@@ -76,7 +76,8 @@ public:
 ITD_AudioSource::ITD_AudioSource(char* samplePtr, int size) : SoLoud::AudioSource()
 {
     assert(samplePtr[26] == 1); //assert first block is of sound data type
-    int sampleSize = (READ_LE_U32(samplePtr + 26) >> 8) - 2;
+	printf("Old: %i, Manual: %i, Correct: %i", (READ_LE_U32(samplePtr + 26) >> 8) - 2, (MANUAL_ENDIAN_U32(samplePtr + 26) >> 8) - 2, (CORRECT_ENDIAN_U32(samplePtr + 26) >> 8) - 2);
+    int sampleSize = (MANUAL_ENDIAN_U32(samplePtr + 26) >> 8) - 2;
 
     int frequencyDiv = *(unsigned char*)(samplePtr + 30);
     //    int codecId = samplePtr[31];

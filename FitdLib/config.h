@@ -44,6 +44,10 @@
 
 #ifdef MACOSX
 #define UNIX
+#else
+#ifndef _WIN32
+#define UNIX
+#endif
 #endif
 
 #define HAS_YM3812 1

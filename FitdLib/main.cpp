@@ -522,7 +522,11 @@ void OpenProgram(void)
 #ifdef FITD_DEBUGGER
 			printf("\t%i:\n\t\tRaw: %hi\n\t\tLE: %hi", i, cvarValue, READ_LE_S16(&cvarValue));
 #endif
-            CVars[i] = READ_BE_S16(&cvarValue);
+#ifdef WIN32
+			CVars[i] = READ_BE_S16(&cvarValue);
+#else
+			CVars[i] = CORRECT_ENDIAN_S16(&cvarValue);
+#endif
 #ifdef FITD_DEBUGGER
 			printf("\t\tFinal: %hi\n", CVars[i]);
 #endif
@@ -1414,11 +1418,11 @@ void loadMask(int cameraIdx)
 	for(int i=0; i<cameraDataTable[currentCamera]->numViewedRooms; i++)
 	{
 		cameraViewedRoomStruct* pRoomView = &cameraDataTable[currentCamera]->viewedRoomTable[i];
-		unsigned char* pViewedRoomMask = g_MaskPtr + READ_LE_U32(g_MaskPtr + i*4);
+		unsigned char* pViewedRoomMask = g_MaskPtr + CORRECT_ENDIAN_U32(g_MaskPtr + i*4);
 
 		for(int j=0; j<pRoomView->numMask; j++)
 		{
-			unsigned char* pMaskData = pViewedRoomMask + READ_LE_U32(pViewedRoomMask + j*4);
+			unsigned char* pMaskData = pViewedRoomMask + CORRECT_ENDIAN_U32(pViewedRoomMask + j*4);
 
 			maskStruct* pDestMask = &g_maskBuffers[i][j];
 

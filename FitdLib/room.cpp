@@ -19,7 +19,7 @@ cameraViewedRoomStruct* currentCameraZoneList[NUM_MAX_CAMERA_IN_ROOM];
 
 roomDefStruct* getRoomData(int roomNumber)
 {
-    return (roomDefStruct*)(g_currentFloorRoomRawData + READ_LE_U32(g_currentFloorRoomRawData + roomNumber * 4));
+    return (roomDefStruct*)(g_currentFloorRoomRawData + CORRECT_ENDIAN_U32(g_currentFloorRoomRawData + roomNumber * 4));
 }
 
 int getNumberOfRoom()
@@ -45,11 +45,11 @@ int getNumberOfRoom()
     else
     {
 
-        int numMax = (((READ_LE_U32(g_currentFloorRoomRawData))/4));
+        int numMax = (((CORRECT_ENDIAN_U32(g_currentFloorRoomRawData))/4));
 
         for(i=0;i<numMax;i++)
         {
-            if(g_currentFloorRoomRawDataSize >= READ_LE_U32(g_currentFloorRoomRawData + i * 4))
+            if(g_currentFloorRoomRawDataSize >= CORRECT_ENDIAN_U32(g_currentFloorRoomRawData + i * 4))
             {
                 j++;
             }
@@ -132,7 +132,7 @@ void loadRoom(int roomNumber)
 
         if(g_gameId < AITD3)
         {
-            room_PtrCamera[i] = g_currentFloorCameraRawData + READ_LE_U32(g_currentFloorCameraRawData + currentCameraIdx * 4);
+            room_PtrCamera[i] = g_currentFloorCameraRawData + CORRECT_ENDIAN_U32(g_currentFloorCameraRawData + currentCameraIdx * 4);
         }
 
         cameraDataTable[i] = &(g_currentFloorCameraData[currentCameraIdx]);

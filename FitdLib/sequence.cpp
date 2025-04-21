@@ -125,7 +125,7 @@ void unapckSequenceFrame(unsigned char* source,unsigned char* dest)
                     u16 size;
                     unsigned char fillColor;
 
-                    size = READ_LE_U16(source);
+                    size = CORRECT_ENDIAN_U16(source);
                     source+=2;
                     fillColor = *(source++);
 
@@ -196,7 +196,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
             {
                 memcpy(localPalette,logicalScreen,0x300); // copy palette
                 memcpy(aux,logicalScreen+0x300,64000);
-                nextFrame = READ_LE_U16(logicalScreen+64768);
+                nextFrame = CORRECT_ENDIAN_U16(logicalScreen+64768);
 
                 convertPaletteIfRequired(localPalette);
 
@@ -221,7 +221,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
             {
                 U32 frameSize;
 
-                frameSize = READ_LE_U32(logicalScreen);
+                frameSize = CORRECT_ENDIAN_U32(logicalScreen);
 
                 if(frameSize < 64000) // key frame
                 {

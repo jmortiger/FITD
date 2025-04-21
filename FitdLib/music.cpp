@@ -656,7 +656,8 @@ int musicLoad(void* ptr)
     {
         unsigned long int offset;
 
-        offset = READ_LE_U32(musicPtr + i*4 + 8);
+		printf("Old: %lu, Manual: %lu, Correct: %lu", READ_LE_U32(musicPtr + i*4 + 8), MANUAL_ENDIAN_U32(musicPtr + i*4 + 8), CORRECT_ENDIAN_U32(musicPtr + i*4 + 8));
+        offset = MANUAL_ENDIAN_U32(musicPtr + i*4 + 8);
 
         if(offset)
         {

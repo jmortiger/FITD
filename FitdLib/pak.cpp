@@ -39,9 +39,9 @@ void readPakInfo(pakInfoStruct* pPakInfo, FILE* fileHandle)
 	printf("\tinfo5: %hhu\n", pPakInfo->info5);
 	printf("\toffset: %i\n", pPakInfo->offset);
 #endif
-	pPakInfo->discSize = READ_LE_U32(&pPakInfo->discSize);
-	pPakInfo->uncompressedSize = READ_LE_U32(&pPakInfo->uncompressedSize);
-	pPakInfo->offset = READ_LE_U16(&pPakInfo->offset);
+	pPakInfo->discSize = CORRECT_ENDIAN_U32(&pPakInfo->discSize);
+	pPakInfo->uncompressedSize = CORRECT_ENDIAN_U32(&pPakInfo->uncompressedSize);
+	pPakInfo->offset = MANUAL_ENDIAN_U16(&pPakInfo->offset);
 	
 #ifndef WIN32
 	
@@ -80,6 +80,7 @@ unsigned int PAK_getNumFiles(const char* name)
 #ifdef FITD_DEBUGGER
 	printf("PAK_getNumFiles: Initial: %s has %lu files (Raw value: %lu)\n", name, (fileOffset/4)-2, fileOffset);
 #endif
+    fileOffset = CORRECT_ENDIAN_U32(&fileOffset);
     fclose(fileHandle);
 
 #ifdef FITD_DEBUGGER
@@ -170,8 +171,8 @@ int getPakSize(const char* name, int index)
 #ifdef FITD_DEBUGGER
 		printf("\tinitial fileOffset: %li\n", fileOffset);
 #endif
-#ifdef MACOSX
-        fileOffset = READ_LE_U32(&fileOffset);
+#ifdef UNIX
+        fileOffset = CORRECT_ENDIAN_U32(&fileOffset);
 #endif
 #ifdef FITD_DEBUGGER
 		printf("\tfinal fileOffset: %li\n", fileOffset);
@@ -182,8 +183,8 @@ int getPakSize(const char* name, int index)
 #ifdef FITD_DEBUGGER
 		printf("\tinitial additionalDescriptorSize: %li\n", additionalDescriptorSize);
 #endif
-#ifdef MACOSX
-        additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
+#ifdef UNIX
+        additionalDescriptorSize = CORRECT_ENDIAN_U32(&additionalDescriptorSize);
 #endif
 #ifdef FITD_DEBUGGER
 		printf("\tfinal additionalDescriptorSize: %li\n", additionalDescriptorSize);
@@ -280,16 +281,17 @@ char* loadPak(const char* name, int index)
 
         fread(&fileOffset,4,1,fileHandle);
 
-#ifdef MACOSX
-        fileOffset = READ_LE_U32(&fileOffset);
+#ifdef UNIX
+        fileOffset = CORRECT_ENDIAN_U32(&fileOffset);
 #endif
 
         fseek(fileHandle,fileOffset,SEEK_SET);
 
         fread(&additionalDescriptorSize,4,1,fileHandle);
 
-#ifdef MACOSX
-        additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
+#ifdef UNIX
+		printf("%lu", MANUAL_ENDIAN_U32(&additionalDescriptorSize));
+        additionalDescriptorSize = CORRECT_ENDIAN_U32(&additionalDescriptorSize);
 #endif
 		if(additionalDescriptorSize)
 		{
@@ -386,16 +388,16 @@ void dumpPak(const char* name)
 
             fread(&fileOffset, 4, 1, fileHandle);
 
-#ifdef MACOSX
-            fileOffset = READ_LE_U32(&fileOffset);
+#ifndef WIN32
+            fileOffset = CORRECT_ENDIAN_U32(&fileOffset);
 #endif
 
             fseek(fileHandle, fileOffset, SEEK_SET);
 
             fread(&additionalDescriptorSize, 4, 1, fileHandle);
 
-#ifdef MACOSX
-            additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
+#ifndef WIN32
+            additionalDescriptorSize = CORRECT_ENDIAN_U32(&additionalDescriptorSize);
 #endif
             if (additionalDescriptorSize)
             {
