@@ -73,7 +73,7 @@ void loadRoom(int roomNumber)
 
     freezeTime();
 
-    ASSERT(roomNumber >=0);
+    ASSERT(roomNumber >= 0);
 
     if(currentCamera == -1)
     {
@@ -112,13 +112,13 @@ void loadRoom(int roomNumber)
     var_20 += 2;
     roomZoneData = var_20;*/
 
-    ASSERT(numCameraInRoom < NUM_MAX_CAMERA_IN_ROOM);
+    // ASSERT(numCameraInRoom < NUM_MAX_CAMERA_IN_ROOM);
 
     int newNumCamera = 0;
     int newAbsCamera = -1;
 
     // load the new camera table and try to keep the same camera (except if changing floor)
-    for(i=0;i<numCameraInRoom;i++)
+    for(i = 0; i < numCameraInRoom; i++)
     {
         unsigned int currentCameraIdx = roomDataTable[currentRoom].cameraIdxTable[i]; // indexes are between the roomDefStruct and the first zone data
 

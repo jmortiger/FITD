@@ -12,8 +12,14 @@ extern "C" {
     extern char homePath[512];
 }
 
+/// @brief Loads the given ITD file into memory & returns the loaded address.
+/// @param name 
+/// @return 
 char* loadFromItd(const char* name)
 {
+#ifdef FITD_DEBUGGER
+	printf("loadFromItd: Attempting to loading %s into memory...", name);
+#endif
     FILE* fHandle;
     char* ptr;
 
@@ -30,14 +36,23 @@ char* loadFromItd(const char* name)
     fseek(fHandle,0,SEEK_END);
     fileSize = ftell(fHandle);
     fseek(fHandle,0,SEEK_SET);
+#ifdef FITD_DEBUGGER
+	printf("loadFromItd: Loading %s (%i bytes) into memory...\n", name, fileSize);
+#endif
     ptr = (char*)malloc(fileSize);
 
     if(!ptr)
     {
+#ifdef FITD_DEBUGGER
+		printf("loadFromItd: Failed to allocate (%i bytes) into memory for %s\n", fileSize, name);
+#endif
         fatalError(1,name);
         return NULL;
     }
     fread(ptr,fileSize,1,fHandle);
+#ifdef FITD_DEBUGGER
+printf("loadFromItd: Loaded %s (%i bytes) into memory at address %lu\n", name, fileSize, (u32)ptr);
+#endif
     fclose(fHandle);
     return(ptr);
 }

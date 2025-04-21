@@ -28,9 +28,12 @@ void loadFloor(int floorNumber)
     if(g_gameId < AITD3)
     {
         sprintf(floorFileName,"ETAGE%02d",floorNumber);
+		printf("loadFloor: Loading floor %i...\n", floorNumber);
 
         g_currentFloorRoomRawDataSize = getPakSize(floorFileName,0);
+		printf("\tfloorRoomRawDataSize: %lu...\n", g_currentFloorRoomRawDataSize);
         g_currentFloorCameraRawDataSize = getPakSize(floorFileName,1);
+		printf("\tfloorCameraRawDataSize: %lu...\n", g_currentFloorCameraRawDataSize);
 
         g_currentFloorRoomRawData = CheckLoadMallocPak(floorFileName,0);
         g_currentFloorCameraRawData = CheckLoadMallocPak(floorFileName,1);
@@ -49,9 +52,11 @@ void loadFloor(int floorNumber)
     }
 
     expectedNumberOfRoom = getNumberOfRoom();
+	printf("\tExpecting %i Rooms on Floor %i\n", expectedNumberOfRoom, floorNumber);
 
-    for(i=0;i<expectedNumberOfRoom;i++)
+    for(i = 0; i < expectedNumberOfRoom; i++)
     {
+		printf("\tE%iR%i:\n", floorNumber, i);
         u32 j;
         u8* roomData;
         u8* hardColData;
@@ -91,14 +96,19 @@ void loadFloor(int floorNumber)
         currentRoomDataPtr->worldX = READ_LE_S16(roomData+4);
         currentRoomDataPtr->worldY = READ_LE_S16(roomData+6);
         currentRoomDataPtr->worldZ = READ_LE_S16(roomData+8);
+		printf("\t\tworldX: %li (Raw: %hi)\n", currentRoomDataPtr->worldX, *(s16*)(roomData+4));
+		printf("\t\tworldY: %li (Raw: %hi)\n", currentRoomDataPtr->worldY, *(s16*)(roomData+6));
+		printf("\t\tworldZ: %li (Raw: %hi)\n", currentRoomDataPtr->worldZ, *(s16*)(roomData+8));
 
         currentRoomDataPtr->numCameraInRoom = READ_LE_U16(roomData+0xA);
-
+		printf("\t\tnumCameraInRoom: %li (Raw: %hu)\n", currentRoomDataPtr->numCameraInRoom, *(s16*)(roomData+0xA));
+		
         currentRoomDataPtr->cameraIdxTable = (u16*)malloc(currentRoomDataPtr->numCameraInRoom*sizeof(s16));
-
+		
         for(j=0;j<currentRoomDataPtr->numCameraInRoom;j++)
         {
-            currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData+0xC+2*j);
+			currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData+0xC+2*j);
+			printf("\t\t\tid[%lu]: %hi (Raw: %hu)\n", j, currentRoomDataPtr->cameraIdxTable[j], *(u16*)(roomData+0xC+2*j));
         }
 
         // hard col read
@@ -248,7 +258,7 @@ void loadFloor(int floorNumber)
         {
             unsigned char* backupDataPtr;
 
-            if(g_gameId<AITD3)
+            if(g_gameId < AITD3)
             {
                 currentCameraData = (unsigned char*)(g_currentFloorCameraRawData + READ_LE_U32(g_currentFloorCameraRawData + i * 4));
             }

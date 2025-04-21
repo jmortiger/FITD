@@ -31,9 +31,29 @@ void readPakInfo(pakInfoStruct* pPakInfo, FILE* fileHandle)
     fread(&pPakInfo->info5,1,1,fileHandle);
     fread(&pPakInfo->offset,2,1,fileHandle);
 
-    pPakInfo->discSize = READ_LE_U32(&pPakInfo->discSize);
-    pPakInfo->uncompressedSize = READ_LE_U32(&pPakInfo->uncompressedSize);
-    pPakInfo->offset = READ_LE_U16(&pPakInfo->offset);
+#ifdef FITD_DEBUGGER
+	printf("Raw pakInfo read:\n");
+	printf("\tdiscSize: %li\n", pPakInfo->discSize);
+	printf("\tuncompressedSize: %li\n", pPakInfo->uncompressedSize);
+	printf("\tcompressionFlag: %hhu\n", pPakInfo->compressionFlag);
+	printf("\tinfo5: %hhu\n", pPakInfo->info5);
+	printf("\toffset: %i\n", pPakInfo->offset);
+#endif
+	pPakInfo->discSize = READ_LE_U32(&pPakInfo->discSize);
+	pPakInfo->uncompressedSize = READ_LE_U32(&pPakInfo->uncompressedSize);
+	pPakInfo->offset = READ_LE_U16(&pPakInfo->offset);
+	
+#ifndef WIN32
+	
+#endif
+#ifdef FITD_DEBUGGER
+	printf("Resultant pakInfo:\n");
+	printf("\tdiscSize: %li\n", pPakInfo->discSize);
+	printf("\tuncompressedSize: %li\n", pPakInfo->uncompressedSize);
+	printf("\tcompressionFlag: %hhu\n", pPakInfo->compressionFlag);
+	printf("\tinfo5: %hhu\n", pPakInfo->info5);
+	printf("\toffset: %i\n", pPakInfo->offset);
+#endif
 }
 
 unsigned int PAK_getNumFiles(const char* name)
@@ -53,13 +73,18 @@ unsigned int PAK_getNumFiles(const char* name)
 
     ASSERT(fileHandle);
 
+	// Move past the initial 4 empty bytes
     fseek(fileHandle,4,SEEK_CUR);
+	// Read 1 set of 4 bytes into variable `fileOffset` as an unsigned 32-bit (4 byte) integer
     fread(&fileOffset,4,1,fileHandle);
-#ifdef MACOSX
-    fileOffset = READ_LE_U32(&fileOffset);
+#ifdef FITD_DEBUGGER
+	printf("PAK_getNumFiles: Initial: %s has %lu files (Raw value: %lu)\n", name, (fileOffset/4)-2, fileOffset);
 #endif
     fclose(fileHandle);
 
+#ifdef FITD_DEBUGGER
+	printf("PAK_getNumFiles: Final: %s has %lu files (Raw value: %lu)\n", name, (fileOffset/4)-2, fileOffset);
+#endif
     return((fileOffset/4)-2);
 }
 
@@ -127,6 +152,10 @@ int getPakSize(const char* name, int index)
     pakInfoStruct pakInfo;
     s32 size=0;
 
+#ifdef FITD_DEBUGGER
+	printf("getPakSize: Retrieving size of index %i from %s\n", index, name);
+#endif
+
     strcpy(bufferName, homePath);
     strcat(bufferName, name); // temporary until makeExtention is coded
     strcat(bufferName,".PAK");
@@ -138,14 +167,26 @@ int getPakSize(const char* name, int index)
         fseek(fileHandle,(index+1)*4,SEEK_SET);
 
         fread(&fileOffset,4,1,fileHandle);
+#ifdef FITD_DEBUGGER
+		printf("\tinitial fileOffset: %li\n", fileOffset);
+#endif
 #ifdef MACOSX
         fileOffset = READ_LE_U32(&fileOffset);
+#endif
+#ifdef FITD_DEBUGGER
+		printf("\tfinal fileOffset: %li\n", fileOffset);
 #endif
         fseek(fileHandle,fileOffset,SEEK_SET);
 
         fread(&additionalDescriptorSize,4,1,fileHandle);
+#ifdef FITD_DEBUGGER
+		printf("\tinitial additionalDescriptorSize: %li\n", additionalDescriptorSize);
+#endif
 #ifdef MACOSX
         additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
+#endif
+#ifdef FITD_DEBUGGER
+		printf("\tfinal additionalDescriptorSize: %li\n", additionalDescriptorSize);
 #endif
 
         readPakInfo(&pakInfo,fileHandle);
@@ -166,7 +207,10 @@ int getPakSize(const char* name, int index)
         }
 
         fclose(fileHandle);
-    }
+    } else {
+		printf("getPakSize: Couldn't open file %s", name);
+		// printf("getPakSize: Index out of bounds; %s only has %u files, can't get requested index %i\n", name, PAK_getNumFiles(name), index);
+	}
 
     return size;
 #endif
@@ -174,8 +218,18 @@ int getPakSize(const char* name, int index)
 
 char* loadPak(const char* name, int index)
 {
-    if(PAK_getNumFiles(name) < index)
+#ifdef FITD_DEBUGGER
+	printf("loadPak: Retrieving file of index %i from %s\n", index, name);
+
+	unsigned int numFiles = PAK_getNumFiles(name);
+	if(numFiles < index) {
+		printf("loadPak: Index out of bounds; %s only has %u files, can't get requested index %i\n", name, PAK_getNumFiles(name), index);
+		return NULL;
+	}
+#else
+	if(PAK_getNumFiles(name) < index) 
         return NULL;
+#endif
     
     
     //dumpPak(name);
@@ -289,6 +343,9 @@ char* loadPak(const char* name, int index)
                 break;
             }
         default:
+#ifdef FITD_DEBUGGER
+			printf("Failed to load pak:\n\tfile: %s\n\tresource: %s\n\treason: Unexpected Value; pakInfo.compressionFlag should be 0, 1, or 4; was \n%x", name,nameBuffer+2,(unsigned int)pakInfo.compressionFlag);
+#endif
             assert(false);
             break;
         }

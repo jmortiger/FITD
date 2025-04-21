@@ -27,6 +27,7 @@ char* PtrPrioritySample;
 
 char* PtrFont;
 
+/// @brief Frame
 char* PtrCadre;
 
 unsigned char currentGamePalette[256*3];
@@ -80,6 +81,8 @@ tObject objectTable[NUM_MAX_OBJECT];
 
 s16 currentWorldTarget;
 
+/// @brief 
+/// @remarks This is an int that's used to store a long at certain points.
 int fileSize;
 
 hqrEntryStruct* listBody;

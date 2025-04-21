@@ -408,11 +408,15 @@ void OpenProgram(void)
         BufferAnim[i].resize(SIZE_BUFFER_ANIM);
     }
 
+	// Load Font Data into memory
 	switch(g_gameId)
 	{
 	case AITD3:
 		{
 #ifdef TARGET_OS_IPHONE
+#ifdef FITD_DEBUGGER
+			printf("Loading font data for AITD3 from index 1 of ITD_RESS.PAK...");
+#endif
 			PtrFont = CheckLoadMallocPak("ITD_RESS",1);
 #else
 			FILE* fHandle = fopen("font.bin", "rb");
@@ -428,6 +432,9 @@ void OpenProgram(void)
 	case JACK:
 	case AITD2:
 		{
+#ifdef FITD_DEBUGGER
+			printf("Loading font data for AITD2/JACK from index 1 of ITD_RESS.PAK...\n");
+#endif
 			PtrFont = CheckLoadMallocPak("ITD_RESS",1);
 			/*
 			int fontSize = getPakSize("ITD_RESS",1);
@@ -438,18 +445,27 @@ void OpenProgram(void)
 		}
 	case AITD1:
 		{
+#ifdef FITD_DEBUGGER
+			printf("Loading font data for AITD1 from index 5 of ITD_RESS.PAK...\n");
+#endif
 			PtrFont = CheckLoadMallocPak("ITD_RESS",5);
 			break;
 		}
     case TIMEGATE:
-        PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
+	{
+#ifdef FITD_DEBUGGER
+			printf("Loading font data for TIMEGATE from index 2 of ITD_RESS.PAK...\n");
+#endif
+		PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
         break;
+	}
 	default:
 		assert(0);
 	}
 
 	ExtSetFont(PtrFont, 14);
 
+	// Set Font Space (?)
 	if(g_gameId == AITD1)
 	{
 		SetFontSpace(2,0);
@@ -459,20 +475,33 @@ void OpenProgram(void)
 		SetFontSpace(2,1);
 	}
 
+	// Load Frame (?)
 	switch(g_gameId)
 	{
 	case JACK:
 	case AITD2:
 	case AITD3:
 		{
+#ifdef FITD_DEBUGGER
+			printf("Loading menu frame data from index 0 of ITD_RESS.PAK...\n");
+#endif
 			PtrCadre = CheckLoadMallocPak("ITD_RESS",0);
 			break;
 		}
 	case AITD1:
 		{
+#ifdef FITD_DEBUGGER
+			printf("Loading menu frame data for AITD1 from index 4 of ITD_RESS.PAK...\n");
+#endif
 			PtrCadre = CheckLoadMallocPak("ITD_RESS",4);
 			break;
 		}
+	case TIMEGATE:
+	default:
+#ifdef FITD_DEBUGGER
+		printf("Not Loading menu frame data for TIMEGATE from ITD_RESS.PAK...\n");
+#endif
+		break;
 	}
 
 	PtrPrioritySample = loadFromItd("PRIORITY.ITD");
@@ -484,10 +513,19 @@ void OpenProgram(void)
         {
             fatalError(0, "DEFINES.ITD");
         }
+#ifdef FITD_DEBUGGER
+		printf("Initializing CVars...\n");
+#endif
         for (int i = 0; i < CVars.size(); i++) {
             s16 cvarValue = 0;
             fread(&cvarValue, 2, 1, fHandle);
+#ifdef FITD_DEBUGGER
+			printf("\t%i:\n\t\tRaw: %hi\n\t\tLE: %hi", i, cvarValue, READ_LE_S16(&cvarValue));
+#endif
             CVars[i] = READ_BE_S16(&cvarValue);
+#ifdef FITD_DEBUGGER
+			printf("\t\tFinal: %hi\n", CVars[i]);
+#endif
         }
         fclose(fHandle);
     }
@@ -4602,6 +4640,8 @@ void configureHqrHero(hqrEntryStruct* hqrPtr, const char* name)
 	strncpy(hqrPtr->string,name,8);
 }
 
+/// @brief Detects which game is being played & sets up the engine accordingly.
+/// TODO: FINISH
 void detectGame(void)
 {
 	if(fileExists("LISTBOD2.PAK"))
