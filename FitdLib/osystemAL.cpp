@@ -76,14 +76,32 @@ public:
 ITD_AudioSource::ITD_AudioSource(char* samplePtr, int size) : SoLoud::AudioSource()
 {
     assert(samplePtr[26] == 1); //assert first block is of sound data type
+#ifdef FITD_DEBUGGER
+    printf("sampleSize: %lu/%i (Raw: (%lu>>8)-2=%lu)\n", (READ_LE_U32(samplePtr + 26) >> 8) - 2, (int)((READ_LE_U32(samplePtr + 26) >> 8) - 2), *(u32*)(samplePtr + 26), (READ_LE_U32(samplePtr + 26) >> 8) - 2);
+#endif
     int sampleSize = (READ_LE_U32(samplePtr + 26) >> 8) - 2;
+#ifdef FITD_DEBUGGER
+    printf("Final: %i\n", sampleSize);
+#endif
 
+#ifdef FITD_DEBUGGER
+    printf("frequencyDiv: %hhu (Raw: %hhu)\n", *(unsigned char*)(samplePtr + 30), *(unsigned char*)(samplePtr + 30));
+#endif
     int frequencyDiv = *(unsigned char*)(samplePtr + 30);
+#ifdef FITD_DEBUGGER
+    printf("Final: %hhu\n", frequencyDiv);
+#endif
     //    int codecId = samplePtr[31];
 
     char* sampleData = samplePtr + 32;
 
+#ifdef FITD_DEBUGGER
+    printf("sampleRate: %i (Raw: %i)\n", 1000000 / (256 - frequencyDiv), 1000000 / (256 - frequencyDiv));
+#endif
     int sampleRate = 1000000 / (256 - frequencyDiv);
+#ifdef FITD_DEBUGGER
+    printf("Final: %i\n", 1000000 / (256 - frequencyDiv));
+#endif
 
     m_samples = sampleData;
     m_size = sampleSize-1;

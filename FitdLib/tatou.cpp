@@ -219,6 +219,10 @@ void playSound(int num)
         strcpy(sampleFileName, "LISTSAMP");
     }
 
+#ifdef FITD_DEBUGGER
+    printf("AITD1 playSound: Attempting to play sample %i from %s...\n", num, sampleFileName);
+#endif
+
     int size = getPakSize(sampleFileName,num);
     assert(size);
 
