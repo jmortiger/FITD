@@ -75,7 +75,7 @@ unsigned int PAK_getNumFiles(const char* name)
 	// Read 1 set of 4 bytes into variable `fileOffset` as an unsigned 32-bit (4 byte) integer
     fread(&fileOffset,4,1,fileHandle);
 #ifdef FITD_DEBUGGER
-	printf("PAK_getNumFiles: \n\tInitial: %s has %lu files (Raw value: %lu)\n", name, (fileOffset/4)-2, fileOffset);
+	printf("PAK_getNumFiles: \n\tRaw: %s has %lu files ((%lu / 4) - 2)\n", name, (fileOffset/4)-2, fileOffset);
 #endif
 #ifdef MACOSX
     fileOffset = READ_LE_U32(&fileOffset);
@@ -83,7 +83,7 @@ unsigned int PAK_getNumFiles(const char* name)
     fclose(fileHandle);
 
 #ifdef FITD_DEBUGGER
-	printf("\tFinal: %s has %lu files (Raw value: %lu)\n\n", name, (fileOffset/4)-2, fileOffset);
+	printf("\tFinal: %s has %lu files ((%lu / 4) - 2)\n\n", name, (fileOffset/4)-2, fileOffset);
 #endif
     return((fileOffset/4)-2);
 }
@@ -153,7 +153,7 @@ int getPakSize(const char* name, int index)
     s32 size=0;
 
 #ifdef FITD_DEBUGGER
-	printf("getPakSize: Retrieving size of index %i from %s\n", index, name);
+	printf("getPakSize(%s, %i): Retrieving size of index %i from %s...\n", name, index, index, name);
 #endif
 
     strcpy(bufferName, homePath);
@@ -162,7 +162,7 @@ int getPakSize(const char* name, int index)
 
     fileHandle = fopen(bufferName,"rb");
 
-    if(fileHandle) // a bit stupid, should return NULL right away
+    if(fileHandle) // TODO: Branching is a bit stupid, should return NULL right away
     {
         fseek(fileHandle,(index+1)*4,SEEK_SET);
 
@@ -205,13 +205,20 @@ int getPakSize(const char* name, int index)
         {
             size = pakInfo.uncompressedSize;
         }
+#ifdef FITD_DEBUGGER
+        else
+        {
+            printf("getPakSize(%s, %i): Invalid compression flag value (expected 0, 1, or 4; was %hhi)\n", name, index, pakInfo.compressionFlag);
+        }
+        
+#endif
 
         fclose(fileHandle);
     } else {
-		printf("getPakSize: Couldn't open file %s", name);
-		// printf("getPakSize: Index out of bounds; %s only has %u files, can't get requested index %i\n", name, PAK_getNumFiles(name), index);
+		printf("getPakSize(%s, %i): Couldn't open file\n", name, index);
 	}
 
+    printf("getPakSize(%s, %i): Size = %li\n", name, index, size);
     return size;
 #endif
 }
@@ -279,17 +286,27 @@ char* loadPak(const char* name, int index)
         fseek(fileHandle,(index+1)*4,SEEK_SET);
 
         fread(&fileOffset,4,1,fileHandle);
-
+#ifdef FITD_DEBUGGER
+		printf("\tinitial fileOffset: %li\n", fileOffset);
+#endif
 #ifdef MACOSX
         fileOffset = READ_LE_U32(&fileOffset);
 #endif
-
+#ifdef FITD_DEBUGGER
+		printf("\tfinal fileOffset: %li\n", fileOffset);
+#endif
         fseek(fileHandle,fileOffset,SEEK_SET);
 
         fread(&additionalDescriptorSize,4,1,fileHandle);
 
+#ifdef FITD_DEBUGGER
+		printf("\tinitial additionalDescriptorSize: %li\n", additionalDescriptorSize);
+#endif
 #ifdef MACOSX
         additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
+#endif
+#ifdef FITD_DEBUGGER
+		printf("\tfinal additionalDescriptorSize: %li\n", additionalDescriptorSize);
 #endif
 		if(additionalDescriptorSize)
 		{
@@ -344,7 +361,7 @@ char* loadPak(const char* name, int index)
             }
         default:
 #ifdef FITD_DEBUGGER
-			printf("Failed to load pak:\n\tfile: %s\n\tresource: %s\n\treason: Unexpected Value; pakInfo.compressionFlag should be 0, 1, or 4; was \n%x", name,nameBuffer+2,(unsigned int)pakInfo.compressionFlag);
+			printf("Failed to load pak:\n\tfile: %s\n\tresource: %s\n\treason: Unexpected Value; pakInfo.compressionFlag should be 0, 1, or 4; was %hhi\n", name, nameBuffer + 2, pakInfo.compressionFlag);
 #endif
             assert(false);
             break;

@@ -9,6 +9,9 @@
 #include <TargetConditionals.h>
 #include <stdint.h>
 #define HAS_STDINT
+// #elif __has_include ("stdint.h")
+// #include <stdint.h>
+// #define HAS_STDINT
 #endif
 
 #ifdef _WIN32
@@ -65,6 +68,46 @@ typedef signed char s8;
 typedef signed short int s16;
 typedef signed long int s32;
 #endif
+
+// #if defined(_MSC_VER) || (defined(__INTEL_COMPILER) && defined(_WIN32))
+// // It HAS to be a 64 bit machine
+// #if defined(_M_X64)
+// typedef unsigned char u8;
+// typedef unsigned short int u16;
+// typedef unsigned int u32;
+
+// typedef signed char s8;
+// typedef signed short int s16;
+// typedef signed int s32;
+// #else // Unknown default size; presumed 32 bit
+// typedef unsigned char u8;
+// typedef unsigned short int u16;
+// typedef unsigned long int u32;
+
+// typedef signed char s8;
+// typedef signed short int s16;
+// typedef signed long int s32;
+// #endif
+// #elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
+// // It HAS to be a 64 bit machine
+// #if defined(__x86_64) || defined(__x86_64__)
+// typedef unsigned char u8;
+// typedef unsigned short int u16;
+// typedef unsigned int u32;
+
+// typedef signed char s8;
+// typedef signed short int s16;
+// typedef signed int s32;
+// #else // Unknown default size; presumed 32 bit
+// typedef unsigned char u8;
+// typedef unsigned short int u16;
+// typedef unsigned int u32;
+
+// typedef signed char s8;
+// typedef signed short int s16;
+// typedef signed int s32;
+// #endif
+// #endif
 
 #include <stdlib.h>
 #include <stdio.h>

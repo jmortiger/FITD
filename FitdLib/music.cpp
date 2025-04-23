@@ -652,10 +652,14 @@ int musicLoad(void* ptr)
 
     regBDConf = flag1;
 
+#ifdef FITD_DEBUGGER
+    printf("Loading music...\n\tBuilding channelTable2...\n");
+#endif
     for(i=0;i<11;i++)
     {
         unsigned long int offset;
 
+        printf("\t\tchannelTable2[%i].dataPtr offset: %lu (Raw: %lu)\n", i, READ_LE_U32(musicPtr + i * 4 + 8), *(u32*)(musicPtr + i * 4 + 8));
         offset = READ_LE_U32(musicPtr + i*4 + 8);
 
         if(offset)
@@ -670,6 +674,7 @@ int musicLoad(void* ptr)
         channelTable2[i].var4 |= 0x40;
     }
 
+    printf("\t\tcurrentMusicPtr offset: %hu (Raw: %hu)\n", READ_LE_U16(musicPtr + 0x34), *(u16*)(musicPtr + 0x34));
     currentMusicPtr = musicPtr + READ_LE_U16(musicPtr + 0x34);
 
     return 0;

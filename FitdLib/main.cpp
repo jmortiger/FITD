@@ -4644,6 +4644,9 @@ void configureHqrHero(hqrEntryStruct* hqrPtr, const char* name)
 /// TODO: FINISH DESCRIPTION
 void detectGame(void)
 {
+#ifdef FITD_DEBUGGER
+    printf("...BTW, here's the type sizes:\n\tu8: %zi, \n\tu16: %zi, \n\tu32: %zi, \n\ts8: %zi, \n\ts16: %zi, \n\ts32: %zi\n", sizeof(u8), sizeof(u16), sizeof(u32), sizeof(s8), sizeof(s16), sizeof(s32));
+#endif
 	if(fileExists("LISTBOD2.PAK"))
 	{
 		g_gameId = AITD1;
@@ -4651,6 +4654,9 @@ void detectGame(void)
 		currentCVarTable = AITD1KnownCVars;
 
 		printf("Detected Alone in the Dark\n");
+#ifdef FITD_DEBUGGER
+		printf("\tCVars sized to 45\n");
+#endif
 #ifndef AITD_UE4
         SDL_SetWindowTitle(gWindowBGFX, "Alone in the Dark");
 #endif
