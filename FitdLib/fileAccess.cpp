@@ -51,7 +51,11 @@ char* loadFromItd(const char* name)
     }
     fread(ptr,fileSize,1,fHandle);
 #ifdef FITD_DEBUGGER
-    printf("loadFromItd: Loaded %s (%i bytes) into memory at address %lu\n", name, fileSize, (u32)ptr);
+#ifdef _M_X64
+    printf("loadFromItd: Loaded %s (%i bytes) into memory at address %llu\n", name, fileSize, (unsigned long long)ptr);
+#else
+    printf("loadFromItd: Loaded %s (%i bytes) into memory at address %lu\n", name, fileSize, (unsigned long)ptr);
+#endif
 #endif
     fclose(fHandle);
     return(ptr);

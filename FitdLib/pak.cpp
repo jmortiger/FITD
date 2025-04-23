@@ -33,8 +33,8 @@ void readPakInfo(pakInfoStruct* pPakInfo, FILE* fileHandle)
 
 #ifdef FITD_DEBUGGER
 	printf("\nRaw pakInfo read:\n");
-	printf("\tdiscSize: %li\n", pPakInfo->discSize);
-	printf("\tuncompressedSize: %li\n", pPakInfo->uncompressedSize);
+	printf("\tdiscSize: %i\n", pPakInfo->discSize);
+	printf("\tuncompressedSize: %i\n", pPakInfo->uncompressedSize);
 	printf("\tcompressionFlag: %hhu\n", pPakInfo->compressionFlag);
 	printf("\tinfo5: %hhu\n", pPakInfo->info5);
 	printf("\toffset: %i\n", pPakInfo->offset);
@@ -44,8 +44,8 @@ void readPakInfo(pakInfoStruct* pPakInfo, FILE* fileHandle)
     pPakInfo->offset = READ_LE_U16(&pPakInfo->offset);
 #ifdef FITD_DEBUGGER
 	printf("Resultant pakInfo:\n");
-	printf("\tdiscSize: %li\n", pPakInfo->discSize);
-	printf("\tuncompressedSize: %li\n", pPakInfo->uncompressedSize);
+	printf("\tdiscSize: %i\n", pPakInfo->discSize);
+	printf("\tuncompressedSize: %i\n", pPakInfo->uncompressedSize);
 	printf("\tcompressionFlag: %hhu\n", pPakInfo->compressionFlag);
 	printf("\tinfo5: %hhu\n", pPakInfo->info5);
 	printf("\toffset: %i\n", pPakInfo->offset);
@@ -75,7 +75,7 @@ unsigned int PAK_getNumFiles(const char* name)
 	// Read 1 set of 4 bytes into variable `fileOffset` as an unsigned 32-bit (4 byte) integer
     fread(&fileOffset,4,1,fileHandle);
 #ifdef FITD_DEBUGGER
-	printf("PAK_getNumFiles: \n\tRaw: %s has %lu files ((%lu / 4) - 2)\n", name, (fileOffset/4)-2, fileOffset);
+	printf("PAK_getNumFiles: \n\tRaw: %s has %u files ((%u / 4) - 2)\n", name, (fileOffset/4)-2, fileOffset);
 #endif
 #ifdef MACOSX
     fileOffset = READ_LE_U32(&fileOffset);
@@ -83,7 +83,7 @@ unsigned int PAK_getNumFiles(const char* name)
     fclose(fileHandle);
 
 #ifdef FITD_DEBUGGER
-	printf("\tFinal: %s has %lu files ((%lu / 4) - 2)\n\n", name, (fileOffset/4)-2, fileOffset);
+	printf("\tFinal: %s has %u files ((%u / 4) - 2)\n\n", name, (fileOffset/4)-2, fileOffset);
 #endif
     return((fileOffset/4)-2);
 }
@@ -168,25 +168,25 @@ int getPakSize(const char* name, int index)
 
         fread(&fileOffset,4,1,fileHandle);
 #ifdef FITD_DEBUGGER
-		printf("\tinitial fileOffset: %li\n", fileOffset);
+		printf("\tinitial fileOffset: %i\n", fileOffset);
 #endif
 #ifdef MACOSX
         fileOffset = READ_LE_U32(&fileOffset);
 #endif
 #ifdef FITD_DEBUGGER
-		printf("\tfinal fileOffset: %li\n", fileOffset);
+		printf("\tfinal fileOffset: %i\n", fileOffset);
 #endif
         fseek(fileHandle,fileOffset,SEEK_SET);
 
         fread(&additionalDescriptorSize,4,1,fileHandle);
 #ifdef FITD_DEBUGGER
-		printf("\tinitial additionalDescriptorSize: %li\n", additionalDescriptorSize);
+		printf("\tinitial additionalDescriptorSize: %i\n", additionalDescriptorSize);
 #endif
 #ifdef MACOSX
         additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
 #endif
 #ifdef FITD_DEBUGGER
-		printf("\tfinal additionalDescriptorSize: %li\n", additionalDescriptorSize);
+		printf("\tfinal additionalDescriptorSize: %i\n", additionalDescriptorSize);
 #endif
 
         readPakInfo(&pakInfo,fileHandle);
@@ -218,7 +218,7 @@ int getPakSize(const char* name, int index)
 		printf("getPakSize(%s, %i): Couldn't open file\n", name, index);
 	}
 
-    printf("getPakSize(%s, %i): Size = %li\n", name, index, size);
+    printf("getPakSize(%s, %i): Size = %i\n", name, index, size);
     return size;
 #endif
 }
@@ -287,26 +287,26 @@ char* loadPak(const char* name, int index)
 
         fread(&fileOffset,4,1,fileHandle);
 #ifdef FITD_DEBUGGER
-		printf("\tinitial fileOffset: %li\n", fileOffset);
+		printf("\tinitial fileOffset: %i\n", fileOffset);
 #endif
 #ifdef MACOSX
         fileOffset = READ_LE_U32(&fileOffset);
 #endif
 #ifdef FITD_DEBUGGER
-		printf("\tfinal fileOffset: %li\n", fileOffset);
+		printf("\tfinal fileOffset: %i\n", fileOffset);
 #endif
         fseek(fileHandle,fileOffset,SEEK_SET);
 
         fread(&additionalDescriptorSize,4,1,fileHandle);
 
 #ifdef FITD_DEBUGGER
-		printf("\tinitial additionalDescriptorSize: %li\n", additionalDescriptorSize);
+		printf("\tinitial additionalDescriptorSize: %i\n", additionalDescriptorSize);
 #endif
 #ifdef MACOSX
         additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
 #endif
 #ifdef FITD_DEBUGGER
-		printf("\tfinal additionalDescriptorSize: %li\n", additionalDescriptorSize);
+		printf("\tfinal additionalDescriptorSize: %i\n", additionalDescriptorSize);
 #endif
 		if(additionalDescriptorSize)
 		{

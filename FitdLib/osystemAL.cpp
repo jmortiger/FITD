@@ -78,7 +78,7 @@ ITD_AudioSource::ITD_AudioSource(char* samplePtr, int size) : SoLoud::AudioSourc
     assert(samplePtr[26] == 1); //assert first block is of sound data type
     printf("validated first 26 bytes\n");
 #ifdef FITD_DEBUGGER
-    printf("sampleSize: %lu/%i (Raw: (%lu>>8)-2=%lu)\n", (READ_LE_U32(samplePtr + 26) >> 8) - 2, (int)((READ_LE_U32(samplePtr + 26) >> 8) - 2), *(u32*)(samplePtr + 26), (READ_LE_U32(samplePtr + 26) >> 8) - 2);
+    printf("sampleSize: %u/%i (Raw: (%u>>8)-2=%u)\n", (READ_LE_U32(samplePtr + 26) >> 8) - 2, (int)((READ_LE_U32(samplePtr + 26) >> 8) - 2), *(u32*)(samplePtr + 26), (READ_LE_U32(samplePtr + 26) >> 8) - 2);
 #endif
     int sampleSize = (READ_LE_U32(samplePtr + 26) >> 8) - 2;
 #ifdef FITD_DEBUGGER

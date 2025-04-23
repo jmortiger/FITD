@@ -31,9 +31,9 @@ void loadFloor(int floorNumber)
         printf("loadFloor: Loading floor %i...\n", floorNumber);
 
         g_currentFloorRoomRawDataSize = getPakSize(floorFileName,0);
-        printf("\tfloorRoomRawDataSize: %lu...\n", g_currentFloorRoomRawDataSize);
+        printf("\tfloorRoomRawDataSize: %u...\n", g_currentFloorRoomRawDataSize);
         g_currentFloorCameraRawDataSize = getPakSize(floorFileName,1);
-        printf("\tfloorCameraRawDataSize: %lu...\n", g_currentFloorCameraRawDataSize);
+        printf("\tfloorCameraRawDataSize: %u...\n", g_currentFloorCameraRawDataSize);
 
         g_currentFloorRoomRawData = CheckLoadMallocPak(floorFileName,0);
         g_currentFloorCameraRawData = CheckLoadMallocPak(floorFileName,1);
@@ -89,7 +89,7 @@ void loadFloor(int floorNumber)
         }
         else
         {
-            printf("\t\troomData Offset: %lu (Raw: %lu)", READ_LE_U32(g_currentFloorRoomRawData + i * 4), *(u32*)(g_currentFloorRoomRawData + i * 4));
+            printf("\t\troomData Offset: %u (Raw: %u)", READ_LE_U32(g_currentFloorRoomRawData + i * 4), *(u32*)(g_currentFloorRoomRawData + i * 4));
             roomData = (u8*)(g_currentFloorRoomRawData + READ_LE_U32(g_currentFloorRoomRawData + i * 4));
         }
         currentRoomDataPtr = &roomDataTable[i];
@@ -113,9 +113,9 @@ void loadFloor(int floorNumber)
 
         for(j=0;j<currentRoomDataPtr->numCameraInRoom;j++)
         {
-            printf("\t\t\tid[%lu]: %hi (Raw: %hu)\n", j, READ_LE_U16(roomData + 0xC + 2 * j), *(u16*)(roomData + 0xC + 2 * j));
+            printf("\t\t\tid[%u]: %hi (Raw: %hu)\n", j, READ_LE_U16(roomData + 0xC + 2 * j), *(u16*)(roomData + 0xC + 2 * j));
             currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData+0xC+2*j);
-            // printf("\t\t\tid[%lu]: %hi (Raw: %hu)\n", j, currentRoomDataPtr->cameraIdxTable[j], *(u16 *)(roomData + 0xC + 2 * j));
+            // printf("\t\t\tid[%u]: %hi (Raw: %hu)\n", j, currentRoomDataPtr->cameraIdxTable[j], *(u16 *)(roomData + 0xC + 2 * j));
         }
 
         // hard col read
@@ -137,7 +137,7 @@ void loadFloor(int floorNumber)
 
                 zvData = &currentRoomDataPtr->hardColTable[j].zv;
 
-                printf("\t\t\tCol #%lu:\n", j);
+                printf("\t\t\tCol #%u:\n", j);
                 printf("\t\t\t\tZVX1: %hi (Raw: %hi)\n", READ_LE_S16(hardColData + 0x00), *(s16*)(hardColData + 0x00));
                 printf("\t\t\t\tZVX2: %hi (Raw: %hi)\n", READ_LE_S16(hardColData + 0x02), *(s16*)(hardColData + 0x02));
                 printf("\t\t\t\tZVY1: %hi (Raw: %hi)\n", READ_LE_S16(hardColData + 0x04), *(s16*)(hardColData + 0x04));
@@ -146,7 +146,7 @@ void loadFloor(int floorNumber)
                 printf("\t\t\t\tZVZ2: %hi (Raw: %hi)\n", READ_LE_S16(hardColData + 0x0A), *(s16*)(hardColData + 0x0A));
                 printf("\t\t\t\tparameter: %hu (Raw: %hu)\n", READ_LE_U16(hardColData + 0x0C), *(u16*)(hardColData + 0x0C));
                 printf("\t\t\t\ttype: %hu (Raw: %hu)\n", READ_LE_U16(hardColData + 0x0E), *(u16*)(hardColData + 0x0E));
-                // printf("\t\t\tCol #%lu:\n", j);
+                // printf("\t\t\tCol #%u:\n", j);
                 zvData->ZVX1 = READ_LE_S16(hardColData+0x00);
                 // printf("\t\t\t\tZVX1: %li (Raw: %hi)\n", zvData->ZVX1, *(s16 *)(hardColData + 0x00));
                 zvData->ZVX2 = READ_LE_S16(hardColData+0x02);
@@ -161,9 +161,9 @@ void loadFloor(int floorNumber)
                 // printf("\t\t\t\tZVZ2: %li (Raw: %hi)\n", zvData->ZVZ2, *(s16 *)(hardColData + 0x0A));
 
                 currentRoomDataPtr->hardColTable[j].parameter = READ_LE_U16(hardColData+0x0C);
-                // printf("\t\t\t\tparameter: %lu (Raw: %hu)\n", currentRoomDataPtr->hardColTable[j].parameter, *(u16 *)(hardColData + 0x0C));
+                // printf("\t\t\t\tparameter: %u (Raw: %hu)\n", currentRoomDataPtr->hardColTable[j].parameter, *(u16 *)(hardColData + 0x0C));
                 currentRoomDataPtr->hardColTable[j].type = READ_LE_U16(hardColData+0x0E);
-                // printf("\t\t\t\ttype: %lu (Raw: %hu)\n", currentRoomDataPtr->hardColTable[j].type, *(u16 *)(hardColData + 0x0E));
+                // printf("\t\t\t\ttype: %u (Raw: %hu)\n", currentRoomDataPtr->hardColTable[j].type, *(u16 *)(hardColData + 0x0E));
 
                 hardColData+=0x10;
             }
@@ -179,7 +179,7 @@ void loadFloor(int floorNumber)
         sceZoneData = roomData + READ_LE_U16(roomData+2);
         printf("\t\tnumSceZone: %hu (Raw: %hu)\n", READ_LE_U16(roomData + 2), *(u16*)(roomData + 2));
         currentRoomDataPtr->numSceZone = READ_LE_U16(sceZoneData);
-        // printf("\t\tnumSceZone: %lu (Raw: %hu)\n", currentRoomDataPtr->numSceZone, *(u16 *)(roomData + 2));
+        // printf("\t\tnumSceZone: %u (Raw: %hu)\n", currentRoomDataPtr->numSceZone, *(u16 *)(roomData + 2));
         sceZoneData+=2;
 
         if(currentRoomDataPtr->numSceZone)
@@ -192,7 +192,7 @@ void loadFloor(int floorNumber)
 
                 zvData = &currentRoomDataPtr->sceZoneTable[j].zv;
 
-                printf("\t\t\tSce #%lu:\n", j);
+                printf("\t\t\tSce #%u:\n", j);
                 printf("\t\t\t\tZVX1: %hi (Raw: %hi)\n", READ_LE_S16(sceZoneData + 0x00), *(s16*)(sceZoneData + 0x00));
                 printf("\t\t\t\tZVX2: %hi (Raw: %hi)\n", READ_LE_S16(sceZoneData + 0x02), *(s16*)(sceZoneData + 0x02));
                 printf("\t\t\t\tZVY1: %hi (Raw: %hi)\n", READ_LE_S16(sceZoneData + 0x04), *(s16*)(sceZoneData + 0x04));
@@ -201,7 +201,7 @@ void loadFloor(int floorNumber)
                 printf("\t\t\t\tZVZ2: %hi (Raw: %hi)\n", READ_LE_S16(sceZoneData + 0x0A), *(s16*)(sceZoneData + 0x0A));
                 printf("\t\t\t\tparameter: %hu (Raw: %hu)\n", READ_LE_U16(sceZoneData + 0x0C), *(u16*)(sceZoneData + 0x0C));
                 printf("\t\t\t\ttype: %hu (Raw: %hu)\n", READ_LE_U16(sceZoneData + 0x0E), *(u16*)(sceZoneData + 0x0E));
-                // printf("\t\t\tSce #%lu:\n", j);
+                // printf("\t\t\tSce #%u:\n", j);
                 zvData->ZVX1 = READ_LE_S16(sceZoneData+0x00);
                 // printf("\t\t\t\tZVX1: %li (Raw: %hi)\n", zvData->ZVX1, *(s16 *)(sceZoneData + 0x00));
                 zvData->ZVX2 = READ_LE_S16(sceZoneData+0x02);
@@ -216,9 +216,9 @@ void loadFloor(int floorNumber)
                 // printf("\t\t\t\tZVZ2: %li (Raw: %hi)\n", zvData->ZVZ2, *(s16 *)(sceZoneData + 0x0A));
 
                 currentRoomDataPtr->sceZoneTable[j].parameter = READ_LE_U16(sceZoneData+0x0C);
-                // printf("\t\t\t\tparameter: %lu (Raw: %hu)\n", currentRoomDataPtr->sceZoneTable[j].parameter, *(u16 *)(sceZoneData + 0x0C));
+                // printf("\t\t\t\tparameter: %u (Raw: %hu)\n", currentRoomDataPtr->sceZoneTable[j].parameter, *(u16 *)(sceZoneData + 0x0C));
                 currentRoomDataPtr->sceZoneTable[j].type = READ_LE_U16(sceZoneData+0x0E);
-                // printf("\t\t\t\ttype: %lu (Raw: %hu)\n", currentRoomDataPtr->sceZoneTable[j].type, *(u16 *)(sceZoneData + 0x0E));
+                // printf("\t\t\t\ttype: %u (Raw: %hu)\n", currentRoomDataPtr->sceZoneTable[j].type, *(u16 *)(sceZoneData + 0x0E));
 
                 sceZoneData+=0x10;
             }
@@ -251,9 +251,9 @@ void loadFloor(int floorNumber)
     }
     else
     {
-        printf("\tCan't have more than %lu (Raw: %lu / 4 = %f) cameras on Floor %i\n", (READ_LE_U32(g_currentFloorCameraRawData)) / 4, *(u32*)g_currentFloorCameraRawData, (*(u32*)g_currentFloorCameraRawData) / 4.0, floorNumber);
+        printf("\tCan't have more than %u (Raw: %u / 4 = %f) cameras on Floor %i\n", (READ_LE_U32(g_currentFloorCameraRawData)) / 4, *(u32*)g_currentFloorCameraRawData, (*(u32*)g_currentFloorCameraRawData) / 4.0, floorNumber);
         int maxExpectedNumberOfCamera = ((READ_LE_U32(g_currentFloorCameraRawData))/4);
-        printf("\tCan't have more than %i (Raw: %lu / 4 = %f) cameras on Floor %i\n", maxExpectedNumberOfCamera, *(u32*)g_currentFloorCameraRawData, (*(u32*)g_currentFloorCameraRawData) / 4.0, floorNumber);
+        printf("\tCan't have more than %i (Raw: %u / 4 = %f) cameras on Floor %i\n", maxExpectedNumberOfCamera, *(u32*)g_currentFloorCameraRawData, (*(u32*)g_currentFloorCameraRawData) / 4.0, floorNumber);
 
 		expectedNumberOfCamera = 0;
 
@@ -261,9 +261,9 @@ void loadFloor(int floorNumber)
 
 		for(int i=0; i<maxExpectedNumberOfCamera; i++)
 		{
-            printf("\t\tOffset #%i: %lu (Raw: %lu); Prior Offset = %i", i, READ_LE_U32(g_currentFloorCameraRawData + i * 4), *(u32*)(g_currentFloorCameraRawData + i * 4), minOffset);
+            printf("\t\tOffset #%i: %u (Raw: %u); Prior Offset = %i", i, READ_LE_U32(g_currentFloorCameraRawData + i * 4), *(u32*)(g_currentFloorCameraRawData + i * 4), minOffset);
 			int offset = READ_LE_U32(g_currentFloorCameraRawData + i * 4);
-            printf("\t\t\tOffset #%i: %i (Raw: %lu); Prior Offset = %i", i, offset, *(u32*)(g_currentFloorCameraRawData + i * 4), minOffset);
+            printf("\t\t\tOffset #%i: %i (Raw: %u); Prior Offset = %i", i, offset, *(u32*)(g_currentFloorCameraRawData + i * 4), minOffset);
 			if(offset > minOffset)
 			{
 				minOffset = offset;
@@ -307,9 +307,9 @@ void loadFloor(int floorNumber)
         }
         else
         {
-            printf("\t\tCam #%i (w/ Offset: %lu (Raw: %lu)):\n", i, READ_LE_U32(g_currentFloorCameraRawData + i * 4), *(u32*)(g_currentFloorCameraRawData + i * 4));
+            printf("\t\tCam #%i (w/ Offset: %u (Raw: %u)):\n", i, READ_LE_U32(g_currentFloorCameraRawData + i * 4), *(u32*)(g_currentFloorCameraRawData + i * 4));
             offset = READ_LE_U32(g_currentFloorCameraRawData + i * 4);
-            printf("\t\tCam #%i (w/ Offset: %u (Raw: %lu)):\n", i, offset, *(u32*)(g_currentFloorCameraRawData + i * 4));
+            printf("\t\tCam #%i (w/ Offset: %u (Raw: %u)):\n", i, offset, *(u32*)(g_currentFloorCameraRawData + i * 4));
         }
 
         // load cameras

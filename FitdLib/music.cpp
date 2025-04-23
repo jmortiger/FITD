@@ -659,7 +659,7 @@ int musicLoad(void* ptr)
     {
         unsigned long int offset;
 
-        printf("\t\tchannelTable2[%i].dataPtr offset: %lu (Raw: %lu)\n", i, READ_LE_U32(musicPtr + i * 4 + 8), *(u32*)(musicPtr + i * 4 + 8));
+        printf("\t\tchannelTable2[%i].dataPtr offset: %u (Raw: %u)\n", i, READ_LE_U32(musicPtr + i * 4 + 8), *(u32*)(musicPtr + i * 4 + 8));
         offset = READ_LE_U32(musicPtr + i*4 + 8);
 
         if(offset)

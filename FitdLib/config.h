@@ -62,11 +62,11 @@ typedef int32_t s32;
 #else
 typedef unsigned char u8;
 typedef unsigned short int u16;
-typedef unsigned long int u32;
+typedef unsigned int u32;
 
 typedef signed char s8;
 typedef signed short int s16;
-typedef signed long int s32;
+typedef signed int s32;
 #endif
 
 // #if defined(_MSC_VER) || (defined(__INTEL_COMPILER) && defined(_WIN32))
