@@ -1,0 +1,23 @@
+{
+	// "$schema": "/home/jmor/.vscode/extensions/streetsidesoftware.code-spell-checker-4.0.47/node_modules/@cspell/cspell-types/cspell.schema.json",
+	// "import": [
+	// 	"./ThirdParty/.cspell.json",
+	// ],
+	// "ignorePaths": [
+	// 	"./ThirdParty/**",
+	// ],
+	// "files": [
+	// 	"**/CMakeLists.txt"
+	// ],
+	"dictionaries": [
+		"frenchDictionary",
+	],
+	"dictionaryDefinitions": [
+		{
+			"name": "frenchDictionary",
+			"path": "./frenchDictionary.txt",
+			"addWords": true,
+			"scope": "workspace"
+		},
+	],
+}

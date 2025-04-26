@@ -1,5 +1,5 @@
-project(FITD)
 cmake_minimum_required(VERSION 3.9)
+project(FITD)
 
 set(THIRD_PARTY "${CMAKE_SOURCE_DIR}/ThirdParty")
 

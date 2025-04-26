@@ -1,0 +1,23 @@
+{
+	// "import": [
+	// 	"./ThirdParty/.cspell.json",
+	// ],
+	"globRoot": "./",
+	"dictionaries": [
+		// "projectDictionary",
+		"bgfxDictionary",
+	],
+	"dictionaryDefinitions": [
+		// {
+		// 	"name": "projectDictionary",
+		// 	"path": "./.vscode/projectDictionary.txt",
+		// 	"addWords": true,
+		// },
+		{
+			"name": "bgfxDictionary",
+			"path": "./bgfxDictionary.txt",
+			"addWords": true,
+			"scope": "folder",
+		},
+	],
+}
