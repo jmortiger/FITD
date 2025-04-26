@@ -8,33 +8,33 @@ typedef struct hardColStruct hardColStruct;
 
 struct hardColStruct
 {
-  ZVStruct zv;
-  u32 type;
-  u32 parameter;
+	ZVStruct zv;
+	u32 type;
+	u32 parameter;
 };
 
 struct sceZoneStruct
 {
-  ZVStruct zv;
-  u32 type;
-  u32 parameter;
+	ZVStruct zv;
+	u32 type;
+	u32 parameter;
 };
 
 typedef struct sceZoneStruct sceZoneStruct;
 
 struct cameraZonePointStruct
 {
-  s16 x;
-  s16 y;
+	s16 x;
+	s16 y;
 };
 
 typedef struct cameraZonePointStruct cameraZonePointStruct;
 
 struct cameraZoneEntryStruct
 {
-  u16 numPoints;
+	u16 numPoints;
 
-  cameraZonePointStruct* pointTable;
+	cameraZonePointStruct* pointTable;
 };
 
 typedef struct cameraZoneEntryStruct cameraZoneEntryStruct;
@@ -55,54 +55,54 @@ struct cameraMaskStruct
 
 struct cameraViewedRoomStruct
 {
-  s16 viewedRoomIdx;
-  s16 offsetToMask;
-  s16 offsetToCover;
-  s16 offsetToHybrids;
-  s16 offsetCamOptims;
-  s16 lightX;
-  s16 lightY;
-  s16 lightZ;
+	s16 viewedRoomIdx;
+	s16 offsetToMask;
+	s16 offsetToCover;
+	s16 offsetToHybrids;
+	s16 offsetCamOptims;
+	s16 lightX;
+	s16 lightY;
+	s16 lightZ;
 
-  u16 numMask;
-  cameraMaskStruct* masks;
-  u16 numCoverZones;
-  cameraZoneEntryStruct* coverZones;
+	u16 numMask;
+	cameraMaskStruct* masks;
+	u16 numCoverZones;
+	cameraZoneEntryStruct* coverZones;
 };
 
 struct cameraDataStruct
 {
-  s16 alpha;
-  s16 beta;
-  s16 gamma;
+	s16 alpha;
+	s16 beta;
+	s16 gamma;
 
-  s16 x;
-  s16 y;
-  s16 z;
+	s16 x;
+	s16 y;
+	s16 z;
 
-  s16 focal1;
-  s16 focal2;
-  s16 focal3;
+	s16 focal1;
+	s16 focal2;
+	s16 focal3;
 
-  u16 numViewedRooms;
-  cameraViewedRoomStruct* viewedRoomTable;
+	u16 numViewedRooms;
+	cameraViewedRoomStruct* viewedRoomTable;
 };
 
 struct roomDataStruct
 {
-  u32 numCameraInRoom;
+	u32 numCameraInRoom;
 
-  u32 numHardCol;
-  hardColStruct* hardColTable;
+	u32 numHardCol;
+	hardColStruct* hardColTable;
 
-  u32 numSceZone;
-  sceZoneStruct* sceZoneTable;
+	u32 numSceZone;
+	sceZoneStruct* sceZoneTable;
 
-  s32 worldX;
-  s32 worldY;
-  s32 worldZ;
+	s32 worldX;
+	s32 worldY;
+	s32 worldZ;
 
-  u16* cameraIdxTable;
+	u16* cameraIdxTable;
 };
 typedef struct roomDataStruct roomDataStruct;
 

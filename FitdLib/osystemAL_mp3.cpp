@@ -55,32 +55,23 @@ void decodeMP3()
 	decompressedSize = 0;
 	int16* pCurrentDecompressionBuffer = (int16*)decompressionBuffer;
 
-	while((((unsigned char*)pCurrentDecompressionBuffer) < decompressionBuffer + BUFFER_SIZE) || decompressionFinished)
-	{
-		if(mad_frame_decode(&mad_Frame,&mad_Stream))
-		{
-			if(MAD_RECOVERABLE(mad_Stream.error))
-			{
+	while ((((unsigned char*)pCurrentDecompressionBuffer) < decompressionBuffer + BUFFER_SIZE) || decompressionFinished) {
+		if (mad_frame_decode(&mad_Frame, &mad_Stream)) {
+			if (MAD_RECOVERABLE(mad_Stream.error)) {
 				/* Do not print a message if the error is a loss of
 				* synchronization and this loss is due to the end of
 				* stream guard bytes. (See the comments marked {3}
 				* supra for more informations about guard bytes.)
 				*/
-				if(mad_Stream.error!=MAD_ERROR_LOSTSYNC)
-				{
+				if (mad_Stream.error != MAD_ERROR_LOSTSYNC) {
 					fflush(stderr);
 				}
 				continue;
-			}
-			else
-			{
-				if(mad_Stream.error==MAD_ERROR_BUFLEN)
-				{
+			} else {
+				if (mad_Stream.error == MAD_ERROR_BUFLEN) {
 					decompressionFinished = true;
 					break;
-				}
-				else
-				{
+				} else {
 					assert(0);
 				}
 			}
@@ -91,8 +82,7 @@ void decodeMP3()
 		assert(mad_Synth.pcm.channels == 2);
 		assert(mad_Synth.pcm.length == 1152);
 
-		for(int sampleIdx=0; sampleIdx<mad_Synth.pcm.length; sampleIdx++)
-		{
+		for (int sampleIdx = 0; sampleIdx < mad_Synth.pcm.length; sampleIdx++) {
 			*pCurrentDecompressionBuffer++ = (int16)scale_sample(mad_Synth.pcm.samples[0][sampleIdx]);
 			*pCurrentDecompressionBuffer++ = (int16)scale_sample(mad_Synth.pcm.samples[1][sampleIdx]);
 		}
@@ -109,7 +99,7 @@ int osystem_playTrack(int trackId)
 	sprintf(musicFileName, "%d.mp3", trackId);
 
 	FILE* fHandle = fopen(musicFileName, "rb");
-	if(fHandle == NULL)
+	if (fHandle == NULL)
 		return false;
 
 	fseek(fHandle, 0, SEEK_END);
@@ -129,16 +119,15 @@ int osystem_playTrack(int trackId)
 	mad_synth_init(&mad_Synth);
 	mad_timer_reset(&mad_Timer);
 
-	mad_stream_buffer(&mad_Stream,pMp3Data,mp3DataSize);
+	mad_stream_buffer(&mad_Stream, pMp3Data, mp3DataSize);
 
 	decompressionFinished = false;
 
-	for(int bufferIdx=0; bufferIdx<NUM_MUSIC_BUFFER; bufferIdx++)
-	{
+	for (int bufferIdx = 0; bufferIdx < NUM_MUSIC_BUFFER; bufferIdx++) {
 		decodeMP3();
-	
+
 		alBufferData(mp3_buffers[bufferIdx], AL_FORMAT_STEREO16, decompressionBuffer, decompressedSize, 44100);
-		assert( decompressionFinished == false );
+		assert(decompressionFinished == false);
 	}
 	alSourceQueueBuffers(mp3_source, NUM_MUSIC_BUFFER, mp3_buffers);
 	alSourcePlay(mp3_source);
@@ -152,8 +141,7 @@ int osystem_playTrack(int trackId)
 
 void osystem_mp3_stop()
 {
-	if(bIsMp3Playing)
-	{
+	if (bIsMp3Playing) {
 		alSourceStop(mp3_source);
 		alDeleteSources(1, &mp3_source);
 		alDeleteBuffers(NUM_MUSIC_BUFFER, mp3_buffers);
@@ -164,15 +152,12 @@ void osystem_mp3_stop()
 
 void osystemAL_mp3_Update()
 {
-	if(bIsMp3Playing)
-	{
+	if (bIsMp3Playing) {
 		ALint numProcessedBuffers;
 		alGetSourcei(mp3_source, AL_BUFFERS_PROCESSED, &numProcessedBuffers);
 
-		if(decompressionFinished == false)
-		{
-			for(int i=0; i<numProcessedBuffers; i++)
-			{
+		if (decompressionFinished == false) {
+			for (int i = 0; i < numProcessedBuffers; i++) {
 				ALuint buffer;
 				alSourceUnqueueBuffers(mp3_source, 1, &buffer);
 

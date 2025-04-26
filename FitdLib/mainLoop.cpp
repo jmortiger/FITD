@@ -8,284 +8,240 @@ int mainLoopSwitch = 0;
 
 void updatePendingEvents(void)
 {
-    // TODO: miss pending events here
+	// TODO: miss pending events here
 
-    if(currentMusic!=-1)
-    {
-        if(currentMusic==-2)
-        {
-            if(evalChrono(&musicChrono)>180)
-            {
-                playMusic(nextMusic);
-            }
-        }
-        else
-        {
+	if (currentMusic != -1) {
+		if (currentMusic == -2) {
+			if (evalChrono(&musicChrono) > 180) {
+				playMusic(nextMusic);
+			}
+		} else {
 			/*
-            if(fadeMusic(0,0,0x10)==-1)
-            {
-                currentMusic = -1;
+			if(fadeMusic(0,0,0x10)==-1)
+			{
+				currentMusic = -1;
 
-                if(nextMusic != -1)
-                {
-                    playMusic(nextMusic);
-                    nextMusic = -1;
-                }
-            }
+				if(nextMusic != -1)
+				{
+					playMusic(nextMusic);
+					nextMusic = -1;
+				}
+			}
 			*/
-        }
-    }
+		}
+	}
 }
 
 extern "C" {
-    void mainLoop(int allowSystemMenu, int deltaTime);
+	void mainLoop(int allowSystemMenu, int deltaTime);
 }
 
 void mainLoop(int allowSystemMenu, int deltaTime)
 {
-    bool bLoop = true;
+	bool bLoop = true;
 
-    while(bLoop)
-    {
+	while (bLoop) {
 		process_events();
-        
-        localKey = key;
-        localJoyD = JoyD;
-        localClick = Click;
 
-        if(localKey)
-        {
-            if(localKey == 0x1B)
-            {
-                while(key==0x1B)
-                {
-                    process_events();
-                }
-                processSystemMenu();
-                while(key==0x1B || key == 0x1C)
-                {
-                    process_events();
-                    localKey = key;
-                }
-            }
+		localKey = key;
+		localJoyD = JoyD;
+		localClick = Click;
 
-            if(localKey == 0x1C || localKey == 0x17)
-            {
-                if(allowSystemMenu == 0)
-                {
-                    break;
-                }
+		if (localKey) {
+			if (localKey == 0x1B) {
+				while (key == 0x1B) {
+					process_events();
+				}
+				processSystemMenu();
+				while (key == 0x1B || key == 0x1C) {
+					process_events();
+					localKey = key;
+				}
+			}
 
-                if(statusScreenAllowed)
-                {
-                    processInventory();
-                }
-            }
-        }
-        else
-        {
-            //      input5 = 0;
-        }
+			if (localKey == 0x1C || localKey == 0x17) {
+				if (allowSystemMenu == 0) {
+					break;
+				}
 
-        if(localClick)
-        {
-            if(!allowSystemMenu)
-            {
-                break;
-            }
+				if (statusScreenAllowed) {
+					processInventory();
+				}
+			}
+		} else {
+			//      input5 = 0;
+		}
 
-            action = 0x2000;
-        }
-        else
-        {
-            action = 0;
-        }
+		if (localClick) {
+			if (!allowSystemMenu) {
+				break;
+			}
 
-        executeFoundLife(inHandTable[currentInventory]);
+			action = 0x2000;
+		} else {
+			action = 0;
+		}
 
-        if(changeFloor == 0)
-        {
-            if(g_gameId == AITD1)
-            {
-                if(CVars[getCVarsIdx(LIGHT_OBJECT)] == -1)
-                {
-                    //        mainVar2 = 2000;
-                    //        mainVar3 = 2000;
-                }
-            }
+		executeFoundLife(inHandTable[currentInventory]);
 
-            currentProcessedActorPtr = objectTable;
+		if (changeFloor == 0) {
+			if (g_gameId == AITD1) {
+				if (CVars[getCVarsIdx(LIGHT_OBJECT)] == -1) {
+					//        mainVar2 = 2000;
+					//        mainVar3 = 2000;
+				}
+			}
 
-            for(currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++)
-            {
-                if(currentProcessedActorPtr->indexInWorld >= 0)
-                {
-                    currentProcessedActorPtr->COL_BY = -1;
-                    currentProcessedActorPtr->HIT_BY = -1;
-                    currentProcessedActorPtr->HIT = -1;
-                    currentProcessedActorPtr->HARD_DEC = -1;
-                    currentProcessedActorPtr->HARD_COL = -1;
-                }
+			currentProcessedActorPtr = objectTable;
 
-                currentProcessedActorPtr++;
-            }
+			for (currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++) {
+				if (currentProcessedActorPtr->indexInWorld >= 0) {
+					currentProcessedActorPtr->COL_BY = -1;
+					currentProcessedActorPtr->HIT_BY = -1;
+					currentProcessedActorPtr->HIT = -1;
+					currentProcessedActorPtr->HARD_DEC = -1;
+					currentProcessedActorPtr->HARD_COL = -1;
+				}
 
-            currentProcessedActorPtr = objectTable;
-            for(currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++)
-            {
-                if(currentProcessedActorPtr->indexInWorld >= 0)
-                {
-                    int flag = currentProcessedActorPtr->_flags;
+				currentProcessedActorPtr++;
+			}
 
-                    if((flag & AF_ANIMATED) || (g_gameId >= AITD2 && flag & 0x200))
-                    {
-                        updateAnimation();
-                    }
-                    if(flag & AF_TRIGGER)
-                    {
-                        processActor2();
-                    }
+			currentProcessedActorPtr = objectTable;
+			for (currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++) {
+				if (currentProcessedActorPtr->indexInWorld >= 0) {
+					int flag = currentProcessedActorPtr->_flags;
 
-                    if(currentProcessedActorPtr->animActionType)
-                    {
-                        GereFrappe();
-                    }
-                }
+					if ((flag & AF_ANIMATED) || (g_gameId >= AITD2 && flag & 0x200)) {
+						updateAnimation();
+					}
+					if (flag & AF_TRIGGER) {
+						processActor2();
+					}
 
-                currentProcessedActorPtr++;
-            }
+					if (currentProcessedActorPtr->animActionType) {
+						GereFrappe();
+					}
+				}
 
-            currentProcessedActorPtr = objectTable;
-            for(currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++)
-            {
-                if(currentProcessedActorPtr->indexInWorld >= 0)
-                {
-                    if(currentProcessedActorPtr->life != -1)
-                    {
-                        switch(g_gameId)
-                        {
-                        case AITD2:
-                        case AITD3:
-                        case TIMEGATE:
-                            {
-                                if(currentProcessedActorPtr->lifeMode&3)
-                                    if(!(currentProcessedActorPtr->lifeMode&4))
-                                        processLife(currentProcessedActorPtr->life, false);
-                                break;
-                            }
-						case JACK:
-                        case AITD1:
-                            {
-                                if(currentProcessedActorPtr->life != -1)
-                                    if(currentProcessedActorPtr->lifeMode != -1)
-                                        processLife(currentProcessedActorPtr->life, false);
-                                break;
-                            }
-                        }
-                    }
-                }
+				currentProcessedActorPtr++;
+			}
 
-                if(changeFloor)
-                    break;
+			currentProcessedActorPtr = objectTable;
+			for (currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++) {
+				if (currentProcessedActorPtr->indexInWorld >= 0) {
+					if (currentProcessedActorPtr->life != -1) {
+						switch (g_gameId) {
+							case AITD2:
+							case AITD3:
+							case TIMEGATE:
+							{
+								if (currentProcessedActorPtr->lifeMode & 3)
+									if (!(currentProcessedActorPtr->lifeMode & 4))
+										processLife(currentProcessedActorPtr->life, false);
+								break;
+							}
+							case JACK:
+							case AITD1:
+							{
+								if (currentProcessedActorPtr->life != -1)
+									if (currentProcessedActorPtr->lifeMode != -1)
+										processLife(currentProcessedActorPtr->life, false);
+								break;
+							}
+						}
+					}
+				}
 
-                currentProcessedActorPtr++;
-            }
+				if (changeFloor)
+					break;
 
-            if(giveUp)
-                break;
-        }
+				currentProcessedActorPtr++;
+			}
 
-        if(changeFloor)
-        {
-            loadFloor(newFloor);
-        }
+			if (giveUp)
+				break;
+		}
 
-        if(needChangeRoom)
-        {
+		if (changeFloor) {
+			loadFloor(newFloor);
+		}
+
+		if (needChangeRoom) {
 			loadRoom(newRoom);
-            setupCamera();
-        }
-        else
-        {
-            checkIfCameraChangeIsRequired();
-            if(g_gameId >= AITD2)
-            {
-                int tempCurrentCamera;
+			setupCamera();
+		} else {
+			checkIfCameraChangeIsRequired();
+			if (g_gameId >= AITD2) {
+				int tempCurrentCamera;
 
-                tempCurrentCamera = currentCamera;
+				tempCurrentCamera = currentCamera;
 
-                currentCamera = startGameVar1;
+				currentCamera = startGameVar1;
 
 				currentProcessedActorPtr = objectTable;
-                for(currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++)
-                {
-                    if(currentProcessedActorPtr->indexInWorld >= 0)
-                    {
-                        if(currentProcessedActorPtr->life != -1)
-                        {
-                            if(currentProcessedActorPtr->_flags & 0x200)
-                            {
-                                if(currentProcessedActorPtr->lifeMode&3)
-                                    if(!(currentProcessedActorPtr->lifeMode&4))
-                                    {
-                                        processLife(currentProcessedActorPtr->life, false);
-                                        actorTurnedToObj = 1;
-                                    }
-                            }
-                        }
-                    }
+				for (currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++) {
+					if (currentProcessedActorPtr->indexInWorld >= 0) {
+						if (currentProcessedActorPtr->life != -1) {
+							if (currentProcessedActorPtr->_flags & 0x200) {
+								if (currentProcessedActorPtr->lifeMode & 3)
+									if (!(currentProcessedActorPtr->lifeMode & 4)) {
+										processLife(currentProcessedActorPtr->life, false);
+										actorTurnedToObj = 1;
+									}
+							}
+						}
+					}
 
-                    if(changeFloor)
-                        break;
+					if (changeFloor)
+						break;
 
 					currentProcessedActorPtr++;
-                }
+				}
 
-                if(giveUp)
-                    break;
+				if (giveUp)
+					break;
 
-                currentCamera = tempCurrentCamera;
-            }
-            if(flagInitView
+				currentCamera = tempCurrentCamera;
+			}
+			if (flagInitView
 #ifdef FITD_DEBUGGER
-               || debuggerVar_topCamera
+				|| debuggerVar_topCamera
 #endif
-               )
-            {
-                setupCamera();
-            }
-        }
+				) {
+				setupCamera();
+			}
+		}
 
-        //    if(FlagGenereActiveList)
-        {
-            updateAllActorAndObjects();
-        } 
+		//    if(FlagGenereActiveList)
+		{
+			updateAllActorAndObjects();
+		}
 
-        //    if(actorTurnedToObj)
-        {
-            createActorList();
-        }
+		//    if(actorTurnedToObj)
+		{
+			createActorList();
+		}
 
-        sortActorList();
+		sortActorList();
 
-        //    if(FlagRefreshAux2)
-        {
-            //      setupCameraSub4();
-        }
+		//    if(FlagRefreshAux2)
+		{
+			//      setupCameraSub4();
+		}
 
-        //    mainLoopSub1();
+		//    mainLoopSub1();
 
-        //osystem_delay(100);
+		//osystem_delay(100);
 
-        mainDraw(flagRedraw);
+		mainDraw(flagRedraw);
 
-        updatePendingEvents();
-    }
+		updatePendingEvents();
+	}
 
-    //  mainLoopVar1 = 0;
-    //  shakingState = 0;
+	//  mainLoopVar1 = 0;
+	//  shakingState = 0;
 
-    //  stopShaking();
-    //  stopSounds();
+	//  stopShaking();
+	//  stopSounds();
 }
 

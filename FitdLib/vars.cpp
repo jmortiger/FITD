@@ -29,11 +29,11 @@ char* PtrFont;
 
 char* PtrCadre;
 
-unsigned char currentGamePalette[256*3];
+unsigned char currentGamePalette[256 * 3];
 
 //OSystem osystem;
 
-char rgbaBuffer[320*200*4];
+char rgbaBuffer[320 * 200 * 4];
 
 unsigned int timer;
 unsigned int timeGlobal;
@@ -55,11 +55,11 @@ char localClick;
 
 const std::vector<std::string> languageNameTable =
 {
-    "FRANCAIS",
-    "ITALIANO",
-    "ENGLISH",
-    "ESPAGNOL",
-    "DEUTSCH",
+	"FRANCAIS",
+	"ITALIANO",
+	"ENGLISH",
+	"ESPAGNOL",
+	"DEUTSCH",
 };
 
 char languageNameString[20] = "";
@@ -103,8 +103,8 @@ int action;
 
 boxStruct genVar2[15]; // recheckSize
 boxStruct genVar4[50];
-boxStruct *genVar1;
-boxStruct *genVar3;
+boxStruct* genVar1;
+boxStruct* genVar3;
 
 int genVar5;
 int genVar6;
@@ -177,19 +177,16 @@ char* currentLifePtr;
 
 s16 readNextArgument(const char* name)
 {
-    s16 value = *(s16*)(currentLifePtr);
-    currentLifePtr+=2;
+	s16 value = *(s16*)(currentLifePtr);
+	currentLifePtr += 2;
 
-    if (name)
-    {
-        appendFormated("%s:%d, ",name, value);
-    }
-    else
-    {
-        appendFormated("%d, ", value);
-    }
+	if (name) {
+		appendFormatted("%s:%d, ", name, value);
+	} else {
+		appendFormatted("%d, ", value);
+	}
 
-    return value;
+	return value;
 }
 
 bool cameraBackgroundChanged = false;
@@ -255,13 +252,13 @@ s16 hardColStepZ;
 ZVStruct hardClip;
 
 const char* listBodySelect[] = {
-    "LISTBODY",
-    "LISTBOD2",
+	"LISTBODY",
+	"LISTBOD2",
 };
 
 const char* listAnimSelect[] = {
-    "LISTANIM",
-    "LISTANI2",
+	"LISTANIM",
+	"LISTANI2",
 };
 
 saveEntry saveTable[40];

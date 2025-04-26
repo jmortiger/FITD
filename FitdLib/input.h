@@ -2,7 +2,7 @@
 #define _INPUT_H_
 
 extern "C" {
-void readKeyboard(void);
+	void readKeyboard(void);
 }
 
 #endif

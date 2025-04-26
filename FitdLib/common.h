@@ -39,20 +39,20 @@ enum enumCVars
 	LIGHT_OBJECT,
 	FOG_FLAG,
 	DEAD_PERSO,
-	JET_SARBACANE,
-	TIR_CANON,
+	JET_SARBACANE, // Blowgun jet
+	TIR_CANON, // Cannon shot
 	JET_SCALPEL,
-	POIVRE,
-	DORTOIR,
+	POIVRE, // Pepper
+	DORTOIR, // Dormitory
 	EXT_JACK,
 	NUM_MATRICE_PROTECT_1,
 	NUM_MATRICE_PROTECT_2,
 	NUM_PERSO,
 	TYPE_INVENTAIRE,
 	PROLOGUE,
-	POIGNARD,
+	POIGNARD, // Dagger
 	MATRICE_FORME,
-	MATRICE_COULEUR,
+	MATRICE_COULEUR, // Color Matrix
 
 	UNKNOWN_CVAR // for table padding, shouldn't be called !
 };
@@ -69,16 +69,16 @@ int getCVarsIdx(int);
 //////////////////////
 
 #define	SAMPLE_PAGE				0
-#define	BODY_FLAMME				1
+#define	BODY_FLAMME				1 // Flame
 #define	MAX_WEIGHT_LOADABLE		2
-#define	TEXTE_CREDITS			3
-#define	SAMPLE_TONNERRE			4
-#define	INTRO_DETECTIVE			5
-#define	INTRO_HERITIERE			6
+#define	TEXTE_CREDITS			3 // Credits text
+#define	SAMPLE_TONNERRE			4 // Thunder sfx
+#define	INTRO_DETECTIVE			5 // Detective intro (Edward)
+#define	INTRO_HERITIERE			6 // Heiress intro (Emily)
 #define	WORLD_NUM_PERSO			7
 #define	CHOOSE_PERSO			8
 #define	SAMPLE_CHOC				9
-#define	SAMPLE_PLOUF			10
+#define	SAMPLE_PLOUF			10 // Splash sfx
 #define	REVERSE_OBJECT			11
 #define	KILLED_SORCERER			12
 #define	LIGHT_OBJECT			13
@@ -99,13 +99,13 @@ typedef signed char int8;
 typedef signed short int16;
 typedef signed long int32;
 #endif
-
+// TODO: Unused out of ThirdParty & redundant w/ members in config.h
 typedef unsigned char U8;
 typedef unsigned short U16;
-typedef unsigned long U32;
+typedef unsigned int U32;
 typedef signed char S8;
 typedef signed short S16;
-typedef signed long S32;
+typedef signed int S32;
 
 #define TYPE_MASK 0x1D1
 
@@ -181,70 +181,70 @@ typedef signed long S32;
 #endif
 #endif
 
-FORCEINLINE u8 READ_LE_U8(void *ptr)
+FORCEINLINE u8 READ_LE_U8(void* ptr)
 {
-    return *(u8*)ptr;
+	return *(u8*)ptr;
 }
 
-FORCEINLINE s8 READ_LE_S8(void *ptr)
+FORCEINLINE s8 READ_LE_S8(void* ptr)
 {
-    return *(s8*)ptr;
+	return *(s8*)ptr;
 }
 
-FORCEINLINE u16 READ_LE_U16(void *ptr)
+FORCEINLINE u16 READ_LE_U16(void* ptr)
 {
 #ifdef MACOSX
-  return (((u8*)ptr)[1]<<8)|((u8*)ptr)[0];
+	return (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
 #else
-  return *(u16*)ptr;
+	return *(u16*)ptr;
 #endif
 }
 
-FORCEINLINE s16 READ_LE_S16(void *ptr)
+FORCEINLINE s16 READ_LE_S16(void* ptr)
 {
-  return (s16)READ_LE_U16(ptr);
+	return (s16)READ_LE_U16(ptr);
 }
 
-FORCEINLINE u16 READ_BE_U16(void *ptr)
+FORCEINLINE u16 READ_BE_U16(void* ptr)
 {
 #ifdef MACOSX
-  return *(u16*)ptr;
+	return *(u16*)ptr;
 #else
-  return (((u8*)ptr)[0]<<8)|((u8*)ptr)[1];
+	return (((u8*)ptr)[0] << 8) | ((u8*)ptr)[1];
 #endif
 }
 
-FORCEINLINE s16 READ_BE_S16(void *ptr)
+FORCEINLINE s16 READ_BE_S16(void* ptr)
 {
-  return (s16)READ_BE_U16(ptr);
+	return (s16)READ_BE_U16(ptr);
 }
 
-FORCEINLINE u32 READ_LE_U32(void *ptr)
+FORCEINLINE u32 READ_LE_U32(void* ptr)
 {
 #ifdef MACOSX
-  return (((u8*)ptr)[3]<<24)|(((u8*)ptr)[2]<<16)|(((u8*)ptr)[1]<<8)|((u8*)ptr)[0];
+	return (((u8*)ptr)[3] << 24) | (((u8*)ptr)[2] << 16) | (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
 #else
-  return *(u32*)ptr;
+	return *(u32*)ptr;
 #endif
 }
 
-FORCEINLINE s32 READ_LE_S32(void *ptr)
+FORCEINLINE s32 READ_LE_S32(void* ptr)
 {
-  return (s32)READ_LE_U32(ptr);
+	return (s32)READ_LE_U32(ptr);
 }
 
-FORCEINLINE u32 READ_BE_U32(void *ptr)
+FORCEINLINE u32 READ_BE_U32(void* ptr)
 {
 #ifdef MACOSX
-  return *(u32*)ptr;
+	return *(u32*)ptr;
 #else
-  return (((u8*)ptr)[3]<<24)|(((u8*)ptr)[2]<<16)|(((u8*)ptr)[1]<<8)|((u8*)ptr)[0];
+	return (((u8*)ptr)[3] << 24) | (((u8*)ptr)[2] << 16) | (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
 #endif
 }
 
-FORCEINLINE s32 READ_BE_S32(void *ptr)
+FORCEINLINE s32 READ_BE_S32(void* ptr)
 {
-  return (s32)READ_LE_U32(ptr);
+	return (s32)READ_LE_U32(ptr);
 }
 
 #endif

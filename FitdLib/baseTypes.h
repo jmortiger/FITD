@@ -2,7 +2,7 @@
 #define _BASE_TYPES_H_
 
 #include "config.h"
-
+// TODO: Seemingly moved to config.h & common.h; revert or remove.
 /*
 //typedef unsigned char u8;
 typedef unsigned short int u16;

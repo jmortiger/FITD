@@ -4,5 +4,5 @@
 
 void setupVideoMode(void)
 {
-    videoMode = 1;
+	videoMode = 1;
 }

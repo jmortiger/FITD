@@ -15,7 +15,7 @@ void updateAllActorAndObjects();
 void createActorList();
 void mainDraw(int mode);
 int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr);
-int checkLineProjectionWithActors( int actorIdx, int X, int Y, int Z, int beta, int room, int param );
+int checkLineProjectionWithActors(int actorIdx, int X, int Y, int Z, int beta, int room, int param);
 void GiveZVObjet(char* bodyPtr, ZVStruct* zvPtr);
 int AsmCheckListCol(ZVStruct* zvPtr, roomDataStruct* pRoomData);
 void DeleteInventoryObjet(int objIdx);
@@ -29,7 +29,7 @@ void flushScreen(void);
 int parseAllSaves(int arg);
 textEntryStruct* getTextFromIdx(int index);
 void cleanupAndExit(void);
-void drawProjectedBox(int x1,int x2,int y1,int y2,int z1,int z2, int color, int transparency);
+void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency);
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index);
 
 void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar);
@@ -37,7 +37,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar);
 #ifndef WIN32
 extern "C" {
 #endif
-int fileExists(const char* name);
+	int fileExists(const char* name);
 #ifndef WIN32
 }
 #endif
@@ -50,8 +50,8 @@ void copyZv(ZVStruct* source, ZVStruct* dest);
 void getZvRelativePosition(ZVStruct* zvPtr, int startRoom, int destRoom);
 void take(int objIdx);
 void foundObject(int objIdx, int param);
-void hit(int animNumber,int arg_2,int arg_4,int arg_6,int hitForce,int arg_A);
-int checkZvCollision(ZVStruct* zvPtr1,ZVStruct* zvPtr2);
+void hit(int animNumber, int arg_2, int arg_4, int arg_6, int hitForce, int arg_A);
+int checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2);
 void getZvCube(char* bodyPtr, ZVStruct* zvPtr);
 void PutAtObjet(int objIdx, int objIdxToPutAt);
 void SetClip(int left, int top, int right, int bottom);

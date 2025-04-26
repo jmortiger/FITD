@@ -33,12 +33,11 @@ int osystem_mouseLeft;
 
 void osystem_delay(int time)
 {
-    SDL_Delay(time);
+	SDL_Delay(time);
 }
 
 void osystem_updateImage()
-{
-}
+{}
 
 /*void OSystem::getMouseStatus(mouseStatusStruct * mouseData)
 {
@@ -58,22 +57,21 @@ mouseRight = 0;
 #define CALLBACK
 #endif
 
-void OPL_musicPlayer(void *udata, Uint8 *stream, int len)
+void OPL_musicPlayer(void* udata, Uint8* stream, int len)
 {
-    musicUpdate(udata, stream, len);
+	musicUpdate(udata, stream, len);
 }
 
 extern "C" {
-    void Sound_Quit(void);
+	void Sound_Quit(void);
 }
 
 void Sound_Quit(void)
-{
-}
+{}
 
 extern "C" {
-    char homePath[256] = "";
-    int FitdMain(void* unkused);
+	char homePath[256] = "";
+	int FitdMain(void* unkused);
 }
 
 SDL_Semaphore* startOfRender = NULL;
@@ -87,95 +85,91 @@ bool bFirst = true;
 int FitdInit(int argc, char* argv[])
 {
 #ifdef WIN32
-    //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
 #endif
-    startOfRender = SDL_CreateSemaphore(0);
-    endOfRender = SDL_CreateSemaphore(0);
+	startOfRender = SDL_CreateSemaphore(0);
+	endOfRender = SDL_CreateSemaphore(0);
 
-    osystem_init();
+	osystem_init();
 
-    unsigned int flags = 0;
-    flags |= SDL_WINDOW_RESIZABLE;
-    //flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+	unsigned int flags = 0;
+	flags |= SDL_WINDOW_RESIZABLE;
+	//flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
 #ifdef __IPHONEOS__
-    flags |= SDL_WINDOW_FULLSCREEN;
+	flags |= SDL_WINDOW_FULLSCREEN;
 #endif
 
-    // Game is running in dos resolution 13h, ie 320x200x256, but is displayed in 4:3, so pixel are not square (1.6:1)
-    // We still need to create a 4:3 window for the actual display on screen.
-    int scale = 4;
-    int resolution[2] = { 320 * scale, 240 * scale };
+	// Game is running in dos resolution 13h, ie 320x200x256, but is displayed in 4:3, so pixel are not square (1.6:1)
+	// We still need to create a 4:3 window for the actual display on screen.
+	int scale = 4;
+	int resolution[2] = { 320 * scale, 240 * scale };
 
-    gWindowBGFX = SDL_CreateWindow("FITD", resolution[0], resolution[1], flags);
-    
-    char version[256];
+	gWindowBGFX = SDL_CreateWindow("FITD", resolution[0], resolution[1], flags);
 
-    getVersion(version);
+	char version[256];
 
-    printf(version);
+	getVersion(version);
 
-    detectGame();
-        
-    SDL_CreateThread(FitdMain, "FitdMainThread", NULL);
+	printf(version);
 
-    unsigned long int t_start = SDL_GetTicks();
-    unsigned long int t_lastUpdate = t_start;
+	detectGame();
 
-    int FRAMES_PER_SECOND = 25;
+	SDL_CreateThread(FitdMain, "FitdMainThread", NULL);
 
-    u32 startOfPreviousFrame = SDL_GetTicks();
-    bool bFirstFrame = true;
+	unsigned long int t_start = SDL_GetTicks();
+	unsigned long int t_lastUpdate = t_start;
 
-    while (1)
-    {
-        u32 startOfFrame = SDL_GetTicks();
+	int FRAMES_PER_SECOND = 25;
 
-        assert(startOfPreviousFrame <= startOfFrame);
+	u32 startOfPreviousFrame = SDL_GetTicks();
+	bool bFirstFrame = true;
 
-        u32 tickDifference = startOfFrame - startOfPreviousFrame;
+	while (1) {
+		u32 startOfFrame = SDL_GetTicks();
 
-        if (tickDifference < 1000 / FRAMES_PER_SECOND)
-        {
-            //Sleep the remaining frame time
-            //SDL_Delay((1000 / FRAMES_PER_SECOND) - tickDifference);
-        }
+		assert(startOfPreviousFrame <= startOfFrame);
 
-        startOfPreviousFrame = startOfFrame;
+		u32 tickDifference = startOfFrame - startOfPreviousFrame;
 
-        unsigned long int t_sinceStart = SDL_GetTicks();
+		if (tickDifference < 1000 / FRAMES_PER_SECOND) {
+			//Sleep the remaining frame time
+			//SDL_Delay((1000 / FRAMES_PER_SECOND) - tickDifference);
+		}
 
-        int delta = 0;
+		startOfPreviousFrame = startOfFrame;
 
-        //if(t_sinceStart + 10 > t_lastUpdate)
-        {
-            delta = (t_sinceStart - t_lastUpdate);
-            t_lastUpdate = t_sinceStart;
-        }
+		unsigned long int t_sinceStart = SDL_GetTicks();
 
-        osystemAL_udpate();
+		int delta = 0;
 
-        SDL_PumpEvents();
+		//if(t_sinceStart + 10 > t_lastUpdate)
+		{
+			delta = (t_sinceStart - t_lastUpdate);
+			t_lastUpdate = t_sinceStart;
+		}
 
-        SDL_GL_MakeCurrent(NULL, NULL);
+		osystemAL_update();
 
-        // Don't process events on first frame to avoid race condition with the init code
-        if(!bFirstFrame)
-        {
-            readKeyboard();
-        }
-        else {
-            bFirstFrame = false;
-        }
-        
-        SDL_SignalSemaphore(startOfRender);
+		SDL_PumpEvents();
 
-        SDL_WaitSemaphore(endOfRender);
-        
-        //SDL_RenderPresent(SDL_GetRenderer(gWindowBGFX));
-    }
+		SDL_GL_MakeCurrent(NULL, NULL);
 
-    return 0;
+		// Don't process events on first frame to avoid race condition with the init code
+		if (!bFirstFrame) {
+			readKeyboard();
+		} else {
+			bFirstFrame = false;
+		}
+
+		SDL_SignalSemaphore(startOfRender);
+
+		SDL_WaitSemaphore(endOfRender);
+
+		//SDL_RenderPresent(SDL_GetRenderer(gWindowBGFX));
+	}
+
+	return 0;
 }
 
 u32 lastFrameTime = 0;
@@ -184,107 +178,104 @@ u32 lastFrameTime = 0;
 
 u32 osystem_startOfFrame()
 {
-    SDL_WaitSemaphore(startOfRender);
+	SDL_WaitSemaphore(startOfRender);
 
-    StartFrame();
-    osystem_startFrame();
+	StartFrame();
+	osystem_startFrame();
 
-    static bool firstFrame = true;
-    if (firstFrame)
-    {
-        //
+	static bool firstFrame = true;
+	if (firstFrame) {
+		//
 #ifdef USE_IMGUI
-        //ImGui_ImplSdlGL3_Init(sdl_window);
+		//ImGui_ImplSdlGL3_Init(sdl_window);
 #endif
-        lastFrameTime = SDL_GetTicks();
+		lastFrameTime = SDL_GetTicks();
 
-        firstFrame = false;
-    }
+		firstFrame = false;
+	}
 
-    u32 numFramesToAdvance = (SDL_GetTicks() - lastFrameTime) / (1000 / FRAMES_PER_SECOND);
+	u32 numFramesToAdvance = (SDL_GetTicks() - lastFrameTime) / (1000 / FRAMES_PER_SECOND);
 
-    if (numFramesToAdvance == 0)
-        numFramesToAdvance = 1;
+	if (numFramesToAdvance == 0)
+		numFramesToAdvance = 1;
 
-    lastFrameTime = SDL_GetTicks();
+	lastFrameTime = SDL_GetTicks();
 
 #ifdef USE_IMGUI
-    //ImGui_ImplSdlGL3_NewFrame(sdl_window);
+	//ImGui_ImplSdlGL3_NewFrame(sdl_window);
 #endif
 
-    return numFramesToAdvance;
+	return numFramesToAdvance;
 }
 
 void osystem_endOfFrame()
 {
-    osystem_flushPendingPrimitives();
+	osystem_flushPendingPrimitives();
 
 #ifdef FITD_DEBUGGER
-    debugger_draw();
+	debugger_draw();
 #endif
 
 #ifdef USE_IMGUI
-    //ImGui::Render();
+	//ImGui::Render();
 #endif
 
    // osystem_flip(NULL);
 
-    renderGameWindow();
+	renderGameWindow();
 
-    EndFrame();
+	EndFrame();
 
-    if (bFirst)
-        bFirst = false;
+	if (bFirst)
+		bFirst = false;
 
-    SDL_SignalSemaphore(endOfRender);
-    //SDL_SemPost(emptyCount);
+	SDL_SignalSemaphore(endOfRender);
+	//SDL_SemPost(emptyCount);
 
 }
 
 int fileExists(const char* name)
 {
-    FILE* fHandle;
+	FILE* fHandle;
 
-    fHandle = fopen(name, "rb");
+	fHandle = fopen(name, "rb");
 
-    if (fHandle)
-    {
-        fclose(fHandle);
-        return 1;
-    }
-    return 0;
+	if (fHandle) {
+		fclose(fHandle);
+		return 1;
+	}
+	return 0;
 }
 
 void osystem_init()  // that's the constructor of the system dependent
 // object used for the SDL port
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-        assert(0);
-    }
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+		assert(0);
+	}
 
-    // SDL_ShowCursor (SDL_DISABLE);
+	// SDL_ShowCursor (SDL_DISABLE);
 
-    // SDL_EnableUNICODE (SDL_ENABLE); // not much used in fact
+	// SDL_EnableUNICODE (SDL_ENABLE); // not much used in fact
 
-    SDL_PumpEvents();
+	SDL_PumpEvents();
 
-    int screen_width = 800;
-    int screen_height = 600;
+	int screen_width = 800;
+	int screen_height = 600;
 
-    Uint32 windowFlags = SDL_WINDOW_OPENGL;
+	Uint32 windowFlags = SDL_WINDOW_OPENGL;
 
 #ifdef RUN_FULLSCREEN
-    windowFlags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALLOW_HIGHDPI;
+	windowFlags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALLOW_HIGHDPI;
 #endif
 
-    osystem_mouseLeft = 0;
-    osystem_mouseRight = 0;
+	osystem_mouseLeft = 0;
+	osystem_mouseRight = 0;
 
-    osystem_initGL(screen_width, screen_height);
+	osystem_initGL(screen_width, screen_height);
 
-    osystemAL_init();
+	osystemAL_init();
 }
 
 int posInStream = 0;

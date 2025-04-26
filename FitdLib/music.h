@@ -4,9 +4,9 @@ extern unsigned int musicChrono;
 int initMusicDriver(void);
 
 extern "C" {
-int musicUpdate(void *udata, uint8 *stream, int len);
-void playMusic(int musicNumber);
-extern bool g_gameUseCDA;
+	int musicUpdate(void* udata, uint8* stream, int len);
+	void playMusic(int musicNumber);
+	extern bool g_gameUseCDA;
 };
 
 void callMusicUpdate(void);

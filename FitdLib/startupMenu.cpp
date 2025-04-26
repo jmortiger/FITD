@@ -2,119 +2,110 @@
 
 void drawStartupMenu(int selectedEntry)
 {
-    int currentY = 76;
-    int currentTextNum = 0;
+	int currentY = 76;
+	int currentTextNum = 0;
 
-    AffBigCadre(160,100,320,80);
+	AffBigCadre(160, 100, 320, 80);
 
-    while(currentTextNum<3)
-    {
-        if(currentTextNum == selectedEntry) // hilight selected entry
-        {
-            fillBox(10,currentY,309,currentY+16,100);
-            SelectedMessage(160,currentY,currentTextNum+11,15,4);
-        }
-        else
-        {
-            SimpleMessage(160,currentY,currentTextNum+11,4);
-        }
+	while (currentTextNum < 3) {
+		// highlight selected entry
+		if (currentTextNum == selectedEntry) {
+			fillBox(10, currentY, 309, currentY + 16, 100);
+			SelectedMessage(160, currentY, currentTextNum + 11, 15, 4);
+		} else {
+			SimpleMessage(160, currentY, currentTextNum + 11, 4);
+		}
 
-        currentY+=16; // next line
-        currentTextNum++; // next text
-    }
+		currentY += 16; // next line
+		currentTextNum++; // next text
+	}
 }
 
 int processStartupMenu(void)
 {
-    int currentSelectedEntry = 0;
-    unsigned int chrono;
-    int selectedEntry = -1;
+	int currentSelectedEntry = 0;
+	unsigned int chrono;
+	int selectedEntry = -1;
 
-    flushScreen();
+	flushScreen();
 
-    drawStartupMenu(0);
+	drawStartupMenu(0);
 
-    osystem_startFrame();
-    osystem_stopFrame();
-    osystem_CopyBlockPhys((unsigned char*)logicalScreen,0,0,320,200);
+	osystem_startFrame();
+	osystem_stopFrame();
+	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
 
-    osystem_flip(NULL);
-    FadeInPhys(16,0);
-    startChrono(&chrono);
+	osystem_flip(NULL);
+	FadeInPhys(16, 0);
+	startChrono(&chrono);
 
-    while(evalChrono(&chrono) <= 0x10000) // exit loop only if time out or if choice made
-    {
-        osystem_CopyBlockPhys((unsigned char*)logicalScreen,0,0,320,200);
-        osystem_startFrame();
+	// exit loop only if time out or if choice made
+	while (evalChrono(&chrono) <= 0x10000) {
+		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+		osystem_startFrame();
 
-        if(selectedEntry!=-1 || evalChrono(&chrono) > 0x10000)
-        {
-            break;
-        }
+		if (selectedEntry != -1 || evalChrono(&chrono) > 0x10000) {
+			break;
+		}
 
-        process_events();
+		process_events();
 		osystem_drawBackground();
 
-        if(JoyD&1) // up key
-        {
-            currentSelectedEntry--;
+		// up key
+		if (JoyD & 1) {
+			currentSelectedEntry--;
 
-            if(currentSelectedEntry<0)
-            {
-                currentSelectedEntry = 2;
-            }
+			if (currentSelectedEntry < 0) {
+				currentSelectedEntry = 2;
+			}
 
-            drawStartupMenu(currentSelectedEntry);
-            osystem_flip(NULL);
-            //      menuWaitVSync();
+			drawStartupMenu(currentSelectedEntry);
+			osystem_flip(NULL);
+			//      menuWaitVSync();
 
-            startChrono(&chrono);
+			startChrono(&chrono);
 
-            while(JoyD)
-            {
-                process_events();
-            }
-        }
+			while (JoyD) {
+				process_events();
+			}
+		}
 
 
-        if(JoyD&2) // down key
-        {
-            currentSelectedEntry++;
+		// down key
+		if (JoyD & 2) {
+			currentSelectedEntry++;
 
-            if(currentSelectedEntry>2)
-            {
-                currentSelectedEntry = 0;
-            }
+			if (currentSelectedEntry > 2) {
+				currentSelectedEntry = 0;
+			}
 
-            drawStartupMenu(currentSelectedEntry);
-            //menuWaitVSync();
-            osystem_flip(NULL);
+			drawStartupMenu(currentSelectedEntry);
+			//menuWaitVSync();
+			osystem_flip(NULL);
 
-            startChrono(&chrono);
+			startChrono(&chrono);
 
-            while(JoyD)
-            {
-                process_events();
-            }
-        } 
+			while (JoyD) {
+				process_events();
+			}
+		}
 
-        if(key == 28 || (key != 28 && Click!=0)) // select current entry
-        {
-            selectedEntry = currentSelectedEntry;
-        }
-        osystem_stopFrame();
-        osystem_flip(NULL);
-    }
+		// select current entry
+		if (key == 28 || (key != 28 && Click != 0)) {
+			selectedEntry = currentSelectedEntry;
+		}
+		osystem_stopFrame();
+		osystem_flip(NULL);
+	}
 
-    if(selectedEntry==2) // if exit game, do not fade
-    {
-        FadeOutPhys(16,0);
-    }
+	// if exit game, do not fade
+	if (selectedEntry == 2) {
+		FadeOutPhys(16, 0);
+	}
 
-    while(JoyD)
-    {
-        process_events();
-    }
+	while (JoyD) {
+		process_events();
+	}
 
-    return(selectedEntry);
+	return(selectedEntry);
 }

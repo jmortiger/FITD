@@ -138,6 +138,20 @@ extern enumLifeMacro AITD1LifeMacroTable[];
 extern enumLifeMacro AITD2LifeMacroTable[];
 
 void processLife(int lifeNum, bool callFoundLife);
+
+/// @brief Creates [flow actors](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#FLOW_ACTORS).
+/// @details CURRENTLY ONLY SUPPORTS mode 0 (death bubbles/evaporate)
+/// @param mode 0 for death bubbles, 1 for blood, 2 for impact debris, 3 for muzzle flash, and 4 for cigar smoke. Currently, only 0 is supported.
+/// @param X 
+/// @param Y 
+/// @param Z 
+/// @param stage 
+/// @param room 
+/// @param alpha 
+/// @param beta 
+/// @param gamma 
+/// @param zvPtr 
+/// @return -1 if no there are no free actor slots or it failed to allocate memory, otherwise the index in the object table of the initialized flow actor/special object.
 int InitSpecialObjet( int mode, int X, int Y, int Z, int stage, int room, int alpha, int beta, int gamma, ZVStruct* zvPtr);
 void animMove(int a,int b,int c,int d,int e,int f,int g);
 void doRealZv(tObject* actorPtr);
@@ -148,9 +162,9 @@ void getHardClip();
 void throwObj(int animThrow, int frameThrow, int arg_4, int objToThrowIdx, int throwRotated, int throwForce, int animNext);
 
 #ifdef DEBUG
-void appendFormated(const char* format, ...);
+void appendFormatted(const char* format, ...);
 #else
-#define appendFormated(format, ...) {}
+#define appendFormatted(format, ...) {}
 #endif
 
 #endif

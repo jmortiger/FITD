@@ -18,24 +18,24 @@
 
 // Config IMGUI
 #ifdef __APPLE__
-    #if TARGET_OS_OSX
-        #define USE_SDL 1
-        #define FITD_DEBUGGER
-        #define USE_IMGUI
-        #define USE_OPENGL_3_2
-    #endif
-    #if TARGET_OS_TV || TARGET_OS_IOS
-        #define USE_SDL 1
-        #define USE_OPENGLES_3_0
-        #define RUN_FULLSCREEN  
-        #define USE_IMGUI
-        #define FITD_DEBUGGER
-    #endif
+#if TARGET_OS_OSX
+#define USE_SDL 1
+#define FITD_DEBUGGER
+#define USE_IMGUI
+#define USE_OPENGL_3_2
+#endif
+#if TARGET_OS_TV || TARGET_OS_IOS
+#define USE_SDL 1
+#define USE_OPENGLES_3_0
+#define RUN_FULLSCREEN  
+#define USE_IMGUI
+#define FITD_DEBUGGER
+#endif
 #else
-    #define USE_SDL 1
-    #define FITD_DEBUGGER
-    #define USE_IMGUI
-    #define USE_OPENGL_3_2
+#define USE_SDL 1
+#define FITD_DEBUGGER
+#define USE_IMGUI
+#define USE_OPENGL_3_2
 #endif
 
 #ifdef AITD_UE4
@@ -59,11 +59,11 @@ typedef int32_t s32;
 #else
 typedef unsigned char u8;
 typedef unsigned short int u16;
-typedef unsigned long int u32;
+typedef unsigned int u32;
 
 typedef signed char s8;
 typedef signed short int s16;
-typedef signed long int s32;
+typedef signed int s32;
 #endif
 
 #include <stdlib.h>

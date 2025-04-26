@@ -3,7 +3,7 @@
  * License: https://github.com/bkaradzic/bgfx#license-bsd-2-clause
  */
 
-// cspell:words Binks Guizmo Kenney MBUT Ocornut STBTT darl
+ // cspell:words Binks Guizmo Kenney MBUT Ocornut STBTT darl
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -31,42 +31,42 @@
 
 namespace ImGui
 {
-    struct Font
-    {
-        enum Enum
-        {
-            Regular,
-            Mono,
+	struct Font
+	{
+		enum Enum
+		{
+			Regular,
+			Mono,
 
-            Count
-        };
-    };
+			Count
+		};
+	};
 
-    void PushFont(Font::Enum _font);
+	void PushFont(Font::Enum _font);
 
-    // BK - simple string class for convenience.
-    class ImString
-    {
-    public:
-        ImString();
-        ImString(const ImString& rhs);
-        ImString(const char* rhs);
-        ~ImString();
+	// BK - simple string class for convenience.
+	class ImString
+	{
+	public:
+		ImString();
+		ImString(const ImString& rhs);
+		ImString(const char* rhs);
+		~ImString();
 
-        ImString& operator=(const ImString& rhs);
-        ImString& operator=(const char* rhs);
+		ImString& operator=(const ImString& rhs);
+		ImString& operator=(const char* rhs);
 
-        void Clear();
-        bool IsEmpty() const;
+		void Clear();
+		bool IsEmpty() const;
 
-        const char* CStr() const
-        {
-            return NULL == Ptr ? "" : Ptr;
-        }
+		const char* CStr() const
+		{
+			return NULL == Ptr ? "" : Ptr;
+		}
 
-    private:
-        char* Ptr;
-    };
+	private:
+		char* Ptr;
+	};
 } // namespace ImGui
 
 
@@ -139,8 +139,7 @@ struct OcornutImguiContext
 		}
 
 		// Render command lists
-		for (int32_t ii = 0, num = _drawData->CmdListsCount; ii < num; ++ii)
-		{
+		for (int32_t ii = 0, num = _drawData->CmdListsCount; ii < num; ++ii) {
 			bgfx::TransientVertexBuffer tvb;
 			bgfx::TransientIndexBuffer tib;
 
@@ -148,8 +147,7 @@ struct OcornutImguiContext
 			uint32_t numVertices = (uint32_t)drawList->VtxBuffer.size();
 			uint32_t numIndices = (uint32_t)drawList->IdxBuffer.size();
 
-			if (!checkAvailTransientBuffers(numVertices, m_layout, numIndices))
-			{
+			if (!checkAvailTransientBuffers(numVertices, m_layout, numIndices)) {
 				// not enough space in transient buffer just quit drawing the rest...
 				break;
 			}
@@ -164,14 +162,10 @@ struct OcornutImguiContext
 			bx::memCopy(indices, drawList->IdxBuffer.begin(), numIndices * sizeof(ImDrawIdx));
 
 			uint32_t offset = 0;
-			for (const ImDrawCmd* cmd = drawList->CmdBuffer.begin(), *cmdEnd = drawList->CmdBuffer.end(); cmd != cmdEnd; ++cmd)
-			{
-				if (cmd->UserCallback)
-				{
+			for (const ImDrawCmd* cmd = drawList->CmdBuffer.begin(), *cmdEnd = drawList->CmdBuffer.end(); cmd != cmdEnd; ++cmd) {
+				if (cmd->UserCallback) {
 					cmd->UserCallback(drawList, cmd);
-				}
-				else if (0 != cmd->ElemCount)
-				{
+				} else if (0 != cmd->ElemCount) {
 					uint64_t state = 0
 						| BGFX_STATE_WRITE_RGB
 						| BGFX_STATE_WRITE_A
@@ -181,23 +175,19 @@ struct OcornutImguiContext
 					bgfx::TextureHandle th = m_texture;
 					bgfx::ProgramHandle program = m_program;
 
-					if (NULL != cmd->TextureId)
-					{
+					if (NULL != cmd->TextureId) {
 						union { ImTextureID ptr; struct { bgfx::TextureHandle handle; uint8_t flags; uint8_t mip; } s; } texture = { cmd->TextureId };
 						state |= 0 != (IMGUI_FLAGS_ALPHA_BLEND & texture.s.flags)
 							? BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA)
 							: BGFX_STATE_NONE
 							;
 						th = texture.s.handle;
-						if (0 != texture.s.mip)
-						{
+						if (0 != texture.s.mip) {
 							const float lodEnabled[4] = { float(texture.s.mip), 1.0f, 0.0f, 0.0f };
 							bgfx::setUniform(u_imageLodEnabled, lodEnabled);
 							program = m_imageProgram;
 						}
-					}
-					else
-					{
+					} else {
 						state |= BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA);
 					}
 
@@ -224,8 +214,7 @@ struct OcornutImguiContext
 	{
 		m_allocator = _allocator;
 
-		if (NULL == _allocator)
-		{
+		if (NULL == _allocator) {
 			static bx::DefaultAllocator allocator;
 			m_allocator = &allocator;
 		}
@@ -333,8 +322,7 @@ struct OcornutImguiContext
 			config.MergeMode = true;
 			config.DstFont = m_font[ImGui::Font::Regular];
 
-			for (uint32_t ii = 0; ii < BX_COUNTOF(s_fontRangeMerge); ++ii)
-			{
+			for (uint32_t ii = 0; ii < BX_COUNTOF(s_fontRangeMerge); ++ii) {
 				const FontRangeMerge& frm = s_fontRangeMerge[ii];
 
 				io.Fonts->AddFontFromMemoryTTF((void*)frm.data
@@ -381,12 +369,9 @@ struct OcornutImguiContext
 		// Doug Binks' darl color scheme
 		// https://gist.github.com/dougbinks/8089b4bbaccaaf6fa204236978d165a9
 		ImGuiStyle& style = ImGui::GetStyle();
-		if (_dark)
-		{
+		if (_dark) {
 			ImGui::StyleColorsDark(&style);
-		}
-		else
-		{
+		} else {
 			ImGui::StyleColorsLight(&style);
 		}
 
@@ -409,8 +394,7 @@ struct OcornutImguiContext
 
 #if 0
 		ImGuiIO& io = ImGui::GetIO();
-		if (_inputChar >= 0)
-		{
+		if (_inputChar >= 0) {
 			io.AddInputCharacter(_inputChar);
 		}
 
@@ -435,8 +419,7 @@ struct OcornutImguiContext
 		io.KeyShift = 0 != (modifiers & (entry::Modifier::LeftShift | entry::Modifier::RightShift));
 		io.KeyCtrl = 0 != (modifiers & (entry::Modifier::LeftCtrl | entry::Modifier::RightCtrl));
 		io.KeyAlt = 0 != (modifiers & (entry::Modifier::LeftAlt | entry::Modifier::RightAlt));
-		for (int32_t ii = 0; ii < (int32_t)entry::Key::Count; ++ii)
-		{
+		for (int32_t ii = 0; ii < (int32_t)entry::Key::Count; ++ii) {
 			io.KeysDown[ii] = inputGetKeyState(entry::Key::Enum(ii));
 		}
 #endif // USE_ENTRY
@@ -453,23 +436,21 @@ struct OcornutImguiContext
 		render(ImGui::GetDrawData());
 
 #if 0
-        ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-        for (int i = 1; i < platform_io.Viewports.Size; i++)
-        {
-            ImGuiViewport* viewport = platform_io.Viewports[i];
-            if (viewport->Flags & ImGuiViewportFlags_Minimized)
-                continue;
-            //if (platform_io.Platform_RenderWindow) platform_io.Platform_RenderWindow(viewport, platform_render_arg);
-            //if (platform_io.Renderer_RenderWindow) platform_io.Renderer_RenderWindow(viewport, renderer_render_arg);
-        }
-        for (int i = 1; i < platform_io.Viewports.Size; i++)
-        {
-            ImGuiViewport* viewport = platform_io.Viewports[i];
-            if (viewport->Flags & ImGuiViewportFlags_Minimized)
-                continue;
-            //if (platform_io.Platform_SwapBuffers) platform_io.Platform_SwapBuffers(viewport, platform_render_arg);
-            //if (platform_io.Renderer_SwapBuffers) platform_io.Renderer_SwapBuffers(viewport, renderer_render_arg);
-        }
+		ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+		for (int i = 1; i < platform_io.Viewports.Size; i++) {
+			ImGuiViewport* viewport = platform_io.Viewports[i];
+			if (viewport->Flags & ImGuiViewportFlags_Minimized)
+				continue;
+			//if (platform_io.Platform_RenderWindow) platform_io.Platform_RenderWindow(viewport, platform_render_arg);
+			//if (platform_io.Renderer_RenderWindow) platform_io.Renderer_RenderWindow(viewport, renderer_render_arg);
+		}
+		for (int i = 1; i < platform_io.Viewports.Size; i++) {
+			ImGuiViewport* viewport = platform_io.Viewports[i];
+			if (viewport->Flags & ImGuiViewportFlags_Minimized)
+				continue;
+			//if (platform_io.Platform_SwapBuffers) platform_io.Platform_SwapBuffers(viewport, platform_render_arg);
+			//if (platform_io.Renderer_SwapBuffers) platform_io.Renderer_SwapBuffers(viewport, renderer_render_arg);
+		}
 #endif
 	}
 

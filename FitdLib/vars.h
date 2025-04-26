@@ -8,248 +8,248 @@ extern int statusVar1;
 
 enum gameTypeEnum
 {
-    AITD1,
-    JACK,
-    AITD2,
-    AITD3,
-    TIMEGATE,
+	AITD1,
+	JACK,
+	AITD2,
+	AITD3,
+	TIMEGATE,
 };
 
 extern enum gameTypeEnum g_gameId;
 
 struct point3dStruct
 {
-    s16 x;
-    s16 y;
-    s16 z;
+	s16 x;
+	s16 y;
+	s16 z;
 };
 
 typedef struct point3dStruct point3dStruct;
 
 struct textEntryStruct
 {
-    s16 index;
-    u8* textPtr;
-    s16 width;
+	s16 index;
+	u8* textPtr;
+	s16 width;
 };
 
 typedef struct textEntryStruct textEntryStruct;
 
 struct messageStruct
 {
-    textEntryStruct* string;
-    s16 time;
+	textEntryStruct* string;
+	s16 time;
 };
 
 typedef struct messageStruct messageStruct;
 
 struct saveEntry
 {
-    void* ptr;
-    unsigned int size;
+	void* ptr;
+	unsigned int size;
 };
 
 typedef struct saveEntry saveEntry;
 
 struct regularTextEntryStruct
 {
-    u8* textPtr;
-    s16 width;
+	u8* textPtr;
+	s16 width;
 };
 
 typedef struct regularTextEntryStruct regularTextEntryStruct;
 
 struct hqrSubEntryStruct
 {
-    s16 key;
-    s16 size;
-    unsigned int lastTimeUsed;
-    char* ptr;
+	s16 key;
+	s16 size;
+	unsigned int lastTimeUsed;
+	char* ptr;
 };
 
 typedef struct hqrSubEntryStruct hqrSubEntryStruct;
 
 struct hqrEntryStruct
 {
-    char string[10];
-    u16 maxFreeData;
-    u16 sizeFreeData;
-    u16 numMaxEntry;
-    u16 numUsedEntry;
-    hqrSubEntryStruct* entries;
+	char string[10];
+	u16 maxFreeData;
+	u16 sizeFreeData;
+	u16 numMaxEntry;
+	u16 numUsedEntry;
+	hqrSubEntryStruct* entries;
 };
 
 typedef struct hqrEntryStruct hqrEntryStruct;
 
 struct ZVStruct
 {
-    s32 ZVX1;
-    s32 ZVX2;
-    s32 ZVY1;
-    s32 ZVY2;
-    s32 ZVZ1;
-    s32 ZVZ2;
+	s32 ZVX1;
+	s32 ZVX2;
+	s32 ZVY1;
+	s32 ZVY2;
+	s32 ZVZ1;
+	s32 ZVZ2;
 };
 
 typedef struct ZVStruct ZVStruct;
 
 struct interpolatedValue
 {
-    s16 oldAngle;
-    s16 newAngle;
-    s16 param;
-    unsigned int timeOfRotate;
+	s16 oldAngle;
+	s16 newAngle;
+	s16 param;
+	unsigned int timeOfRotate;
 };
 
 typedef struct interpolatedValue interpolatedValue;
 
 enum actorFlags
 {
-    AF_ANIMATED     = 0x0001,
-    // 0x02
-    AF_DRAWABLE     = 0x0004,
-    AF_BOXIFY       = 0x0008,
-    AF_MOVABLE      = 0x0010,
-    AF_SPECIAL      = 0x0020,
-    AF_TRIGGER      = 0x0040,
-    AF_FOUNDABLE    = 0x0080,
-    AF_FALLABLE     = 0x0100,
+	AF_ANIMATED = 0x0001,
+	// 0x02
+	AF_DRAWABLE = 0x0004,
+	AF_BOXIFY = 0x0008,
+	AF_MOVABLE = 0x0010,
+	AF_SPECIAL = 0x0020,
+	AF_TRIGGER = 0x0040,
+	AF_FOUNDABLE = 0x0080,
+	AF_FALLABLE = 0x0100,
 
-    AF_MASK         = AF_ANIMATED + AF_MOVABLE + AF_TRIGGER + AF_FOUNDABLE + AF_FALLABLE,
+	AF_MASK = AF_ANIMATED + AF_MOVABLE + AF_TRIGGER + AF_FOUNDABLE + AF_FALLABLE,
 };
 
 struct tObject // used to read data from file too
 {
-    s16 indexInWorld;
-    s16 bodyNum;
-    u16 _flags;
-    s16 dynFlags;
-    ZVStruct zv;
-    s16 screenXMin;
-    s16 screenYMin;
-    s16 screenXMax;
-    s16 screenYMax;
-    s16 roomX;
-    s16 roomY;
-    s16 roomZ;
-    s16 worldX;
-    s16 worldY;
-    s16 worldZ;
-    s16 alpha;
-    s16 beta;
-    s16 gamma;
-    s16 stage;
-    s16 room;
-    s16 lifeMode;
-    s16 life;
-    unsigned int CHRONO;
-    unsigned int ROOM_CHRONO;
-    s16 ANIM;
-    s16 animType;
-    s16 animInfo;
-    s16 newAnim;
-    s16 newAnimType;
-    s16 newAnimInfo;
-    s16 FRAME;
-    s16 numOfFrames;
-    s16 END_FRAME;
-    s16 END_ANIM;
-    s16 trackMode;
-    s16 trackNumber;
-    s16 MARK;
-    s16 positionInTrack;
+	s16 indexInWorld;
+	s16 bodyNum;
+	u16 _flags;
+	s16 dynFlags;
+	ZVStruct zv;
+	s16 screenXMin;
+	s16 screenYMin;
+	s16 screenXMax;
+	s16 screenYMax;
+	s16 roomX;
+	s16 roomY;
+	s16 roomZ;
+	s16 worldX;
+	s16 worldY;
+	s16 worldZ;
+	s16 alpha;
+	s16 beta;
+	s16 gamma;
+	s16 stage;
+	s16 room;
+	s16 lifeMode;
+	s16 life;
+	unsigned int CHRONO;
+	unsigned int ROOM_CHRONO;
+	s16 ANIM;
+	s16 animType;
+	s16 animInfo;
+	s16 newAnim;
+	s16 newAnimType;
+	s16 newAnimInfo;
+	s16 FRAME;
+	s16 numOfFrames;
+	s16 END_FRAME;
+	s16 END_ANIM;
+	s16 trackMode;
+	s16 trackNumber;
+	s16 MARK;
+	s16 positionInTrack;
 
-    s16 stepX;
-    s16 stepY;
-    s16 stepZ;
+	s16 stepX;
+	s16 stepY;
+	s16 stepZ;
 
 	s16 animNegX;
 	s16 animNegY;
 	s16 animNegZ;
 
-    interpolatedValue YHandler;
-    s16 falling;
-    interpolatedValue rotate;
-    s16 direction;
-    s16 speed;
-    interpolatedValue speedChange;
-    s16 COL[3];
-    s16 COL_BY;
-    s16 HARD_DEC;
-    s16 HARD_COL;
-    s16 HIT;
-    s16 HIT_BY;
-    s16 animActionType;
-    s16 animActionANIM;
-    s16 animActionFRAME;
-    s16 animActionParam;
-    s16 hitForce;
-    s16 hotPointID;
-    point3dStruct hotPoint;
+	interpolatedValue YHandler;
+	s16 falling;
+	interpolatedValue rotate;
+	s16 direction;
+	s16 speed;
+	interpolatedValue speedChange;
+	s16 COL[3];
+	s16 COL_BY;
+	s16 HARD_DEC;
+	s16 HARD_COL;
+	s16 HIT;
+	s16 HIT_BY;
+	s16 animActionType;
+	s16 animActionANIM;
+	s16 animActionFRAME;
+	s16 animActionParam;
+	s16 hitForce;
+	s16 hotPointID;
+	point3dStruct hotPoint;
 
-    // aitd2
-    s16 hardMat;
+	// aitd2
+	s16 hardMat;
 };
 
 typedef struct tObject tObject;
 
 struct tWorldObject
 {
-    s16 objIndex;
-    s16 body;
-    union
-    {
-        s16 flags;
-        actorFlags bitField;
-    };
-    s16 typeZV;
-    s16 foundBody;
-    s16 foundName;
-    s16 flags2;
-    s16 foundLife;
-    s16 x;
-    s16 y;
-    s16 z;
-    s16 alpha;
-    s16 beta;
-    s16 gamma;
-    s16 stage;
-    s16 room;
-    s16 lifeMode;
-    s16 life;
-    s16 floorLife;
-    s16 anim;
-    s16 frame;
-    s16 animType;
-    s16 animInfo;
-    s16 trackMode;
-    s16 trackNumber;
-    s16 positionInTrack;
+	s16 objIndex;
+	s16 body;
+	union
+	{
+		s16 flags;
+		actorFlags bitField;
+	};
+	s16 typeZV;
+	s16 foundBody;
+	s16 foundName;
+	s16 flags2;
+	s16 foundLife;
+	s16 x;
+	s16 y;
+	s16 z;
+	s16 alpha;
+	s16 beta;
+	s16 gamma;
+	s16 stage;
+	s16 room;
+	s16 lifeMode;
+	s16 life;
+	s16 floorLife;
+	s16 anim;
+	s16 frame;
+	s16 animType;
+	s16 animInfo;
+	s16 trackMode;
+	s16 trackNumber;
+	s16 positionInTrack;
 
-    // AITD2
-    s16 mark;
+	// AITD2
+	s16 mark;
 };
 
 typedef struct tWorldObject tWorldObject;
 
 struct boxStruct
 {
-    s16 var0;
-    s16 var1;
-    s16 var2;
-    s16 var3;
+	s16 var0;
+	s16 var1;
+	s16 var2;
+	s16 var3;
 };
 
 typedef struct boxStruct boxStruct;
 
 struct roomDefStruct
 {
-    s16 offsetToCameraDef; // 0
-    s16 offsetToPosDef; // 2
-    s16 worldX;//4
-    s16 worldY;//6
-    s16 worldZ;//8
-    s16 numCameraInRoom;//0xA
+	s16 offsetToCameraDef; // 0
+	s16 offsetToPosDef; // 2
+	s16 worldX;//4
+	s16 worldY;//6
+	s16 worldZ;//8
+	s16 numCameraInRoom;//0xA
 };
 
 typedef struct roomDefStruct roomDefStruct;
@@ -287,8 +287,8 @@ extern char* PtrCadre;
 extern unsigned char currentGamePalette[0x300];
 
 //extern OSystem osystem;
-extern unsigned char frontBuffer[320*200];
-extern char rgbaBuffer[320*200*4];
+extern unsigned char frontBuffer[320 * 200];
+extern char rgbaBuffer[320 * 200 * 4];
 
 extern unsigned int timer;
 extern unsigned int timeGlobal;
@@ -302,7 +302,7 @@ extern textEntryStruct* tabTextes;
 extern u8* systemTextes;
 
 extern "C" {
-    extern char JoyD;
+	extern char JoyD;
 };
 extern char Click;
 extern char key;
@@ -352,8 +352,8 @@ extern int action;
 
 extern boxStruct genVar2[15]; // recheckSize
 extern boxStruct genVar4[50];
-extern boxStruct *genVar1;
-extern boxStruct *genVar3;
+extern boxStruct* genVar1;
+extern boxStruct* genVar3;
 
 extern int genVar5;
 extern int genVar6;
@@ -501,8 +501,8 @@ extern unsigned char* g_MaskPtr;
 #if defined(FITD_DEBUGGER)
 enum backgroundModeEnum
 {
-    backgroundModeEnum_2D,
-    backgroundModeEnum_3D,
+	backgroundModeEnum_2D,
+	backgroundModeEnum_3D,
 };
 
 typedef enum backgroundModeEnum backgroundModeEnum;
@@ -512,49 +512,49 @@ extern backgroundModeEnum backgroundMode;
 
 struct sGroupState
 {
-    s16 m_type; // 8
-    s16 m_delta[3]; // A
-    s16 m_rotateDelta[3]; // 10 (AITD2+) if Info_optimise
+	s16 m_type; // 8
+	s16 m_delta[3]; // A
+	s16 m_rotateDelta[3]; // 10 (AITD2+) if Info_optimise
 };
 
 struct sGroup
 {
-    s16 m_start; // 0
-    s16 m_numVertices; // 2
-    s16 m_baseVertices; // 4
-    s8 m_orgGroup; // 6
-    s8 m_numGroup; // 7
-    sGroupState m_state;
+	s16 m_start; // 0
+	s16 m_numVertices; // 2
+	s16 m_baseVertices; // 4
+	s8 m_orgGroup; // 6
+	s8 m_numGroup; // 7
+	sGroupState m_state;
 };
 
 enum primTypeEnum
 {
-    primTypeEnum_Line = 0,
-    primTypeEnum_Poly = 1,
-    primTypeEnum_Point = 2,
-    primTypeEnum_Sphere = 3,
-    primTypeEnum_Disk = 4,
-    primTypeEnum_Cylinder = 5,
-    primTypeEnum_BigPoint = 6,
-    primTypeEnum_Zixel = 7,
-    processPrim_PolyTexture8 = 8,
-    processPrim_PolyTexture9 = 9,
-    processPrim_PolyTexture10 = 10,
+	primTypeEnum_Line = 0,
+	primTypeEnum_Poly = 1,
+	primTypeEnum_Point = 2,
+	primTypeEnum_Sphere = 3,
+	primTypeEnum_Disk = 4,
+	primTypeEnum_Cylinder = 5,
+	primTypeEnum_BigPoint = 6,
+	primTypeEnum_Zixel = 7,
+	processPrim_PolyTexture8 = 8,
+	processPrim_PolyTexture9 = 9,
+	processPrim_PolyTexture10 = 10,
 };
 
 struct sPrimitive
 {
-    primTypeEnum m_type;
-    u8 m_material;
-    u8 m_color;
-    u8 m_even;
-    u16 m_size;
-    std::vector<u16> m_points;
+	primTypeEnum m_type;
+	u8 m_material;
+	u8 m_color;
+	u8 m_even;
+	u16 m_size;
+	std::vector<u16> m_points;
 };
 
 struct sExtraBody
 {
-    u16 m_startOfKeyframe; // 2
+	u16 m_startOfKeyframe; // 2
 };
 
 // scratch buffer:
@@ -563,32 +563,32 @@ struct sExtraBody
 
 struct sBody
 {
-    void* m_raw;
+	void* m_raw;
 
-    u16 m_flags;
-    ZVStruct m_zv;
-    std::vector<u8> m_scratchBuffer;
-    std::vector<point3dStruct> m_vertices;
-    std::vector<uint16> m_groupOrder;
-    std::vector<sGroup> m_groups;
-    std::vector<sPrimitive> m_primitives;
+	u16 m_flags;
+	ZVStruct m_zv;
+	std::vector<u8> m_scratchBuffer;
+	std::vector<point3dStruct> m_vertices;
+	std::vector<uint16> m_groupOrder;
+	std::vector<sGroup> m_groups;
+	std::vector<sPrimitive> m_primitives;
 
-    void sync();
+	void sync();
 };
 
 struct sFrame
 {
-    u16 m_timestamp;
-    s16 m_animStep[3];
-    std::vector<sGroupState> m_groups;
+	u16 m_timestamp;
+	s16 m_animStep[3];
+	std::vector<sGroupState> m_groups;
 };
 
 struct sAnimation
 {
-    void* m_raw;
+	void* m_raw;
 
-    u16 m_numFrames;
-    u16 m_numGroups;
-    std::vector<sFrame> m_frames;
+	u16 m_numFrames;
+	u16 m_numGroups;
+	std::vector<sFrame> m_frames;
 };
 
