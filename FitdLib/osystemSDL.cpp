@@ -84,6 +84,7 @@ bool bFirst = true;
 
 int FitdInit(int argc, char* argv[])
 {
+	parseDebugParam(argc, argv);
 #ifdef WIN32
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
 #endif
@@ -107,11 +108,10 @@ int FitdInit(int argc, char* argv[])
 
 	gWindowBGFX = SDL_CreateWindow("FITD", resolution[0], resolution[1], flags);
 
-	char version[256];
-
-	getVersion(version);
-
-	printf(version);
+	// char version[256];
+	// getVersion(version);
+	// printf(version);
+	printVersion();
 
 	detectGame();
 

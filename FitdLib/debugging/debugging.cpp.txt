@@ -2,7 +2,7 @@
 
 // debugOutputConfig debugOutput;
 
-void DebugAddSection(debugOutputConfig category, bool startOfSection, const char* format, ...)
+void DebugBeginSection(debugOutputConfig category, bool startOfSection, const char* format, ...)
 {
 	
 }

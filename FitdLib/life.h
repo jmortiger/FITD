@@ -161,9 +161,9 @@ void put(int x,int y,int z,int room,int stage,int alpha,int beta,int gamma,int i
 void getHardClip();
 void throwObj(int animThrow, int frameThrow, int arg_4, int objToThrowIdx, int throwRotated, int throwForce, int animNext);
 
-#ifndef DEBUG
-#define DEBUG
-#endif
+// #ifndef DEBUG
+// #define DEBUG
+// #endif
 #ifdef DEBUG
 void appendFormatted(const char* format, ...);
 #else

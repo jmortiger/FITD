@@ -28,6 +28,6 @@ struct debugOutputConfig
 typedef struct debugOutputConfig debugOutputConfig;
 
 // extern debugOutputConfig debugOutput;
-void DebugAddSection(debugOutputConfig category, bool startOfSection, const char* format, ...);
+void DebugBeginSection(debugOutputConfig category, bool startOfSection, const char* format, ...);
 void DebugPrintfLn(debugOutputConfig category, bool startOfSection, const char* format, ...);
 #endif

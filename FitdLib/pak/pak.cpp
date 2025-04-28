@@ -25,41 +25,63 @@ typedef struct pakInfoStruct pakInfoStruct;
 
 void readPakInfo(pakInfoStruct* pPakInfo, FILE* fileHandle)
 {
+	DebugBeginSection(debugCategoryEnum::DBO_PAK);
 	fread(&pPakInfo->discSize, 4, 1, fileHandle);
 	fread(&pPakInfo->uncompressedSize, 4, 1, fileHandle);
 	fread(&pPakInfo->compressionFlag, 1, 1, fileHandle);
 	fread(&pPakInfo->info5, 1, 1, fileHandle);
 	fread(&pPakInfo->offset, 2, 1, fileHandle);
-
+	
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "discSize (initial): %i", pPakInfo->discSize);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "uncompressedSize (initial): %i", pPakInfo->uncompressedSize);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "offset (initial): %i", pPakInfo->offset);
 	pPakInfo->discSize = READ_LE_U32(&pPakInfo->discSize); // TODO: Change to S32?
 	pPakInfo->uncompressedSize = READ_LE_U32(&pPakInfo->uncompressedSize); // TODO: Change to S32?
 	pPakInfo->offset = READ_LE_U16(&pPakInfo->offset); // TODO: Change to S32?
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "discSize: %i", pPakInfo->discSize);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "uncompressedSize: %i", pPakInfo->uncompressedSize);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "compressionFlag: %i", pPakInfo->compressionFlag);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "info5: %i", pPakInfo->info5);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "offset: %i", pPakInfo->offset);
+	DebugEndSection();
 }
 
 unsigned int PAK_getNumFiles(const char* name)
 {
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "PAK_getNumFiles(%s)", name);
+	DebugBeginSection(debugCategoryEnum::DBO_PAK);
 	char bufferName[512];
 	FILE* fileHandle;
 	u32 fileOffset;
 
+	//makeExtention(bufferName, name, ".PAK");
 	strcpy(bufferName, homePath);
 	strcat(bufferName, name); // TODO: temporary until makeExtention is coded
 	strcat(bufferName, ".PAK");
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Full Path: %s", bufferName);
 
 	fileHandle = fopen(bufferName, "rb");
 
-	if (!fileHandle)
+	if (!fileHandle) {
+		DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Failed to open %s; returning 0...", bufferName);
+		DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Returns: %u", 0);
+		DebugEndSection();
 		return 0;
+	}
 
 	ASSERT(fileHandle);
 
 	fseek(fileHandle, 4, SEEK_CUR);
 	fread(&fileOffset, 4, 1, fileHandle);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "fileOffset (initial): %u", fileOffset);
 #ifdef MACOSX
 	fileOffset = READ_LE_U32(&fileOffset);
 #endif
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "fileOffset (final): %u", fileOffset);
 	fclose(fileHandle);
-
+	
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Returns: %u", (fileOffset / 4) - 2);
+	DebugEndSection();
 	return((fileOffset / 4) - 2);
 }
 
@@ -169,11 +191,17 @@ int getPakSize(const char* name, int index)
 #endif
 }
 
+/// @brief 
+/// @param name 
+/// @param index 
+/// @return 
+/// @details Uses `malloc`.
 char* loadPak(const char* name, int index)
 {
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "loadPak(%s, %i)", name, index);
+	DebugBeginSection(debugCategoryEnum::DBO_PAK);
 	if (PAK_getNumFiles(name) < index)
 		return NULL;
-
 
 	//dumpPak(name);
 #ifdef USE_UNPACKED_DATA
@@ -207,11 +235,11 @@ char* loadPak(const char* name, int index)
 	pakInfoStruct pakInfo;
 	char* ptr = 0;
 
-
 	//makeExtention(bufferName, name, ".PAK");
 	strcpy(bufferName, homePath);
 	strcat(bufferName, name); // TODO: temporary until makeExtention is coded
 	strcat(bufferName, ".PAK");
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Full Path: %s", bufferName);
 
 	fileHandle = fopen(bufferName, "rb");
 
@@ -222,18 +250,22 @@ char* loadPak(const char* name, int index)
 		fseek(fileHandle, (index + 1) * 4, SEEK_SET);
 
 		fread(&fileOffset, 4, 1, fileHandle);
+		DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "fileOffset (initial): %u", fileOffset);
 
 #ifdef MACOSX
 		fileOffset = READ_LE_U32(&fileOffset);
 #endif
 
+		DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "fileOffset (final): %u", fileOffset);
 		fseek(fileHandle, fileOffset, SEEK_SET);
 
 		fread(&additionalDescriptorSize, 4, 1, fileHandle);
+		DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "additionalDescriptorSize (initial): %u", additionalDescriptorSize);
 
 #ifdef MACOSX
 		additionalDescriptorSize = READ_LE_U32(&additionalDescriptorSize);
 #endif
+		DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "additionalDescriptorSize (final): %u", additionalDescriptorSize);
 		if (additionalDescriptorSize) {
 			fseek(fileHandle, additionalDescriptorSize - 4, SEEK_CUR);
 		}
@@ -246,6 +278,7 @@ char* loadPak(const char* name, int index)
 			fread(nameBuffer, pakInfo.offset, 1, fileHandle);
 #ifdef FITD_DEBUGGER
 			printf("Loading %s/%s\n", name, nameBuffer + 2);
+			DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Loading %s/%s", name, nameBuffer + 2);
 #endif
 		} else {
 			fseek(fileHandle, pakInfo.offset, SEEK_CUR);
@@ -264,7 +297,7 @@ char* loadPak(const char* name, int index)
 				fread(compressedDataPtr, pakInfo.discSize, 1, fileHandle);
 				ptr = (char*)malloc(pakInfo.uncompressedSize);
 
-				PAK_explode((unsigned char*)compressedDataPtr, (unsigned char*)ptr, pakInfo.discSize, pakInfo.uncompressedSize, pakInfo.info5);
+				PAK_explode((u8*)compressedDataPtr, (u8*)ptr, pakInfo.discSize, pakInfo.uncompressedSize, pakInfo.info5);
 
 				free(compressedDataPtr);
 				break;
@@ -275,18 +308,21 @@ char* loadPak(const char* name, int index)
 				fread(compressedDataPtr, pakInfo.discSize, 1, fileHandle);
 				ptr = (char*)malloc(pakInfo.uncompressedSize);
 
-				PAK_deflate((unsigned char*)compressedDataPtr, (unsigned char*)ptr, pakInfo.discSize, pakInfo.uncompressedSize);
+				PAK_deflate((u8*)compressedDataPtr, (u8*)ptr, pakInfo.discSize, pakInfo.uncompressedSize);
 
 				free(compressedDataPtr);
 				break;
 			}
 			default:
+				DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Failed to load %s/%s; expected compression flag of 0, 1, or 4; got %hhi", name, nameBuffer + 2, pakInfo.compressionFlag);
 				assert(false);
 				break;
 		}
 		fclose(fileHandle);
 	}
 
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Successfully loaded %s at %i", bufferName, (long)ptr);
+	DebugEndSection();
 	return ptr;
 #endif
 }
