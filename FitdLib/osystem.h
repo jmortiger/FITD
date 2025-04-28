@@ -7,7 +7,7 @@
 #include "string.h"
 
 #ifdef FITD_DEBUGGER
-#include "debugFont.h"
+#include "debugging/debugFont.h"
 #endif
 
 extern "C" {

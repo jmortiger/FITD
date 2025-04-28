@@ -120,8 +120,8 @@ typedef signed int S32;
 #include "fileAccess.h"
 #include "screen.h"
 #include "videoMode.h"
-#include "pak.h"
-#include "unpack.h"
+#include "pak/pak.h"
+#include "pak/unpak.h"
 #include "tatou.h"
 #include "threadCode.h"
 #include "renderer.h"
@@ -133,8 +133,8 @@ typedef signed int S32;
 #include "font.h"
 #include "aitdBox.h"
 #include "save.h"
-#include "anim.h"
-#include "animAction.h"
+#include "anim/anim.h"
+#include "anim/animAction.h"
 #include "actorList.h"
 #include "mainLoop.h"
 #include "inventory.h"
@@ -142,11 +142,12 @@ typedef signed int S32;
 #include "systemMenu.h"
 #include "floor.h"
 #include "object.h"
-#include "zv.h"
-#include "music.h"
-#include "fmopl.h"
+#include "collision/zv.h"
+#include "audio/music.h"
+#include "audio/fmopl.h"
 #include "main.h"
 #include "sequence.h"
+// #include "./debug/debug.h"
 
 // include game specific stuff
 #include "AITD1.h"
@@ -156,7 +157,7 @@ typedef signed int S32;
 
 // debugger
 #ifdef FITD_DEBUGGER
-#include "debugger.h"
+#include "debugging/debugger.h"
 #endif
 
 // scripting

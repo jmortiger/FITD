@@ -6,6 +6,7 @@ extern char* currentFoundBody;
 extern int currentFoundBodyIdx;
 extern int statusVar1;
 
+/// @brief Which game are we running?
 enum gameTypeEnum
 {
 	AITD1,
@@ -17,6 +18,7 @@ enum gameTypeEnum
 
 extern enum gameTypeEnum g_gameId;
 
+/// @brief A point in 3d space stored in signed 16 bit integers.
 struct point3dStruct
 {
 	s16 x;
@@ -81,6 +83,7 @@ struct hqrEntryStruct
 
 typedef struct hqrEntryStruct hqrEntryStruct;
 
+/// @brief Axis-Aligned Bounding Box (I think). 32 bit signed integers.
 struct ZVStruct
 {
 	s32 ZVX1;
@@ -527,6 +530,7 @@ struct sGroup
 	sGroupState m_state;
 };
 
+/// @brief Defines the primitive types.
 enum primTypeEnum
 {
 	primTypeEnum_Line = 0,

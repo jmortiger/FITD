@@ -130,7 +130,7 @@ int makeIntroScreens(void)
 	memcpy(logicalScreen, frontBuffer, 320 * 200);
 	osystem_flip(NULL);
 	free(data);
-	LoadPak("ITD_RESS", AITD1_LIVRE, aux);
+	loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
 	startChrono(&chrono);
 
 	osystem_drawBackground();
@@ -184,7 +184,7 @@ int ChoosePerso(void)
 
 		// TODO: missing code for music stop
 
-		LoadPak("ITD_RESS", 10, aux);
+		loadPakTo("ITD_RESS", 10, aux);
 		FastCopyScreen(aux, logicalScreen);
 		FastCopyScreen(logicalScreen, aux2);
 
@@ -255,7 +255,7 @@ int ChoosePerso(void)
 			{
 				FastCopyScreen(frontBuffer, logicalScreen);
 				SetClip(0, 0, 319, 199);
-				LoadPak("ITD_RESS", AITD1_FOND_INTRO, aux);
+				loadPakTo("ITD_RESS", AITD1_FOND_INTRO, aux);
 				CopyBox_Aux_Log(160, 0, 319, 199);
 				FastCopyScreen(logicalScreen, aux);
 				Lire(CVars[getCVarsIdx(INTRO_HERITIERE)] + 1, 165, 5, 314, 194, 2, 15, 0);
@@ -266,7 +266,7 @@ int ChoosePerso(void)
 			{
 				FastCopyScreen(frontBuffer, logicalScreen);
 				SetClip(0, 0, 319, 199);
-				LoadPak("ITD_RESS", AITD1_FOND_INTRO, aux);
+				loadPakTo("ITD_RESS", AITD1_FOND_INTRO, aux);
 				CopyBox_Aux_Log(0, 0, 159, 199);
 				FastCopyScreen(logicalScreen, aux);
 				Lire(CVars[getCVarsIdx(INTRO_DETECTIVE)] + 1, 5, 5, 154, 194, 2, 15, 0);
@@ -380,21 +380,21 @@ void AITD1_ReadBook(int index, int type)
 	switch (type) {
 		case 0: // READ_MESSAGE
 		{
-			LoadPak("ITD_RESS", AITD1_LETTRE, aux);
+			loadPakTo("ITD_RESS", AITD1_LETTRE, aux);
 			turnPageFlag = 0;
 			Lire(index, 60, 10, 245, 190, 0, 26, 0);
 			break;
 		}
 		case 1: // READ_BOOK
 		{
-			LoadPak("ITD_RESS", AITD1_LIVRE, aux);
+			loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
 			turnPageFlag = 1;
 			Lire(index, 48, 2, 260, 197, 0, 26, 0);
 			break;
 		}
 		case 2: // READ_CARNET
 		{
-			LoadPak("ITD_RESS", AITD1_CARNET, aux);
+			loadPakTo("ITD_RESS", AITD1_CARNET, aux);
 			turnPageFlag = 0;
 			Lire(index, 50, 20, 250, 199, 0, 26, 0);
 			break;

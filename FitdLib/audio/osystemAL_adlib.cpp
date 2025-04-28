@@ -4,9 +4,12 @@
 #include "common.h"
 #include "osystemAL.h"
 
+#ifndef _AL_ADLIB_ON
+#define _AL_ADLIB_ON 0
+#endif
 void osystem_playAdlib()
 {
-#if 0
+#if _AL_ADLIB_ON
 	if (adlib_source) {
 		alSourceStop(adlib_source);
 		alDeleteSources(1, &adlib_source);
@@ -31,7 +34,7 @@ void osystem_playAdlib()
 
 void osystemAL_adlib_Update()
 {
-#if 0
+#if _AL_ADLIB_ON
 	if (adlib_source) {
 		ALint numProcessedBuffers;
 		alGetSourcei(adlib_source, AL_BUFFERS_PROCESSED, &numProcessedBuffers);

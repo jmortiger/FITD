@@ -28,7 +28,7 @@ int makeProportional(int x1, int x2, int y1, int y2)
 	return x1 + ((x2 - x1) * y2) / y1;
 }
 
-int computeAngleModificatorToPositionSub1(int ax)
+int computeangleModifiericatorToPositionSub1(int ax)
 {
 	int xOut;
 	int yOut;
@@ -49,7 +49,7 @@ int computeAngleModificatorToPositionSub1(int ax)
 		return(-1);
 }
 
-int computeAngleModificatorToPosition(int x1, int z1, int beta, int x2, int z2)
+int computeangleModifiericatorToPosition(int x1, int z1, int beta, int x2, int z2)
 {
 	int resultMin;
 	int resultMax;
@@ -58,12 +58,12 @@ int computeAngleModificatorToPosition(int x1, int z1, int beta, int x2, int z2)
 	angleCompZ = z2 - z1;
 	angleCompBeta = beta;
 
-	resultMin = computeAngleModificatorToPositionSub1(beta - 4);
-	resultMax = computeAngleModificatorToPositionSub1(beta + 4);
+	resultMin = computeangleModifiericatorToPositionSub1(beta - 4);
+	resultMax = computeangleModifiericatorToPositionSub1(beta + 4);
 
 	if (resultMax == -1 && resultMin == 1) // in the middle
 	{
-		return(computeAngleModificatorToPositionSub1(beta));
+		return(computeangleModifiericatorToPositionSub1(beta));
 	} else {
 		return(((resultMax + resultMin) + 1) >> 1);
 	}
@@ -115,7 +115,7 @@ void GereManualRot(int param)
 	}
 }
 
-#define DISTANCE_TO_POINT_TRESSHOLD 400
+#define DISTANCE_TO_POINT_THRESHOLD 400
 
 unsigned int lastTimeForward = 0;
 
@@ -132,7 +132,7 @@ char* getRoomLink(unsigned int room1, unsigned int room2)
 
 	bestZone = zoneData;
 
-	for (i = 0;i < numOfZones;i++) {
+	for (i = 0; i < numOfZones; i++) {
 		if (*(s16*)(zoneData + 14) == 4) {
 			bestZone = zoneData;
 
@@ -153,10 +153,10 @@ void processTrack(void)
 		case 1: // manual
 		{
 			GereManualRot(60);
-			if (localJoyD & 1) // forward
-			{
-				if (timer - lastTimeForward < 10 && currentProcessedActorPtr->speed != 4) // start running ?
-				{
+			// forward
+			if (localJoyD & 1) {
+				// start running ?
+				if (timer - lastTimeForward < 10 && currentProcessedActorPtr->speed != 4) {
 					currentProcessedActorPtr->speed = 5;
 				} else {
 					if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed == -1) {
@@ -177,8 +177,8 @@ void processTrack(void)
 				}
 			}
 
-			if (localJoyD & 2) // backward
-			{
+			// backward
+			if (localJoyD & 2) {
 				if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed >= 4)
 					currentProcessedActorPtr->speed = -1;
 
@@ -202,7 +202,7 @@ void processTrack(void)
 				int x = followedActorPtr->roomX;
 				int y = followedActorPtr->roomY;
 				int z = followedActorPtr->roomZ;
-				int angleModif;
+				int angleModifier;
 
 				if (currentProcessedActorPtr->room != roomNumber) {
 					char* link = getRoomLink(currentProcessedActorPtr->room, roomNumber);
@@ -212,15 +212,15 @@ void processTrack(void)
 					z = *(s16*)(link + 8) + (((*(s16*)(link + 10)) - (*(s16*)(link + 8))) / 2);
 				}
 
-				angleModif = computeAngleModificatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+				angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 					currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 					currentProcessedActorPtr->beta, x, z);
 
-				if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModif) {
-					InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif << 8), 60, &currentProcessedActorPtr->rotate);
+				if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModifier) {
+					InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
 				}
 
-				currentProcessedActorPtr->direction = angleModif;
+				currentProcessedActorPtr->direction = angleModifier;
 
 				if (currentProcessedActorPtr->direction == 0) {
 					currentProcessedActorPtr->rotate.param = 0;
@@ -319,20 +319,20 @@ void processTrack(void)
 						x, z);
 
 
-					if (distanceToPoint >= DISTANCE_TO_POINT_TRESSHOLD) // not yet at position
+					if (distanceToPoint >= DISTANCE_TO_POINT_THRESHOLD) // not yet at position
 					{
-						int angleModif = computeAngleModificatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+						int angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 							currentProcessedActorPtr->beta,
 							x, z);
 
-						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModif)) {
-							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif * 64), 15, &currentProcessedActorPtr->rotate);
+						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModifier)) {
+							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier * 64), 15, &currentProcessedActorPtr->rotate);
 						}
 
-						currentProcessedActorPtr->direction = angleModif;
+						currentProcessedActorPtr->direction = angleModifier;
 
-						if (!angleModif) {
+						if (!angleModifier) {
 							currentProcessedActorPtr->rotate.param = 0;
 						} else {
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
@@ -371,10 +371,10 @@ void processTrack(void)
 					}
 
 					// reached position?
-					if ((y == currentProcessedActorPtr->roomY) && (computeDistanceToPoint(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX, currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ, x, z) < DISTANCE_TO_POINT_TRESSHOLD)) {
+					if ((y == currentProcessedActorPtr->roomY) && (computeDistanceToPoint(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX, currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ, x, z) < DISTANCE_TO_POINT_THRESHOLD)) {
 						currentProcessedActorPtr->positionInTrack += 6;
 					} else {
-						int angleModif = computeAngleModificatorToPosition(
+						int angleModifier = computeangleModifiericatorToPosition(
 							currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 							currentProcessedActorPtr->beta,
@@ -384,13 +384,13 @@ void processTrack(void)
 							InitRealValue(0, y - (currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY), time, &currentProcessedActorPtr->YHandler);
 						}
 
-						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModif)) {
-							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif * 256), 60, &currentProcessedActorPtr->rotate);
+						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModifier)) {
+							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier * 256), 60, &currentProcessedActorPtr->rotate);
 						}
 
-						currentProcessedActorPtr->direction = angleModif;
+						currentProcessedActorPtr->direction = angleModifier;
 
-						if (!angleModif) {
+						if (!angleModifier) {
 							currentProcessedActorPtr->rotate.param = 0;
 						} else {
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
@@ -522,25 +522,25 @@ void processTrack(void)
 						int propX = makeProportional(objY, y, x - objX, (currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX) - objX);
 
 						int difY = propX - currentProcessedActorPtr->worldY;
-						int angleModif;
+						int angleModifier;
 
 						currentProcessedActorPtr->worldY += difY;
 						currentProcessedActorPtr->roomY += difY;
 						currentProcessedActorPtr->zv.ZVY1 += difY;
 						currentProcessedActorPtr->zv.ZVY2 += difY;
 
-						angleModif = computeAngleModificatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+						angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 							currentProcessedActorPtr->beta,
 							x, z);
 
-						if (!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->direction != angleModif) {
-							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif << 8), 60, &currentProcessedActorPtr->rotate);
+						if (!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->direction != angleModifier) {
+							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
 						}
 
-						currentProcessedActorPtr->direction = angleModif;
+						currentProcessedActorPtr->direction = angleModifier;
 
-						if (angleModif) {
+						if (angleModifier) {
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 						} else {
 							currentProcessedActorPtr->rotate.param = 0;
@@ -586,25 +586,25 @@ void processTrack(void)
 
 						int difY = propZ - currentProcessedActorPtr->worldY;
 
-						int angleModif;
+						int angleModifier;
 
 						currentProcessedActorPtr->worldY += difY;
 						currentProcessedActorPtr->roomY += difY;
 						currentProcessedActorPtr->zv.ZVY1 += difY;
 						currentProcessedActorPtr->zv.ZVY2 += difY;
 
-						angleModif = computeAngleModificatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+						angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 							currentProcessedActorPtr->beta,
 							x, z);
 
-						if (!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->direction != angleModif) {
-							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif << 8), 60, &currentProcessedActorPtr->rotate);
+						if (!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->direction != angleModifier) {
+							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
 						}
 
-						currentProcessedActorPtr->direction = angleModif;
+						currentProcessedActorPtr->direction = angleModifier;
 
-						if (angleModif) {
+						if (angleModifier) {
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 						} else {
 							currentProcessedActorPtr->rotate.param = 0;
@@ -706,7 +706,7 @@ void processTrack2(void)
 				int x = followedActorPtr->roomX;
 				//int y = followedActorPtr->roomY;
 				int z = followedActorPtr->roomZ;
-				int angleModif;
+				int angleModifier;
 
 				if (currentProcessedActorPtr->room != roomNumber) {
 					/*  char* link = getRoomLink(currentProcessedActorPtr->room,roomNumber);
@@ -716,15 +716,15 @@ void processTrack2(void)
 					z = *(s16*)(link+8)+(((*(s16*)(link+10))-(*(s16 *)(link+8))) / 2); */
 				}
 
-				angleModif = computeAngleModificatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+				angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 					currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 					currentProcessedActorPtr->beta, x, z);
 
-				if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModif) {
-					InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif << 8), 60, &currentProcessedActorPtr->rotate);
+				if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModifier) {
+					InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
 				}
 
-				currentProcessedActorPtr->direction = angleModif;
+				currentProcessedActorPtr->direction = angleModifier;
 
 				if (currentProcessedActorPtr->direction == 0) {
 					currentProcessedActorPtr->rotate.param = 0;
@@ -822,20 +822,20 @@ void processTrack2(void)
 						x, z);
 
 
-					if (distanceToPoint >= DISTANCE_TO_POINT_TRESSHOLD) // not yet at position
+					if (distanceToPoint >= DISTANCE_TO_POINT_THRESHOLD) // not yet at position
 					{
-						int angleModif = computeAngleModificatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+						int angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 							currentProcessedActorPtr->beta,
 							x, z);
 
-						if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModif) {
-							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif << 6), 15, &currentProcessedActorPtr->rotate);
+						if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModifier) {
+							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 6), 15, &currentProcessedActorPtr->rotate);
 						}
 
-						currentProcessedActorPtr->direction = angleModif;
+						currentProcessedActorPtr->direction = angleModifier;
 
-						if (!angleModif) {
+						if (!angleModifier) {
 							currentProcessedActorPtr->rotate.param = 0;
 						} else {
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
@@ -957,26 +957,26 @@ void processTrack2(void)
 				 int propX = makeProportional(objY, y, x - objX, (currentProcessedActorPtr->roomX + currentProcessedActorPtr->modX) - objX);
 
 				 int difY = propX - currentProcessedActorPtr->worldY;
-				 int angleModif;
+				 int angleModifier;
 
 				 currentProcessedActorPtr->worldY += difY;
 				 currentProcessedActorPtr->roomY += difY;
 				 currentProcessedActorPtr->zv.ZVY1 += difY;
 				 currentProcessedActorPtr->zv.ZVY2 += difY;
 
-				 angleModif = computeAngleModificatorToPosition( currentProcessedActorPtr->roomX + currentProcessedActorPtr->modX,
+				 angleModifier = computeangleModifiericatorToPosition( currentProcessedActorPtr->roomX + currentProcessedActorPtr->modX,
 				 currentProcessedActorPtr->roomZ + currentProcessedActorPtr->modZ,
 				 currentProcessedActorPtr->beta,
 				 x,z );
 
-				 if(!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->field_72 != angleModif)
+				 if(!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->field_72 != angleModifier)
 				 {
-				 startActorRotation(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif<<8), 60, &currentProcessedActorPtr->rotate);
+				 startActorRotation(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier<<8), 60, &currentProcessedActorPtr->rotate);
 				 }
 
-				 currentProcessedActorPtr->field_72 = angleModif;
+				 currentProcessedActorPtr->field_72 = angleModifier;
 
-				 if(angleModif)
+				 if(angleModifier)
 				 {
 				 currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 				 }
@@ -1028,26 +1028,26 @@ void processTrack2(void)
 
 				 int difY = propZ - currentProcessedActorPtr->worldY;
 
-				 int angleModif;
+				 int angleModifier;
 
 				 currentProcessedActorPtr->worldY += difY;
 				 currentProcessedActorPtr->roomY += difY;
 				 currentProcessedActorPtr->zv.ZVY1 += difY;
 				 currentProcessedActorPtr->zv.ZVY2 += difY;
 
-				 angleModif = computeAngleModificatorToPosition( currentProcessedActorPtr->roomX + currentProcessedActorPtr->modX,
+				 angleModifier = computeangleModifiericatorToPosition( currentProcessedActorPtr->roomX + currentProcessedActorPtr->modX,
 				 currentProcessedActorPtr->roomZ + currentProcessedActorPtr->modZ,
 				 currentProcessedActorPtr->beta,
 				 x,z );
 
-				 if(!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->field_72 != angleModif)
+				 if(!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->field_72 != angleModifier)
 				 {
-				 startActorRotation(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModif<<8), 60, &currentProcessedActorPtr->rotate);
+				 startActorRotation(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier<<8), 60, &currentProcessedActorPtr->rotate);
 				 }
 
-				 currentProcessedActorPtr->field_72 = angleModif;
+				 currentProcessedActorPtr->field_72 = angleModifier;
 
-				 if(angleModif)
+				 if(angleModifier)
 				 {
 				 currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 				 }

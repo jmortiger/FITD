@@ -310,13 +310,13 @@ void osystem_drawBackground()
 		bgfx::TransientVertexBuffer transientBuffer;
 		bgfx::allocTransientVertexBuffer(&transientBuffer, 6, layout);
 
-		struct sVertice
+		struct sVertex
 		{
 			float position[3];
 			float texcoord[2];
 		};
 
-		sVertice* pVertices = (sVertice*)transientBuffer.data;
+		sVertex* pVertices = (sVertex*)transientBuffer.data;
 
 		float quadVertices[6 * 3];
 		float quadUV[6 * 2];
@@ -1179,13 +1179,13 @@ void osystem_createMask(const std::array<u8, 320 * 200>& mask, int roomId, int m
 
 	float maskZ = 0.f;
 
-	struct sVertice
+	struct sVertex
 	{
 		float position[3];
 		float texcoord[2];
 	} vertexBuffer[4];
 
-	sVertice* pVertices = vertexBuffer;
+	sVertex* pVertices = vertexBuffer;
 	pVertices->position[0] = X1;
 	pVertices->position[1] = Y2;
 	pVertices->position[2] = maskZ;

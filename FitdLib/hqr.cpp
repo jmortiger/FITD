@@ -422,7 +422,7 @@ char* HQR_Get(hqrEntryStruct* hqrPtr, int index)
 
 		ptr = foundEntry->ptr;
 
-		LoadPak(hqrPtr->string, index, foundEntry->ptr);
+		loadPakTo(hqrPtr->string, index, foundEntry->ptr);
 
 		hqrPtr->numUsedEntry++;
 		hqrPtr->sizeFreeData -= size;

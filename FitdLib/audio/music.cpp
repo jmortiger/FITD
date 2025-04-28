@@ -134,7 +134,7 @@ unsigned char channelTableMelodic[] =
 	0xFF
 };
 
-unsigned char channelTableRythme[] =
+unsigned char channelTableRhythm[] =
 {
 	0x00,
 	0x03,
@@ -634,7 +634,7 @@ int musicLoad(void* ptr)
 
 	if (!musicParam1) {
 		flag1 |= 0x20;
-		channelTable = channelTableRythme;
+		channelTable = channelTableRhythm;
 	}
 
 	regBDConf = flag1;
@@ -658,7 +658,7 @@ int musicLoad(void* ptr)
 	return 0;
 }
 
-int initialialize(void* dummy)
+int initialize(void* dummy)
 {
 	int i;
 
@@ -1127,7 +1127,7 @@ int musicFade(void* param)
 musicDrvFunctionType musicDrvFunc[14] =
 {
 	update,
-	initialialize,
+	initialize,
 	musicStart,
 	musicLoad,
 	NULL,

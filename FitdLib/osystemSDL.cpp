@@ -22,7 +22,7 @@ email                : yaz0r@yaz0r.net
 #include <SDL_thread.h>
 #include <SDL_mutex.h>
 #include "osystem.h"
-#include "osystemAL.h"
+#include "audio/osystemAL.h" 
 #include <backends/imgui_impl_sdl3.h>
 
 void detectGame(void);

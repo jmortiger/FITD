@@ -1,3 +1,4 @@
+#include "common.h"
 #define INFO_TRI 1
 #define INFO_ANIM 2
 #define INFO_TORTUE 4 // Tortoise

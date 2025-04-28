@@ -63,7 +63,7 @@ unsigned int PAK_getNumFiles(const char* name)
 	return((fileOffset / 4) - 2);
 }
 
-int LoadPak(const char* name, int index, char* ptr)
+int loadPakTo(const char* name, int index, char* ptr)
 {
 #ifdef USE_UNPACKED_DATA
 	char buffer[256];
@@ -87,6 +87,8 @@ int LoadPak(const char* name, int index, char* ptr)
 	char* lptr;
 
 	lptr = loadPak(name, index);
+
+	// if (!lptr) return 0;
 
 	memcpy(ptr, lptr, getPakSize(name, index));
 

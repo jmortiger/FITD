@@ -248,13 +248,13 @@ void drawInventoryAITD2()
 {
 	switch (CVars[getCVarsIdx(TYPE_INVENTAIRE)]) {
 		case 0:
-			LoadPak("ITD_RESS", AITD2_INVENTAIRE_PIRATE, logicalScreen);
+			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_PIRATE, logicalScreen);
 			break;
 		case 1:
-			LoadPak("ITD_RESS", AITD2_INVENTAIRE_GANG, logicalScreen);
+			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_GANG, logicalScreen);
 			break;
 		case 2:
-			LoadPak("ITD_RESS", AITD2_INVENTAIRE_GRACE, logicalScreen);
+			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_GRACE, logicalScreen);
 			break;
 		default:
 			assert(0);
@@ -283,7 +283,7 @@ void AITD2_ReadBook(int index, int type)
 	switch (type) {
 		case 0: // READ_MESSAGE
 		{
-			LoadPak("ITD_RESS", AITD2_LETTRE, aux);
+			loadPakTo("ITD_RESS", AITD2_LETTRE, aux);
 			unsigned char lpalette[0x300];
 			copyPalette((unsigned char*)aux + 64000, lpalette);
 			convertPaletteIfRequired(lpalette);
@@ -296,7 +296,7 @@ void AITD2_ReadBook(int index, int type)
 		}
 		case 1: // READ_BOOK
 		{
-			LoadPak("ITD_RESS", AITD2_LIVRE, aux);
+			loadPakTo("ITD_RESS", AITD2_LIVRE, aux);
 			unsigned char lpalette[0x300];
 			copyPalette((unsigned char*)aux + 64000, lpalette);
 			convertPaletteIfRequired(lpalette);
@@ -309,7 +309,7 @@ void AITD2_ReadBook(int index, int type)
 		}
 		case 2: // READ_CARNET
 		{
-			LoadPak("ITD_RESS", AITD2_CARNET, aux);
+			loadPakTo("ITD_RESS", AITD2_CARNET, aux);
 			unsigned char lpalette[0x300];
 			copyPalette((unsigned char*)aux + 64000, lpalette);
 			convertPaletteIfRequired(lpalette);

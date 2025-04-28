@@ -30,4 +30,5 @@
 	"C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
 	"C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
 	"C_Cpp.vcFormat.space.insertAfterSemicolon": true,
+	"cmake.deleteBuildDirOnCleanConfigure": false,
 }

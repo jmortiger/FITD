@@ -1,0 +1,12 @@
+#include "common.h"
+
+// debugOutputConfig debugOutput;
+
+void DebugAddSection(debugOutputConfig category, bool startOfSection, const char* format, ...)
+{
+	
+}
+void DebugPrintfLn(debugOutputConfig category, bool startOfSection, const char* format, ...)
+{
+	
+}

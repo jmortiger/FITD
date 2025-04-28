@@ -87,13 +87,13 @@ void drawInventoryAITD3()
 {
 	switch (CVars[getCVarsIdx(TYPE_INVENTAIRE)]) {
 		case 0:
-			LoadPak("ITD_RESS", AITD3_INVENTAIRE_CAVERNE, logicalScreen);
+			loadPakTo("ITD_RESS", AITD3_INVENTAIRE_CAVERNE, logicalScreen);
 			break;
 		case 1:
-			LoadPak("ITD_RESS", AITD3_INVENTAIRE_COWBOY, logicalScreen);
+			loadPakTo("ITD_RESS", AITD3_INVENTAIRE_COWBOY, logicalScreen);
 			break;
 		case 2:
-			LoadPak("ITD_RESS", AITD3_INVENTAIRE_COUGUAR, logicalScreen);
+			loadPakTo("ITD_RESS", AITD3_INVENTAIRE_COUGUAR, logicalScreen);
 			break;
 		default:
 			assert(0);

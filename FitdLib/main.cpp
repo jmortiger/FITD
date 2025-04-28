@@ -553,7 +553,7 @@ void loadPalette(void)
 	if (g_gameId == AITD2) {
 		//loadPakToPtr("ITD_RESS",59,aux);
 	} else {
-		LoadPak("ITD_RESS", 3, aux);
+		loadPakTo("ITD_RESS", 3, aux);
 	}
 	copyPalette((unsigned char*)aux, currentGamePalette);
 
@@ -625,7 +625,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 	int textIndexMalloc = HQ_Malloc(HQ_Memory, getPakSize(languageNameString, index) + 300);
 	textPtr = (u8*)HQ_PtrMalloc(HQ_Memory, textIndexMalloc);
 
-	if (!LoadPak(languageNameString, index, (char*)textPtr)) {
+	if (!loadPakTo(languageNameString, index, (char*)textPtr)) {
 		fatalError(1, languageNameString);
 	}
 
@@ -695,7 +695,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 								ptrt++;
 							}
 
-							if (LoadPak("ITD_RESS", 9, aux2)) {
+							if (loadPakTo("ITD_RESS", 9, aux2)) {
 								assert(0); // when is this used?
 								/*  var_C = printTextSub3(currentTextIdx,aux2);
 								var_A = printTextSub4(currentTextIdx,aux2);
@@ -1210,7 +1210,7 @@ void loadCamera(int cameraIdx)
 		}
 	}
 
-	if (!LoadPak(name, cameraIdx, aux)) {
+	if (!loadPakTo(name, cameraIdx, aux)) {
 		fatalError(0, name);
 	}
 

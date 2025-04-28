@@ -2,6 +2,8 @@
 
 #include "common.h"
 
+// cspell:ignore CLUT COOR HYBRIDE Inscrust MODIF lpalette
+
 int groundLevel;
 s16 specialTable[4] = { 144, 192, 48, 112 };
 
@@ -1538,7 +1540,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					freezeTime();
 
 					FadeOutPhys(32, 0);
-					LoadPak("ITD_RESS", lifeTempVar1, aux);
+					loadPakTo("ITD_RESS", lifeTempVar1, aux);
 					unsigned char lpalette[0x300];
 					copyPalette((unsigned char*)aux + 64000, lpalette);
 					convertPaletteIfRequired(lpalette);
@@ -1851,7 +1853,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					freezeTime();
 
-					LoadPak("ITD_RESS", pictureIndex, aux);
+					loadPakTo("ITD_RESS", pictureIndex, aux);
 
 					if (g_gameId > AITD1) {
 						FadeOutPhys(0x10, 0);
@@ -1961,7 +1963,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					//int inventoryIndex = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
 
-					/*          if(indeventoyIndex != currentInHand)
+					/*          if(inventoryIndex != currentInHand)
 					{
 					if(currentInHand<2)
 					{
@@ -2290,7 +2292,7 @@ void processLife(int lifeNum, bool callFoundLife)
 				}
 				default:
 				{
-					printf("Unknown opcode %X in processLife\n", currentOpcode & 0x7FFF);
+					printf("Unknown opcode %X (%i) in processLife\n", currentOpcode & 0x7FFF, opcodeLocated);
 					assert(0);
 				}
 			}

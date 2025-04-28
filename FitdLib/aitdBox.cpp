@@ -1,7 +1,15 @@
 #include "common.h"
 
+/// @brief private; Poster sprite; Plaster the given sprite from the given graphics data at the specified point on the screen.
+/// @param left 
+/// @param top 
+/// @param index 
+/// @param gfxData 
 void afficheSprite(int left, int top, int index, char* gfxData)
 {
+	if (g_gameId >= AITD3)
+		return;
+
 	char* outPtr;
 	char* inPtr;
 
@@ -12,9 +20,6 @@ void afficheSprite(int left, int top, int index, char* gfxData)
 
 	int i;
 	int j;
-
-	if (g_gameId >= AITD3)
-		return;
 
 	outPtr = logicalScreen + top * 320 + left;
 	inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe

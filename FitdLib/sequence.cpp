@@ -156,7 +156,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 				break;
 			}
 
-			if (!LoadPak(buffer, currentFrameId, logicalScreen)) {
+			if (!loadPakTo(buffer, currentFrameId, logicalScreen)) {
 				fatalError(0, buffer);
 			}
 
