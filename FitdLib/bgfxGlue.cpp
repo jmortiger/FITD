@@ -6,9 +6,7 @@
 #include "SDL3/SDL.h"
 
 #if BX_PLATFORM_OSX
-extern "C" {
-	void* cbSetupMetalLayer(void*);
-}
+extern "C" { void* cbSetupMetalLayer(void*); }
 #elif BX_PLATFORM_WINDOWS
 #include <windows.h>
 #endif
@@ -19,7 +17,8 @@ SDL_Window* gWindowBGFX = nullptr;
 int gFrameLimit = 60;
 bool gCloseApp = false;
 
-float gVolume = 1.f;
+/// @brief Used to control volume through a UI slider; min: 0, max: 1, default: 1.
+float gVolume = 1.0f;
 
 // Because SDL is not well defined when using cmake (it's using the old style config.h and is somewhat broken)
 extern "C" {

@@ -767,6 +767,26 @@ void DebugPrintfLn(debugLevelEnum level, const char* format, ...)
 		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
 	}
 }
+/// @brief Makes sure the initial line of a function is printed with the proper indent.
+/// @param level 
+/// @param category 
+/// @param format 
+/// @param  
+void DebugPrintfLnCategory(debugLevelEnum level, debugCategoryEnum category, const char* format, ...)
+{
+	debugCategoryEnum t = (debugCategoryEnum)(resultantCategory | category);
+	if (_shouldPrint(t, level)) {
+		va_list argList;
+		va_start(argList, format);
+
+		char buff[256];
+		vsprintf(buff, format, argList);
+
+		va_end(argList);
+
+		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[t], indent, buff);
+	}
+}
 char buffer[256];
 void DebugBPrintf(debugLevelEnum level, const char* format, ...)
 {

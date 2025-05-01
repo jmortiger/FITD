@@ -68,31 +68,40 @@ public:
 	}
 };
 
+/// @brief 
+/// @param samplePtr The address of the loaded sample to play.
+/// @param size The size of the sample in bits(?); CURRENTLY UNUSED (size is determined by reading info from the start of `samplePtr`).
 ITD_AudioSource::ITD_AudioSource(char* samplePtr, int size) : SoLoud::AudioSource()
 {
+	DebugPrintfLnCategory(DBO_L_INFO, DBO_SOUND, "ITD_AudioSource::ITD_AudioSource(char* samplePtr, %i):%s", size, samplePtr[26] == 1 ? " early exit (expected samplePtr[26] to be 1; was not)." : "");
 	assert(samplePtr[26] == 1); //assert first block is of sound data type
+	DebugBeginSection(DBO_SOUND);
+	// DebugBPrintf(DBO_L_DEBUG, "sampleSize: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData + 4)); DebugBFlushLn();
+	DebugPrintfLn(DBO_L_DEBUG, "sampleSize: (*(samplePtr + 26) >> 8) - 2 => (%u >> 8) - 2 => %u (Raw: (%u >> 8) - 2 => %u)", READ_LE_U32(samplePtr + 26), (READ_LE_U32(samplePtr + 26) >> 8) - 2, *(u32*)(samplePtr + 26), (*(u32*)(samplePtr + 26) >> 8) - 2);
 	int sampleSize = (READ_LE_U32(samplePtr + 26) >> 8) - 2;
 
+	DebugPrintfLn(DBO_L_DEBUG, "frequencyDiv: %hhu (*(samplePtr + 30))", *(unsigned char*)(samplePtr + 30));
 	int frequencyDiv = *(unsigned char*)(samplePtr + 30);
+	DebugPrintfLn(DBO_L_DEBUG, "codecID (unused): %hhi/%hhu (samplePtr[31])", samplePtr[31], (u8)samplePtr[31]);
 	// int codecId = samplePtr[31];
-
+	
+	// TODO: Print sample data
+	// DebugPrintfLn(DBO_L_DEBUG, "frequencyDiv: %hhu (*(samplePtr + 30))", *(unsigned char*)(samplePtr + 30));
 	char* sampleData = samplePtr + 32;
 
+	DebugPrintfLn(DBO_L_DEBUG, "sampleRate: %i (1000000/(256-frequencyDiv) => 1000000/(256-%i) => 1000000/%i)", 1000000 / (256 - frequencyDiv), frequencyDiv, 256 - frequencyDiv);
 	int sampleRate = 1000000 / (256 - frequencyDiv);
 
 	m_samples = sampleData;
 	m_size = sampleSize - 1;
 
 	mBaseSamplerate = sampleRate;
+	DebugEndSection();
 }
 
-ITD_AudioSource::~ITD_AudioSource()
-{}
+ITD_AudioSource::~ITD_AudioSource() {}
 
-SoLoud::AudioSourceInstance* ITD_AudioSource::createInstance()
-{
-	return new ITD_AudioInstance(this);
-}
+SoLoud::AudioSourceInstance* ITD_AudioSource::createInstance() { return new ITD_AudioInstance(this); }
 
 void osystem_playSample(char* samplePtr, int size)
 {
@@ -108,31 +117,37 @@ void osystem_playSample(char* samplePtr, int size)
 
 extern float gVolume;
 
-void osystemAL_update()
-{
-	gSoloud->setGlobalVolume(gVolume);
-}
+/// @brief Just updates the Soloud engine's global volume to `gVolume`;
+void osystemAL_update() { gSoloud->setGlobalVolume(gVolume); }
 
 SoLoud::DiskFile* pFile = NULL;
 SoLoud::WavStream* pWavStream = NULL;
 
+/// @brief 
+/// @param trackId 
+/// @return 0 always??
 int osystem_playTrack(int trackId)
 {
-	if (pWavStream) {
-		pWavStream->stop();
-	}
+	DebugPrintfLnCategory(DBO_L_INFO, DBO_SOUND, "osystem_playTrack(%i):", trackId);
+	DebugBeginSection(DBO_SOUND);
+	// NOTE: Does this get freed?
+	if (pWavStream) { pWavStream->stop(); }
 
 	char filename[256];
 	sprintf(filename, "%02d.wav", trackId);
 
 	FILE* fHandle = fopen(filename, "rb");
-	if (fHandle == NULL)
+	if (fHandle == NULL) {
+		DebugPrintfLn(DBO_L_WARN, "File %s failed to open; exiting early w/ a value of 0", filename);
+		DebugEndSection();
 		return 0;
+	}
 
 	pFile = new SoLoud::DiskFile(fHandle);
 	pWavStream = new SoLoud::WavStream();
 	pWavStream->loadFile(pFile);
 	gSoloud->play(*pWavStream);
 
+	DebugEndSection();
 	return 0;
 }

@@ -12,29 +12,32 @@
 
 void blitScreenTatou(void)
 {
-	/*
-	int i;
-
-	for(i=0;i<45120;i++)
-	{
-		frontBuffer[i] = backbuffer[i];
-	}
-	*/
+	// for (int i = 0; i < 45120; i++) { frontBuffer[i] = backBuffer[i]; }
 }
+
+// void blitScreenTatou(void)
+// {
+// 	/*
+// 	int i;
+// 	for(i=0;i<45120;i++)
+// 	{
+// 		frontBuffer[i] = backbuffer[i];
+// 	}
+// 	*/
+// }
 
 void copyPalette(unsigned char* source, unsigned char* dest)
 {
-	int i;
-
-	for (i = 0; i < 768; i++) {
-		dest[i] = source[i];
-	}
+	for (int i = 0; i < 768; i++) { dest[i] = source[i]; }
 }
 
-void FastCopyScreen(void* source, void* dest)
-{
-	memcpy(dest, source, 64000);
-}
+// void copyPalette(unsigned char* source, unsigned char* dest)
+// {
+// 	int i;
+// 	for (i = 0; i < 768; i++) { dest[i] = source[i]; }
+// }
+
+void FastCopyScreen(void* source, void* dest) { memcpy(dest, source, 64000); }
 
 void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned b)
 {
@@ -54,16 +57,25 @@ void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned b)
 	}
 }
 
-void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coef)
+void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coefficient)
+{
+	for (int i = 0; i < 256; i++) {
+		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
+		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
+		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
+	}
+}
+
+/* void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coefficient)
 {
 	int i;
 
 	for (i = 0; i < 256; i++) {
-		*(outPalette++) = ((*(inPalette++)) * coef) >> 8;
-		*(outPalette++) = ((*(inPalette++)) * coef) >> 8;
-		*(outPalette++) = ((*(inPalette++)) * coef) >> 8;
+		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
+		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
+		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
 	}
-}
+} */
 
 void FadeInPhys(int step, int start)
 {
@@ -105,10 +117,7 @@ void FadeOutPhys(int var1, int var2)
 	unfreezeTime();
 }
 
-void setPalette(void* sourcePal)
-{
-	osystem_setPalette((unsigned char*)sourcePal);
-}
+void setPalette(void* sourcePal) { osystem_setPalette((unsigned char*)sourcePal); }
 
 void process_events(void)
 {
@@ -134,29 +143,23 @@ void process_events(void)
 	u32 timeIncrease = osystem_startOfFrame();
 	assert(timeIncrease);
 #ifdef FITD_DEBUGGER
-	if (debuggerVar_fastForward)
-		timeIncrease = 8;
+	if (debuggerVar_fastForward) timeIncrease = 8;
 #endif
 	timeGlobal += timeIncrease;
 	timer = timeGlobal;
 #endif
 }
 
-void startChrono(unsigned int* chrono)
-{
-	*chrono = timer;
-}
+void startChrono(unsigned int* chrono) { *chrono = timer; }
 
-int evalChrono(unsigned int* chrono)
-{
-	return(timer - *chrono);
-}
+int evalChrono(unsigned int* chrono) { return(timer - *chrono); }
 
 // bp = x, bx = y, cx = z
 // out
 // xOut = dx, yOut = ax
 void Rotate(unsigned int x, unsigned int y, unsigned int z, int* xOut, int* yOut)
 {
+	// TODO: Document the math going on here
 	if (x) {
 		int var1 = (((cosTable[(x + 0x100) & 0x3FF] * y) << 1) & 0xFFFF0000) - (((cosTable[x & 0x3FF] * z) << 1) & 0xFFFF0000);
 		int var2 = (((cosTable[x & 0x3FF] * y) << 1) & 0xFFFF0000) + (((cosTable[(x + 0x100) & 0x3FF] * z) << 1) & 0xFFFF0000);
@@ -183,25 +186,32 @@ void setCameraTarget(int x, int y, int z, int alpha, int beta, int gamma, int ti
 	SetAngleCamera(alpha, beta, gamma);
 }
 
+/// @brief 
+/// @param num 
 void playSound(int num)
 {
-	if (num == -1)
-		return;
+	DebugPrintfLnCategory(DBO_L_INFO, DBO_SOUND, "playSound(%i):%s", num, num == -1 ? " early exit." : "");
+	if (num == -1) return;
+	DebugBeginSection(DBO_SOUND);
 
-	char sampleFileName[256] = "";
+	/* char sampleFileName[9] = ""; // char sampleFileName[256] = "";
 	if (g_gameId == TIMEGATE) {
 		strcpy(sampleFileName, "SAMPLES");
 	} else {
 		strcpy(sampleFileName, "LISTSAMP");
 	}
 
-	int size = getPakSize(sampleFileName, num);
+	int size = getPakSize(sampleFileName, num); */
+	int size = getPakSize(g_gameId == TIMEGATE ? "SAMPLES" : "LISTSAMP", num);
+	DebugPrintfLn(size == 0 ? DBO_L_WARN : DBO_L_INFO, "Sample %i has size %i%s", num, size, size == 0 ? "; exiting early" : "");
 	assert(size);
 
 	char* ptr = HQR_Get(listSamp, num);
+	DebugPrintfLn(ptr == 0 ? DBO_L_WARN : DBO_L_INFO, "Sample %i is at address %lx%s", num, ptr, ptr == 0 ? "; exiting early" : "");
 	assert(ptr);
 
 	osystem_playSample(ptr, size);
+	DebugEndSection();
 }
 
 ////////////////////////

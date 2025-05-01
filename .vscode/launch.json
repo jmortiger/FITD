@@ -12,7 +12,7 @@
 			// "args": ["-pak", "511"],
 			// "args": ["-pak", "-floor", "-mask", "-camera", "-sound"],
 			// "args": ["-pak", "511", "-floor", "511", "-mask", "511", "-camera", "511", "-sound", "511", "-itd", "511"],
-			"args": ["-floor", "511"],
+			"args": ["-floor", "511", "-sound", "511"],
 			// "args": ["-pak", "-floor", "-mask", "-camera", "-sound"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}/data", //"${fileDirname}",
