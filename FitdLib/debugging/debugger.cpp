@@ -303,13 +303,50 @@ void debugger_draw(void)
 	}
 #endif
 }
+#endif
+
+/// @brief Finds the index of the most-significant bit flag.
+/// @param flag The flag to find the index of.
+/// @return -1 if more than 1 bit is set
+int getBitFlagIndex(unsigned char flag) {
+	int iter = 0;
+	while (flag != 0)
+	{
+		flag >>= 1;
+		iter++;
+	}
+	return iter;
+	// if (flag <= 2) { return (int)flag; }
+	// if (flag % 2 == 1) return -1;
+	// int iter = 0;
+	// float val = flag;
+	// while (val > 1) {
+	// 	val /= 2;
+	// 	iter++;
+	// 	// if (val != (val = (int)val)) return -1;
+	// }
+	// if (val != 0) {
+	// 	return -1;
+	// } else {
+	// 	return iter;
+	// }
+}
+
+#define MAX_DEBUG_OUTPUT_INDENTS 10
+
+int section = 0;
+
+char indent[MAX_DEBUG_OUTPUT_INDENTS + 1] = "";
+
+debugCategoryEnum resultantCategory = DBO_NONE;
+debugCategoryEnum categoryStack[10];
 
 debugLevelEnum defaultLevels = (debugLevelEnum)(debugLevelEnum::DBO_L_ERROR | debugLevelEnum::DBO_L_WARN | debugLevelEnum::DBO_L_INFO);
-debugOutputConfig debugOutput;
+debugOutputConfig outputConfig;
 void parseDebugParam(int argc, char* argv[])
 {
-	printf("Count: %i\n", argc);
-	printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum::DBO_NONE));
+	// printf("Count: %i\n", argc);
+	// printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum::DBO_NONE));
 	debugCategoryEnum prior = DBO_NONE;
 	for (int i = 1; i < argc; i++) {
 		printf("argv[%i]: %s\n", i, argv[i]);
@@ -317,36 +354,42 @@ void parseDebugParam(int argc, char* argv[])
 		if (ptr[0] == '-') { ptr++; }
 		if (prior != DBO_NONE) {
 			if (ptr[0] >= '0' && ptr[0] <= '9') {
-				debugLevelEnum* relevantLevels = NULL;
+				/* debugLevelEnum* relevantLevels = NULL;
 				switch (prior) {
 					case debugCategoryEnum::DBO_PAK:
 					{
-						printf("debugCategoryEnum::DBO_PAK\n");
-						relevantLevels = (debugLevelEnum*)&(debugOutput.verbosity_pak);
+						// printf("debugCategoryEnum::DBO_PAK (flag index: %i)\n", getBitFlagIndex(prior));
+						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_pak);
 						break;
 					}
 					case debugCategoryEnum::DBO_FLOOR:
 					{
-						printf("debugCategoryEnum::DBO_FLOOR\n");
-						relevantLevels = (debugLevelEnum*)&(debugOutput.verbosity_floor);
+						// printf("debugCategoryEnum::DBO_FLOOR (flag index: %i)\n", getBitFlagIndex(prior));
+						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_floor);
 						break;
 					}
 					case debugCategoryEnum::DBO_MASK:
 					{
-						printf("debugCategoryEnum::DBO_MASK\n");
-						relevantLevels = (debugLevelEnum*)&(debugOutput.verbosity_mask);
+						// printf("debugCategoryEnum::DBO_MASK (flag index: %i)\n", getBitFlagIndex(prior));
+						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_mask);
 						break;
 					}
 					case debugCategoryEnum::DBO_CAMERA:
 					{
-						printf("debugCategoryEnum::DBO_CAMERA\n");
-						relevantLevels = (debugLevelEnum*)&(debugOutput.verbosity_camera);
+						// printf("debugCategoryEnum::DBO_CAMERA (flag index: %i)\n", getBitFlagIndex(prior));
+						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_camera);
 						break;
 					}
 					case debugCategoryEnum::DBO_SOUND:
 					{
-						printf("debugCategoryEnum::DBO_SOUND\n");
-						relevantLevels = (debugLevelEnum*)&(debugOutput.verbosity_sound);
+						// printf("debugCategoryEnum::DBO_SOUND (flag index: %i)\n", getBitFlagIndex(prior));
+						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_sound);
+						break;
+					}
+					case debugCategoryEnum::DBO_ITD:
+					{
+						// printf("debugCategoryEnum::DBO_ITD (flag index: %i)\n", getBitFlagIndex(prior));
+						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_itd);
 						break;
 					}
 					case DBO_NONE:
@@ -354,76 +397,152 @@ void parseDebugParam(int argc, char* argv[])
 						break;
 				}
 				if (relevantLevels != NULL) {
-					*relevantLevels = (debugLevelEnum)(0b00000000'00000000'00000000'00000000 | DBO_L_ALL & atoi(ptr));
-					printf("Value: %i\n", 0b00000000'00000000'00000000'00000000 | DBO_L_ALL & atoi(ptr));
+					*relevantLevels = (debugLevelEnum)(DBO_L_ALL & atoi(ptr));
+					printf("Value: %i\n", DBO_L_ALL & atoi(ptr));
+					continue;
+				} */
+				if (getBitFlagIndex(prior) != 0) {
+					// debugLevelEnum* relevantLevels = (debugLevelEnum*)(&outputConfig) + getBitFlagIndex(prior);
+					// *relevantLevels = (debugLevelEnum)(DBO_L_ALL & atoi(ptr));
+					((debugLevelEnum*)&outputConfig)[getBitFlagIndex(prior)] = (debugLevelEnum)(DBO_L_ALL & atoi(ptr));
+					printf("Value: %i\n", DBO_L_ALL & atoi(ptr));
 					continue;
 				}
 			}
 		}
 		if (0 == strcmp("pak", ptr) || 0 == strcmp("PAK", ptr)) {
 			prior = debugCategoryEnum::DBO_PAK;
-			debugOutput.verbosity_pak = defaultLevels;
+			outputConfig.verbosity_pak = defaultLevels;
 		} else if (0 == strcmp("floor", ptr) || 0 == strcmp("FLOOR", ptr)) {
 			prior = debugCategoryEnum::DBO_FLOOR;
-			debugOutput.verbosity_floor = defaultLevels;
+			outputConfig.verbosity_floor = defaultLevels;
 		} else if (0 == strcmp("mask", ptr) || 0 == strcmp("MASK", ptr)) {
 			prior = debugCategoryEnum::DBO_MASK;
-			debugOutput.verbosity_mask = defaultLevels;
+			outputConfig.verbosity_mask = defaultLevels;
 		} else if (0 == strcmp("camera", ptr) || 0 == strcmp("CAMERA", ptr)) {
 			prior = debugCategoryEnum::DBO_CAMERA;
-			debugOutput.verbosity_camera = defaultLevels;
+			outputConfig.verbosity_camera = defaultLevels;
 		} else if (0 == strcmp("sound", ptr) || 0 == strcmp("SOUND", ptr)) {
 			prior = debugCategoryEnum::DBO_SOUND;
-			debugOutput.verbosity_sound = defaultLevels;
-		} else {
-			prior = DBO_NONE;
-		}
+			outputConfig.verbosity_sound = defaultLevels;
+		} else if (0 == strcmp("itd", ptr) || 0 == strcmp("ITD", ptr)) {
+			prior = debugCategoryEnum::DBO_ITD;
+			outputConfig.verbosity_itd = defaultLevels;
+		} else { prior = DBO_NONE; }
 		printf("Selected: %hhu\n", prior);
-		printf("Levels: %hhu\n", ((debugLevelEnum*)&debugOutput)[prior * sizeof(debugCategoryEnum)]);
-		printf("Before: %hhu\n", debugOutput.debugOutputEnabled);
-		debugOutput.debugOutputEnabled = (debugCategoryEnum)(debugOutput.debugOutputEnabled | prior);
-		printf("After: %hhu\n", debugOutput.debugOutputEnabled);
+		// printf("Levels: %hhu\n", ((debugLevelEnum*)&outputConfig)[prior * sizeof(debugCategoryEnum)]);
+		// printf("Before: %hhu\n", outputConfig.debugOutputEnabled);
+		outputConfig.debugOutputEnabled = (debugCategoryEnum)(outputConfig.debugOutputEnabled | prior);
+		// printf("After: %hhu\n", outputConfig.debugOutputEnabled);
 	}
-	DebugAddCategory(debugCategoryEnum::DBO_PAK);
-	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "DBO_L_DEBUG");
-	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "DBO_L_ERROR");
-	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "DBO_L_INFO");
-	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "DBO_L_LOG");
-	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "DBO_L_NONE");
-	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "DBO_L_WARN");
+	/* printf("rc: %hhu, section: %i\n", (unsigned char)resultantCategory, section);
+	DebugAddCategory(debugCategoryEnum::DBO_FLOOR);
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Sample Output for DBO_L_ERROR");
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Sample Output for DBO_L_INFO");
+	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "Sample Output for DBO_L_LOG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "Sample Output for DBO_L_NONE");
+	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugRemoveCategory(debugCategoryEnum::DBO_FLOOR);
+	// printf("rc: %hhu, section: %i\n", (unsigned char)resultantCategory, section); */
+
+	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
+	DebugBeginSection(debugCategoryEnum::DBO_FLOOR);
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Sample Output for DBO_L_ERROR");
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Sample Output for DBO_L_INFO");
+	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "Sample Output for DBO_L_LOG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "Sample Output for DBO_L_NONE");
+	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugEndSection();
+	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
+
+	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
+	DebugBeginSection(debugCategoryEnum::DBO_FLOOR);
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugBeginSection(debugCategoryEnum::DBO_PAK);
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Sample Output for DBO_L_ERROR");
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Sample Output for DBO_L_INFO");
+	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "Sample Output for DBO_L_LOG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "Sample Output for DBO_L_NONE");
+	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugEndSection();
+	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
+	DebugEndSection();
+	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
+	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
 }
-char noneLabel[]					 = "NONE";									// 0b0000'0000
-char pakLabel[]						 = "PAK";									// 0b0000'0001
-char floorLabel[]					 = "FLOOR";									// 0b0000'0010
-char pakFloorLabel[]				 = "PAK & FLOOR";							// 0b0000'0011
-char maskLabel[]					 = "MASK";									// 0b0000'0100
-char pakMaskLabel[]					 = "PAK & MASK";							// 0b0000'0101
-char floorMaskLabel[]				 = "FLOOR & MASK";							// 0b0000'0110
-char pakFloorMaskLabel[]			 = "PAK & FLOOR & MASK";					// 0b0000'0111
-char cameraLabel[]					 = "CAMERA";								// 0b0000'1000
-char pakCameraLabel[]				 = "PAK & CAMERA";							// 0b0000'1001
-char floorCameraLabel[]				 = "FLOOR & CAMERA";						// 0b0000'1010
-char pakFloorCameraLabel[]			 = "PAK & FLOOR & CAMERA";					// 0b0000'1011
-char maskCameraLabel[]				 = "MASK & CAMERA";							// 0b0000'1100
-char pakMaskCameraLabel[]			 = "PAK & MASK & CAMERA";					// 0b0000'1101
-char floorMaskCameraLabel[]			 = "FLOOR & MASK & CAMERA";					// 0b0000'1110
-char pakFloorMaskCameraLabel[]		 = "PAK & FLOOR & MASK & CAMERA";			// 0b0000'1111
-char soundLabel[]					 = "SOUND";									// 0b0001'0000
-char soundPakLabel[]				 = "SOUND & PAK";							// 0b0001'0001
-char soundFloorLabel[]				 = "SOUND & FLOOR";							// 0b0001'0010
-char soundPakFloorLabel[]			 = "SOUND & PAK & FLOOR";					// 0b0001'0011
-char soundMaskLabel[]				 = "SOUND & MASK";							// 0b0001'0100
-char soundPakMaskLabel[]			 = "SOUND & PAK & MASK";					// 0b0001'0101
-char soundFloorMaskLabel[]			 = "SOUND & FLOOR & MASK";					// 0b0001'0110
-char soundPakFloorMaskLabel[]		 = "SOUND & PAK & FLOOR & MASK";			// 0b0001'0111
-char soundCameraLabel[]				 = "SOUND & CAMERA";						// 0b0001'1000
-char soundPakCameraLabel[]			 = "SOUND & PAK & CAMERA";					// 0b0001'1001
-char soundFloorCameraLabel[]		 = "SOUND & FLOOR & CAMERA";				// 0b0001'1010
-char soundPakFloorCameraLabel[]		 = "SOUND & PAK & FLOOR & CAMERA";			// 0b0001'1011
-char soundMaskCameraLabel[]			 = "SOUND & MASK & CAMERA";					// 0b0001'1100
-char soundPakMaskCameraLabel[]		 = "SOUND & PAK & MASK & CAMERA";			// 0b0001'1101
-char soundFloorMaskCameraLabel[]	 = "SOUND & FLOOR & MASK & CAMERA";			// 0b0001'1110
-char soundPakFloorMaskCameraLabel[]	 = "SOUND & PAK & FLOOR & MASK & CAMERA";	// 0b0001'1111
+char noneLabel[]						 = "NONE";										// 0b0000'0000
+char pakLabel[]							 = "PAK";										// 0b0000'0001
+char floorLabel[]						 = "FLOOR";										// 0b0000'0010
+char pakFloorLabel[]					 = "PAK & FLOOR";								// 0b0000'0011
+char maskLabel[]						 = "MASK";										// 0b0000'0100
+char pakMaskLabel[]						 = "PAK & MASK";								// 0b0000'0101
+char floorMaskLabel[]					 = "FLOOR & MASK";								// 0b0000'0110
+char pakFloorMaskLabel[]				 = "PAK & FLOOR & MASK";						// 0b0000'0111
+char cameraLabel[]						 = "CAMERA";									// 0b0000'1000
+char pakCameraLabel[]					 = "PAK & CAMERA";								// 0b0000'1001
+char floorCameraLabel[]					 = "FLOOR & CAMERA";							// 0b0000'1010
+char pakFloorCameraLabel[]				 = "PAK & FLOOR & CAMERA";						// 0b0000'1011
+char maskCameraLabel[]					 = "MASK & CAMERA";								// 0b0000'1100
+char pakMaskCameraLabel[]				 = "PAK & MASK & CAMERA";						// 0b0000'1101
+char floorMaskCameraLabel[]				 = "FLOOR & MASK & CAMERA";						// 0b0000'1110
+char pakFloorMaskCameraLabel[]			 = "PAK & FLOOR & MASK & CAMERA";				// 0b0000'1111
+char soundLabel[]						 = "SOUND";										// 0b0001'0000
+char soundPakLabel[]					 = "SOUND & PAK";								// 0b0001'0001
+char soundFloorLabel[]					 = "SOUND & FLOOR";								// 0b0001'0010
+char soundPakFloorLabel[]				 = "SOUND & PAK & FLOOR";						// 0b0001'0011
+char soundMaskLabel[]					 = "SOUND & MASK";								// 0b0001'0100
+char soundPakMaskLabel[]				 = "SOUND & PAK & MASK";						// 0b0001'0101
+char soundFloorMaskLabel[]				 = "SOUND & FLOOR & MASK";						// 0b0001'0110
+char soundPakFloorMaskLabel[]			 = "SOUND & PAK & FLOOR & MASK";				// 0b0001'0111
+char soundCameraLabel[]					 = "SOUND & CAMERA";							// 0b0001'1000
+char soundPakCameraLabel[]				 = "SOUND & PAK & CAMERA";						// 0b0001'1001
+char soundFloorCameraLabel[]			 = "SOUND & FLOOR & CAMERA";					// 0b0001'1010
+char soundPakFloorCameraLabel[]			 = "SOUND & PAK & FLOOR & CAMERA";				// 0b0001'1011
+char soundMaskCameraLabel[]				 = "SOUND & MASK & CAMERA";						// 0b0001'1100
+char soundPakMaskCameraLabel[]			 = "SOUND & PAK & MASK & CAMERA";				// 0b0001'1101
+char soundFloorMaskCameraLabel[]		 = "SOUND & FLOOR & MASK & CAMERA";				// 0b0001'1110
+char soundPakFloorMaskCameraLabel[]		 = "SOUND & PAK & FLOOR & MASK & CAMERA";		// 0b0001'1111
+char itdNoneLabel[]						 = "ITD & NONE";								// 0b0000'0000
+char itdPakLabel[]						 = "ITD & PAK";									// 0b0000'0001
+char itdFloorLabel[]					 = "ITD & FLOOR";								// 0b0000'0010
+char itdPakFloorLabel[]					 = "ITD & PAK & FLOOR";							// 0b0000'0011
+char itdMaskLabel[]						 = "ITD & MASK";								// 0b0000'0100
+char itdPakMaskLabel[]					 = "ITD & PAK & MASK";							// 0b0000'0101
+char itdFloorMaskLabel[]				 = "ITD & FLOOR & MASK";						// 0b0000'0110
+char itdPakFloorMaskLabel[]				 = "ITD & PAK & FLOOR & MASK";					// 0b0000'0111
+char itdCameraLabel[]					 = "ITD & CAMERA";								// 0b0000'1000
+char itdPakCameraLabel[]				 = "ITD & PAK & CAMERA";						// 0b0000'1001
+char itdFloorCameraLabel[]				 = "ITD & FLOOR & CAMERA";						// 0b0000'1010
+char itdPakFloorCameraLabel[]			 = "ITD & PAK & FLOOR & CAMERA";				// 0b0000'1011
+char itdMaskCameraLabel[]				 = "ITD & MASK & CAMERA";						// 0b0000'1100
+char itdPakMaskCameraLabel[]			 = "ITD & PAK & MASK & CAMERA";					// 0b0000'1101
+char itdFloorMaskCameraLabel[]			 = "ITD & FLOOR & MASK & CAMERA";				// 0b0000'1110
+char itdPakFloorMaskCameraLabel[]		 = "ITD & PAK & FLOOR & MASK & CAMERA";			// 0b0000'1111
+char itdSoundLabel[]					 = "ITD & SOUND";								// 0b0001'0000
+char itdSoundPakLabel[]					 = "ITD & SOUND & PAK";							// 0b0001'0001
+char itdSoundFloorLabel[]				 = "ITD & SOUND & FLOOR";						// 0b0001'0010
+char itdSoundPakFloorLabel[]			 = "ITD & SOUND & PAK & FLOOR";					// 0b0001'0011
+char itdSoundMaskLabel[]				 = "ITD & SOUND & MASK";						// 0b0001'0100
+char itdSoundPakMaskLabel[]				 = "ITD & SOUND & PAK & MASK";					// 0b0001'0101
+char itdSoundFloorMaskLabel[]			 = "ITD & SOUND & FLOOR & MASK";				// 0b0001'0110
+char itdSoundPakFloorMaskLabel[]		 = "ITD & SOUND & PAK & FLOOR & MASK";			// 0b0001'0111
+char itdSoundCameraLabel[]				 = "ITD & SOUND & CAMERA";						// 0b0001'1000
+char itdSoundPakCameraLabel[]			 = "ITD & SOUND & PAK & CAMERA";				// 0b0001'1001
+char itdSoundFloorCameraLabel[]			 = "ITD & SOUND & FLOOR & CAMERA";				// 0b0001'1010
+char itdSoundPakFloorCameraLabel[]		 = "ITD & SOUND & PAK & FLOOR & CAMERA";		// 0b0001'1011
+char itdSoundMaskCameraLabel[]			 = "ITD & SOUND & MASK & CAMERA";				// 0b0001'1100
+char itdSoundPakMaskCameraLabel[]		 = "ITD & SOUND & PAK & MASK & CAMERA";			// 0b0001'1101
+char itdSoundFloorMaskCameraLabel[]		 = "ITD & SOUND & FLOOR & MASK & CAMERA";		// 0b0001'1110
+char itdSoundPakFloorMaskCameraLabel[]	 = "ITD & SOUND & PAK & FLOOR & MASK & CAMERA";	// 0b0001'1111
 char* debugCategoryLabels[] = {
 	noneLabel,
 	pakLabel,
@@ -457,6 +576,38 @@ char* debugCategoryLabels[] = {
 	soundPakMaskCameraLabel,
 	soundFloorMaskCameraLabel,
 	soundPakFloorMaskCameraLabel,
+	itdNoneLabel,
+	itdPakLabel,
+	itdFloorLabel,
+	itdPakFloorLabel,
+	itdMaskLabel,
+	itdPakMaskLabel,
+	itdFloorMaskLabel,
+	itdPakFloorMaskLabel,
+	itdCameraLabel,
+	itdPakCameraLabel,
+	itdFloorCameraLabel,
+	itdPakFloorCameraLabel,
+	itdMaskCameraLabel,
+	itdPakMaskCameraLabel,
+	itdFloorMaskCameraLabel,
+	itdPakFloorMaskCameraLabel,
+	itdSoundLabel,
+	itdSoundPakLabel,
+	itdSoundFloorLabel,
+	itdSoundPakFloorLabel,
+	itdSoundMaskLabel,
+	itdSoundPakMaskLabel,
+	itdSoundFloorMaskLabel,
+	itdSoundPakFloorMaskLabel,
+	itdSoundCameraLabel,
+	itdSoundPakCameraLabel,
+	itdSoundFloorCameraLabel,
+	itdSoundPakFloorCameraLabel,
+	itdSoundMaskCameraLabel,
+	itdSoundPakMaskCameraLabel,
+	itdSoundFloorMaskCameraLabel,
+	itdSoundPakFloorMaskCameraLabel,
 };
 // Foreground: 3x
 // Background: 4x
@@ -469,11 +620,11 @@ char* debugCategoryLabels[] = {
 // 6: Cyan
 // 7: White
 // char noneLabel[]	= "NONE";	// 0b0000'0000
-char debugLabel[]	= "\033[7;32mDEBUG\033[0m";	// 0b0000'0001
-char logLabel[]		= "\033[7;36mLOG\033[0m";	// 0b0000'0010
-char infoLabel[]	= "\033[7;34mINFO\033[0m";	// 0b0000'0100
-char warnLabel[]	= "\033[7;33mWARN\033[0m";	// 0b0000'1000
-char errorLabel[]	= "\033[7;31mERROR\033[0m";	// 0b0001'0000
+char debugLabel[]	= FormatDleLabel(DLE_C_DEBUG, DEBUG);	// 0b0000'0001
+char logLabel[]		= FormatDleLabel(DLE_C_LOG, LOG);	// 0b0000'0010
+char infoLabel[]	= FormatDleLabel(DLE_C_INFO, INFO);	// 0b0000'0100
+char warnLabel[]	= FormatDleLabel(DLE_C_WARN, WARN);	// 0b0000'1000
+char errorLabel[]	= FormatDleLabel(DLE_C_ERROR, ERROR);	// 0b0001'0000
 char* debugLevelLabels[] = {
 	noneLabel,	// 0b0000'0000
 	debugLabel,	// 0b0000'0001
@@ -512,32 +663,29 @@ char* debugLevelLabels[] = {
 /// @brief 
 /// @param category 
 /// @param level 
-/// @return true if 1 or more enabled categories are included, false otherwise.
-/// @todo Support `level`
+/// @return true if 1 or more enabled categories are included & 1 or more of the included categories have the debug level enabled, false otherwise.
 bool _shouldPrint(debugCategoryEnum category, debugLevelEnum level = (debugLevelEnum)DBO_L_ALL)
 {
-	if (debugOutput.debugOutputEnabled & category &&
-		((debugLevelEnum*)&debugOutput)[(category & debugCategoryEnum::DBO_PAK) * sizeof(debugCategoryEnum)] & level ||
-		((debugLevelEnum*)&debugOutput)[(category & debugCategoryEnum::DBO_FLOOR) * sizeof(debugCategoryEnum)] & level ||
-		((debugLevelEnum*)&debugOutput)[(category & debugCategoryEnum::DBO_MASK) * sizeof(debugCategoryEnum)] & level ||
-		((debugLevelEnum*)&debugOutput)[(category & debugCategoryEnum::DBO_CAMERA) * sizeof(debugCategoryEnum)] & level ||
-		((debugLevelEnum*)&debugOutput)[(category & debugCategoryEnum::DBO_SOUND) * sizeof(debugCategoryEnum)] & level
-		) {
-		return true;
-	} else {
-		return false;
+	// if (outputConfig.debugOutputEnabled & category &&
+	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_PAK) * sizeof(debugCategoryEnum)] & level ||
+	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_FLOOR) * sizeof(debugCategoryEnum)] & level ||
+	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_MASK) * sizeof(debugCategoryEnum)] & level ||
+	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_CAMERA) * sizeof(debugCategoryEnum)] & level ||
+	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_SOUND) * sizeof(debugCategoryEnum)] & level
+	// 	) {
+	// 	return true;
+	if (outputConfig.debugOutputEnabled & category) {
+		unsigned int flag = DBO_NONE + 1;
+		while (flag < DBO_ALL) {
+			if (category & flag && 
+				((debugLevelEnum*)&outputConfig)[getBitFlagIndex(flag) * sizeof(debugCategoryEnum)]) {
+				return true;
+			} else { flag <<= 1; }
+		}
 	}
+	return false;
 }
-
-#define MAX_DEBUG_OUTPUT_INDENTS 10
-
-int section = 0;
-
-char indent[MAX_DEBUG_OUTPUT_INDENTS + 1] = "";
-
-debugCategoryEnum resultantCategory = DBO_NONE;
-debugCategoryEnum categoryStack[10] = {};
-
+// TODO: Update sectionBeganStack?
 debugCategoryEnum DebugAddCategory(debugCategoryEnum category)
 {
 	category = (debugCategoryEnum)(category & DBO_ALL); // Mask the unused bytes
@@ -550,16 +698,17 @@ debugCategoryEnum DebugAddCategory(debugCategoryEnum category)
 	resultantCategory = (debugCategoryEnum)(resultantCategory | category);
 	return category;
 }
-
+// TODO: Update sectionBeganStack?
 void DebugRemoveCategory(debugCategoryEnum category)
 {
 	category = (debugCategoryEnum)(category & DBO_ALL); // Mask the unused bytes
 	categoryStack[section - 1] = (debugCategoryEnum)(categoryStack[section - 1] ^ category);
 	// TODO: Do this correctly by iterating through stack and &-ing together; currently will wipe repeated flags.
+	// resultantCategory = (debugCategoryEnum)(resultantCategory ^ category);
 	resultantCategory = (debugCategoryEnum)(resultantCategory ^ category);
 }
 bool sectionBeganStack[50] = {};
-int sectionBeganIdx = 0;
+int sectionBeganIdx = -1;
 bool DebugBeginSection(debugCategoryEnum category)
 {
 	if (sectionBeganIdx == 49) return false;
@@ -579,8 +728,10 @@ bool DebugBeginSection(debugCategoryEnum category)
 
 bool DebugEndSection()
 {
-	if (sectionBeganIdx == 0) return false;
+	// if (sectionBeganIdx == 0) return false;
+	if (sectionBeganIdx == -1) return false;
 	bool v = sectionBeganStack[sectionBeganIdx];
+	sectionBeganStack[sectionBeganIdx] = false; // TODO: Unnecessary?
 	sectionBeganIdx--;
 	if (section > 0 && (v || _shouldPrint(resultantCategory))) {
 		// 1. Decrement section *count*
@@ -590,7 +741,11 @@ bool DebugEndSection()
 		// 3. Remove category
 		// 3A. Remove category from `resultantCategory`
 		// TODO: Do this correctly by iterating through stack and &-ing together; currently will wipe repeated flags.
-		resultantCategory = (debugCategoryEnum)(resultantCategory ^ categoryStack[section]);
+		// resultantCategory = (debugCategoryEnum)(resultantCategory ^ categoryStack[section]);
+		resultantCategory = DBO_NONE;
+		for (int i = 0; i < section; i++) {
+			resultantCategory = (debugCategoryEnum)(resultantCategory | categoryStack[i]);
+		}
 		// 3B. Remove category from `categoryStack`
 		categoryStack[section] = DBO_NONE;
 		return true;
@@ -612,4 +767,69 @@ void DebugPrintfLn(debugLevelEnum level, const char* format, ...)
 		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
 	}
 }
-#endif
+char buffer[256];
+void DebugBPrintf(debugLevelEnum level, const char* format, ...)
+{
+	if (_shouldPrint(resultantCategory, level)) {
+		va_list argList;
+		va_start(argList, format);
+		
+		if (buffer[0] != '\000') {
+			vsprintf(buffer, format, argList);
+
+			va_end(argList);
+			return;
+		}
+		// char buff[256];
+		// vsprintf(buff, format, argList);
+		vsprintf(buffer, format, argList);
+
+		va_end(argList);
+
+		// printf("[%s]\t[%s]: %s%s", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
+		printf("[%s]\t[%s]: %s%s", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buffer);
+	}
+}
+void DebugBFlushLn()
+{
+	if (buffer[0] != '\000') {
+		printf("%s\n", buffer);
+		buffer[0] = '\000';
+	}
+}
+#define ___DEBUG_B_PRINT_RAW {\
+	if (_shouldPrint(resultantCategory, level)) {\
+		char buff[256];\
+		sprintf(buff, "%s (Raw: %s)", typeSpecifier, typeSpecifier);\
+		DebugBPrintf(level, buff, result, raw);\
+	}\
+}
+// void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, ...)// T result, T raw)
+// template <typename T1, typename T2, typename T> void DebugBPrintRaw(T1 level, T2 typeSpecifier, T result, T raw)
+template <typename T> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw) ___DEBUG_B_PRINT_RAW
+template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, s16 result, s16 raw) ___DEBUG_B_PRINT_RAW
+template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, u16 result, u16 raw) ___DEBUG_B_PRINT_RAW
+template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, u8 result, u8 raw) ___DEBUG_B_PRINT_RAW
+template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, s8 result, s8 raw) ___DEBUG_B_PRINT_RAW
+template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, s32 result, s32 raw) ___DEBUG_B_PRINT_RAW
+template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, u32 result, u32 raw) ___DEBUG_B_PRINT_RAW
+// template <debugLevelEnum, const char*, typename T> void DebugPrintfLnWithRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw, const char* format, ...)
+// {
+// 	if (_shouldPrint(resultantCategory, level)) {
+// 		va_list argList;
+// 		va_start(argList, format);
+
+// 		char buff[256];
+// 		vsprintf(buff, format, argList);
+
+// 		va_end(argList);
+
+// 		// sprintf(buff, " ");
+// 		sprintf(buff, typeSpecifier, result);
+// 		sprintf(buff, " (Raw: ");
+// 		sprintf(buff, typeSpecifier, raw);
+// 		sprintf(buff, ")");
+
+// 		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
+// 	}
+// }

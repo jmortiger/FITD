@@ -23,7 +23,7 @@ char* loadFromItd(const char* name)
 
 	fHandle = fopen(filePath, "rb");
 	if (!fHandle) {
-		fatalError(0, name);
+		fatalError(0, name); // TODO: Improve error message
 		return NULL;
 	}
 	fseek(fHandle, 0, SEEK_END);
@@ -32,7 +32,7 @@ char* loadFromItd(const char* name)
 	ptr = (char*)malloc(fileSize);
 
 	if (!ptr) {
-		fatalError(1, name);
+		fatalError(1, name); // TODO: Improve error message
 		return NULL;
 	}
 	fread(ptr, fileSize, 1, fHandle);
@@ -40,12 +40,16 @@ char* loadFromItd(const char* name)
 	return(ptr);
 }
 
+/// @brief Simply a wrapper for `loadPak` that ensures the memory is allocated.
+/// @param name 
+/// @param index 
+/// @return 
 char* CheckLoadMallocPak(const char* name, int index)
 {
 	char* ptr;
 	ptr = loadPak(name, index);
 	if (!ptr) {
-		fatalError(0, name);
+		fatalError(0, name); // TODO: Improve error message
 	}
 	return ptr;
 }

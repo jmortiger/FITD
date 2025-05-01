@@ -396,7 +396,7 @@ char* HQR_Get(hqrEntryStruct* hqrPtr, int index)
 			return NULL;
 
 		if (size >= hqrPtr->maxFreeData) {
-			fatalError(1, hqrPtr->string);
+			fatalError(1, hqrPtr->string); // TODO: Improve error message
 		}
 
 		time = timer;

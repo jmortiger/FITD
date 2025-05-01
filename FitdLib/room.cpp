@@ -22,6 +22,12 @@ roomDefStruct* getRoomData(int roomNumber)
 	return (roomDefStruct*)(g_currentFloorRoomRawData + READ_LE_U32(g_currentFloorRoomRawData + roomNumber * 4));
 }
 
+/**
+ * @brief Gets the number of rooms on the current floor.
+ * @return The number of rooms on floor `g_currentFloor` for AITD3 & Time Gate; the number of rooms in `g_currentFloorRoomRawData` for earlier games.
+ * 
+ * @note Uses `PAK_getNumFiles` for AITD3 & Time Gate; Uses `g_currentFloorRoomRawData` for earlier games.
+ **/
 int getNumberOfRoom()
 {
 	int i;

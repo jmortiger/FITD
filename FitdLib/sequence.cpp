@@ -157,7 +157,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 			}
 
 			if (!loadPakTo(buffer, currentFrameId, logicalScreen)) {
-				fatalError(0, buffer);
+				fatalError(0, buffer); // TODO: Improve error message
 			}
 
 			// If it's the first frame...

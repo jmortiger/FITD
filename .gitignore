@@ -7,6 +7,7 @@ build/vs2019
 build/vs2022
 # VS Code
 build/.cmake/**
+build/_deps/**
 build/CMakeFiles/**
 build/Fitd/**
 build/FitdLib/**

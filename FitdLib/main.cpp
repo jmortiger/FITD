@@ -370,12 +370,12 @@ void OpenProgram(void)
 
 	aux = (char*)malloc(65068);
 	if (!aux) {
-		fatalError(1, "Aux");
+		fatalError(1, "Aux"); // TODO: Improve error message
 	}
 
 	aux2 = (char*)malloc(65068);
 	if (!aux2) {
-		fatalError(1, "Aux2");
+		fatalError(1, "Aux2"); // TODO: Improve error message
 	}
 
 	InitCopyBox(aux2, logicalScreen);
@@ -455,7 +455,7 @@ void OpenProgram(void)
 	{
 		fHandle = Open("DEFINES.ITD", "rb");
 		if (!fHandle) {
-			fatalError(0, "DEFINES.ITD");
+			fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
 		}
 		for (int i = 0; i < CVars.size(); i++) {
 			s16 cvarValue = 0;
@@ -626,7 +626,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 	textPtr = (u8*)HQ_PtrMalloc(HQ_Memory, textIndexMalloc);
 
 	if (!loadPakTo(languageNameString, index, (char*)textPtr)) {
-		fatalError(1, languageNameString);
+		fatalError(1, languageNameString); // TODO: Improve error message
 	}
 
 	ptrpage.fill(nullptr);
@@ -960,7 +960,7 @@ void initEngine(void)
 	strcat(objectPath, "OBJETS.ITD");
 	fHandle = fopen(objectPath, "rb");
 	if (!fHandle)
-		fatalError(0, "OBJETS.ITD");
+		fatalError(0, "OBJETS.ITD"); // TODO: Improve error message
 
 	fseek(fHandle, 0, SEEK_END);
 	objectDataSize = ftell(fHandle);
@@ -1079,7 +1079,7 @@ void initEngine(void)
 
 	fHandle = fopen(definestPath, "rb");
 	if (!fHandle) {
-		fatalError(0, "DEFINES.ITD");
+		fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
 	}
 
 	///////////////////////////////////////////////
@@ -1211,7 +1211,7 @@ void loadCamera(int cameraIdx)
 	}
 
 	if (!loadPakTo(name, cameraIdx, aux)) {
-		fatalError(0, name);
+		fatalError(0, name); // TODO: Improve error message
 	}
 
 	if (g_gameId == AITD3) {
