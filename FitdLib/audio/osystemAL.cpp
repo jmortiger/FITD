@@ -137,15 +137,53 @@ int osystem_playTrack(int trackId)
 	sprintf(filename, "%02d.wav", trackId);
 
 	FILE* fHandle = fopen(filename, "rb");
+	SoLoud::WAVSTREAM_FILETYPE filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_WAV;
 	if (fHandle == NULL) {
-		DebugPrintfLn(DBO_L_WARN, "File %s failed to open; exiting early w/ a value of 0", filename);
-		DebugEndSection();
-		return 0;
+		// DebugPrintfLn(DBO_L_WARN, "File %s failed to open; exiting early w/ a value of 0", filename);
+		// DebugEndSection();
+		// return 0;
+		DebugPrintfLn(DBO_L_WARN, "File %s failed to open; trying .mp3", filename);
+		filename[0] = '\000';
+		sprintf(filename, "%02d.mp3", trackId);
+
+		FILE* fHandle = fopen(filename, "rb");
+		filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_MP3;
+		if (fHandle == NULL) {
+			DebugPrintfLn(DBO_L_WARN, "File %s failed to open; trying .ogg", filename);
+			filename[0] = '\000';
+			sprintf(filename, "%02d.ogg", trackId);
+	
+			FILE* fHandle = fopen(filename, "rb");
+			filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_OGG;
+			if (fHandle == NULL) {
+				DebugPrintfLn(DBO_L_WARN, "File %s failed to open; trying .flac", filename);
+				filename[0] = '\000';
+				sprintf(filename, "%02d.flac", trackId);
+		
+				FILE* fHandle = fopen(filename, "rb");
+				filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_FLAC;
+				if (fHandle == NULL) {
+					DebugPrintfLn(DBO_L_WARN, "File %s failed to open; exiting early w/ a value of 0", filename);
+					DebugEndSection();
+					return 0;
+				}
+			}
+		}
 	}
 
 	pFile = new SoLoud::DiskFile(fHandle);
 	pWavStream = new SoLoud::WavStream();
-	pWavStream->loadFile(pFile);
+	// pWavStream->loadFile(pFile);
+	pWavStream->parse(pFile);
+	/* switch (filetype)
+	{
+	case SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_WAV:
+		pWavStream->loadwav(pFile);
+		break;
+	
+	default:
+		break;
+	} */
 	gSoloud->play(*pWavStream);
 
 	DebugEndSection();
