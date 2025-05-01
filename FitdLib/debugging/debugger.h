@@ -177,11 +177,13 @@ void DebugRemoveCategory(debugCategoryEnum category);
 bool DebugBeginSection(debugCategoryEnum category); // bool DebugBeginSection(debugCategoryEnum category, debugLevelEnum level = DBO_L_NONE, const char* format = NULL, ...);
 bool DebugEndSection();
 void DebugPrintfLn(debugLevelEnum level, const char* format, ...);
-// template <typename T> void DebugPrintfLnWithRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw, const char* format, ...);
-// template <debugLevelEnum, const char*, typename T> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw);
-// template <typename T1 = debugLevelEnum, typename T2 = const char*, typename T> void DebugBPrintRaw(T1 level, T2 typeSpecifier, T result, T raw);
+/// @brief For usage w/ `PF_LE_S8` & such
+/// @tparam T 
+/// @param level 
+/// @param typeSpecifier 
+/// @param result 
+/// @param raw 
 template <typename T> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw);
-
 void DebugBPrintf(debugLevelEnum level, const char* format, ...);
 void DebugBFlushLn();
 #endif

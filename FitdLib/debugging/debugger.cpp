@@ -780,13 +780,10 @@ void DebugBPrintf(debugLevelEnum level, const char* format, ...)
 			va_end(argList);
 			return;
 		}
-		// char buff[256];
-		// vsprintf(buff, format, argList);
 		vsprintf(buffer, format, argList);
 
 		va_end(argList);
 
-		// printf("[%s]\t[%s]: %s%s", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
 		printf("[%s]\t[%s]: %s%s", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buffer);
 	}
 }
@@ -797,6 +794,7 @@ void DebugBFlushLn()
 		buffer[0] = '\000';
 	}
 }
+#if 1 // DebugBPrintRaw definition
 #define ___DEBUG_B_PRINT_RAW {\
 	if (_shouldPrint(resultantCategory, level)) {\
 		char buff[256];\
@@ -804,32 +802,16 @@ void DebugBFlushLn()
 		DebugBPrintf(level, buff, result, raw);\
 	}\
 }
-// void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, ...)// T result, T raw)
-// template <typename T1, typename T2, typename T> void DebugBPrintRaw(T1 level, T2 typeSpecifier, T result, T raw)
+#define ____DEBUG_B_PRINT_RAW__SIGNATURE(T, trailing) template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw) trailing
+#define ___DEBUG_B_PRINT_RAW__SIGNATURE(T) ____DEBUG_B_PRINT_RAW__SIGNATURE(T, ___DEBUG_B_PRINT_RAW)
 template <typename T> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw) ___DEBUG_B_PRINT_RAW
-template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, s16 result, s16 raw) ___DEBUG_B_PRINT_RAW
-template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, u16 result, u16 raw) ___DEBUG_B_PRINT_RAW
-template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, u8 result, u8 raw) ___DEBUG_B_PRINT_RAW
-template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, s8 result, s8 raw) ___DEBUG_B_PRINT_RAW
-template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, s32 result, s32 raw) ___DEBUG_B_PRINT_RAW
-template <> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, u32 result, u32 raw) ___DEBUG_B_PRINT_RAW
-// template <debugLevelEnum, const char*, typename T> void DebugPrintfLnWithRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw, const char* format, ...)
-// {
-// 	if (_shouldPrint(resultantCategory, level)) {
-// 		va_list argList;
-// 		va_start(argList, format);
-
-// 		char buff[256];
-// 		vsprintf(buff, format, argList);
-
-// 		va_end(argList);
-
-// 		// sprintf(buff, " ");
-// 		sprintf(buff, typeSpecifier, result);
-// 		sprintf(buff, " (Raw: ");
-// 		sprintf(buff, typeSpecifier, raw);
-// 		sprintf(buff, ")");
-
-// 		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
-// 	}
-// }
+___DEBUG_B_PRINT_RAW__SIGNATURE(s8)
+___DEBUG_B_PRINT_RAW__SIGNATURE(u8)
+___DEBUG_B_PRINT_RAW__SIGNATURE(s16)
+___DEBUG_B_PRINT_RAW__SIGNATURE(u16)
+___DEBUG_B_PRINT_RAW__SIGNATURE(s32)
+___DEBUG_B_PRINT_RAW__SIGNATURE(u32)
+#undef ___DEBUG_B_PRINT_RAW
+#undef ___DEBUG_B_PRINT_RAW__SIGNATURE
+#undef ____DEBUG_B_PRINT_RAW__SIGNATURE
+#endif
