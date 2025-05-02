@@ -62,7 +62,7 @@ enum enumLifeMacro
     LM_FOUND_BODY,
     LM_SET_ALPHA,
     LM_STOP_BETA,
-    LM_DO_MAX_ZV,
+    LM_DO_MAX_ZV, // Adjusts the bbox length and width so they're both as big as whichever one is bigger divided by two, creating a cuboid with a square horizontal cross-section. Leaves the height unaffected. 
     LM_PUT,
     LM_C_VAR,
     LM_DO_NORMAL_ZV,

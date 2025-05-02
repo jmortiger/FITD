@@ -1,7 +1,7 @@
 #include "common.h"
 #include "math.h"
 
-#define	TL_INIT_COOR		0
+#define	TL_INIT_COOR	0
 #define	TL_GOTO			1
 #define	TL_END			2
 #define	TL_REPEAT		3
@@ -10,14 +10,14 @@
 #define	TL_RUN			6
 #define	TL_STOP			7
 #define	TL_BACK			8
-#define	TL_SET_ANGLE		9
+#define	TL_SET_ANGLE	9
 #define	TL_COL_OFF		10
 #define	TL_COL_ON		11
 #define	TL_SET_DIST		12
 #define	TL_DEC_OFF		13
 #define	TL_DEC_ON		14
 #define	TL_GOTO_3D		15
-#define	TL_MEMO_COOR		16
+#define	TL_MEMO_COOR	16
 #define	TL_GOTO_3DX		17
 #define	TL_GOTO_3DZ		18
 #define	TL_ANGLE		19
@@ -147,6 +147,7 @@ char* getRoomLink(unsigned int room1, unsigned int room2)
 	return bestZone;
 }
 
+/// @brief AITD1 process track from life script
 void processTrack(void)
 {
 	switch (currentProcessedActorPtr->trackMode) {
@@ -164,8 +165,8 @@ void processTrack(void)
 					}
 				}
 
-				/*        if(currentProcessedActorPtr->speed>0 && currentProcessedActorPtr->speed<4)
-				currentProcessedActorPtr->speed = 5; */
+				// if(currentProcessedActorPtr->speed>0 && currentProcessedActorPtr->speed<4)
+				// 	currentProcessedActorPtr->speed = 5;
 
 
 				lastTimeForward = timer;
@@ -229,7 +230,6 @@ void processTrack(void)
 				}
 
 				currentProcessedActorPtr->speed = 4;
-
 			}
 			break;
 		}
@@ -243,7 +243,7 @@ void processTrack(void)
 			trackMacro = *(s16*)trackPtr;
 			trackPtr += 2;
 
-			//printf("Track macro %X\n",trackMacro);
+			// printf("Track macro %X\n",trackMacro);
 
 			switch (trackMacro) {
 				case TL_INIT_COOR: // warp
@@ -654,6 +654,7 @@ void processTrack(void)
 	currentProcessedActorPtr->beta &= 0x3FF;
 }
 
+/// @brief AITD2 & later process track from life script
 void processTrack2(void)
 {
 	switch (currentProcessedActorPtr->trackMode) {

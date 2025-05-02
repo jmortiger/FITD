@@ -343,10 +343,13 @@ debugCategoryEnum categoryStack[10];
 
 debugLevelEnum defaultLevels = (debugLevelEnum)(debugLevelEnum::DBO_L_ERROR | debugLevelEnum::DBO_L_WARN | debugLevelEnum::DBO_L_INFO);
 debugOutputConfig outputConfig;
+// #define __DEBUG_parseDebugParam__
 void parseDebugParam(int argc, char* argv[])
 {
-	// printf("Count: %i\n", argc);
-	// printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum::DBO_NONE));
+#ifdef __DEBUG_parseDebugParam__
+	printf("Count: %i\n", argc);
+	printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum)); // printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum::DBO_NONE));
+#endif
 	debugCategoryEnum prior = DBO_NONE;
 	for (int i = 1; i < argc; i++) {
 		printf("argv[%i]: %s\n", i, argv[i]);
@@ -354,56 +357,7 @@ void parseDebugParam(int argc, char* argv[])
 		if (ptr[0] == '-') { ptr++; }
 		if (prior != DBO_NONE) {
 			if (ptr[0] >= '0' && ptr[0] <= '9') {
-				/* debugLevelEnum* relevantLevels = NULL;
-				switch (prior) {
-					case debugCategoryEnum::DBO_PAK:
-					{
-						// printf("debugCategoryEnum::DBO_PAK (flag index: %i)\n", getBitFlagIndex(prior));
-						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_pak);
-						break;
-					}
-					case debugCategoryEnum::DBO_FLOOR:
-					{
-						// printf("debugCategoryEnum::DBO_FLOOR (flag index: %i)\n", getBitFlagIndex(prior));
-						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_floor);
-						break;
-					}
-					case debugCategoryEnum::DBO_MASK:
-					{
-						// printf("debugCategoryEnum::DBO_MASK (flag index: %i)\n", getBitFlagIndex(prior));
-						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_mask);
-						break;
-					}
-					case debugCategoryEnum::DBO_CAMERA:
-					{
-						// printf("debugCategoryEnum::DBO_CAMERA (flag index: %i)\n", getBitFlagIndex(prior));
-						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_camera);
-						break;
-					}
-					case debugCategoryEnum::DBO_SOUND:
-					{
-						// printf("debugCategoryEnum::DBO_SOUND (flag index: %i)\n", getBitFlagIndex(prior));
-						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_sound);
-						break;
-					}
-					case debugCategoryEnum::DBO_ITD:
-					{
-						// printf("debugCategoryEnum::DBO_ITD (flag index: %i)\n", getBitFlagIndex(prior));
-						relevantLevels = (debugLevelEnum*)&(outputConfig.verbosity_itd);
-						break;
-					}
-					case DBO_NONE:
-					default:
-						break;
-				}
-				if (relevantLevels != NULL) {
-					*relevantLevels = (debugLevelEnum)(DBO_L_ALL & atoi(ptr));
-					printf("Value: %i\n", DBO_L_ALL & atoi(ptr));
-					continue;
-				} */
 				if (getBitFlagIndex(prior) != 0) {
-					// debugLevelEnum* relevantLevels = (debugLevelEnum*)(&outputConfig) + getBitFlagIndex(prior);
-					// *relevantLevels = (debugLevelEnum)(DBO_L_ALL & atoi(ptr));
 					((debugLevelEnum*)&outputConfig)[getBitFlagIndex(prior)] = (debugLevelEnum)(DBO_L_ALL & atoi(ptr));
 					printf("Value: %i\n", DBO_L_ALL & atoi(ptr));
 					continue;
@@ -428,26 +382,21 @@ void parseDebugParam(int argc, char* argv[])
 		} else if (0 == strcmp("itd", ptr) || 0 == strcmp("ITD", ptr)) {
 			prior = debugCategoryEnum::DBO_ITD;
 			outputConfig.verbosity_itd = defaultLevels;
+		} else if (0 == strcmp("life", ptr) || 0 == strcmp("LIFE", ptr)) {
+			prior = debugCategoryEnum::DBO_LIFE;
+			outputConfig.verbosity_life = defaultLevels;
 		} else { prior = DBO_NONE; }
+#ifdef __DEBUG_parseDebugParam__
 		printf("Selected: %hhu\n", prior);
 		// printf("Levels: %hhu\n", ((debugLevelEnum*)&outputConfig)[prior * sizeof(debugCategoryEnum)]);
 		// printf("Before: %hhu\n", outputConfig.debugOutputEnabled);
+#endif
 		outputConfig.debugOutputEnabled = (debugCategoryEnum)(outputConfig.debugOutputEnabled | prior);
+#ifdef __DEBUG_parseDebugParam__
 		// printf("After: %hhu\n", outputConfig.debugOutputEnabled);
+#endif
 	}
-	/* printf("rc: %hhu, section: %i\n", (unsigned char)resultantCategory, section);
-	DebugAddCategory(debugCategoryEnum::DBO_FLOOR);
-	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
-	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
-	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Sample Output for DBO_L_ERROR");
-	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Sample Output for DBO_L_INFO");
-	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "Sample Output for DBO_L_LOG");
-	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "Sample Output for DBO_L_NONE");
-	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
-	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
-	DebugRemoveCategory(debugCategoryEnum::DBO_FLOOR);
-	// printf("rc: %hhu, section: %i\n", (unsigned char)resultantCategory, section); */
-
+#ifdef __DEBUG_parseDebugParam__
 	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
 	DebugBeginSection(debugCategoryEnum::DBO_FLOOR);
 	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
@@ -464,6 +413,12 @@ void parseDebugParam(int argc, char* argv[])
 	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
 	DebugBeginSection(debugCategoryEnum::DBO_FLOOR);
 	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Sample Output for DBO_L_ERROR");
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Sample Output for DBO_L_INFO");
+	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "Sample Output for DBO_L_LOG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "Sample Output for DBO_L_NONE");
+	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
 	DebugBeginSection(debugCategoryEnum::DBO_PAK);
 	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
 	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
@@ -475,74 +430,147 @@ void parseDebugParam(int argc, char* argv[])
 	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section - 1]);
 	DebugEndSection();
 	printf("rc: %hhu, section: %i, categoryStack[section - 1]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
+	DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Sample Output for DBO_L_DEBUG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Sample Output for DBO_L_ERROR");
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Sample Output for DBO_L_INFO");
+	DebugPrintfLn(debugLevelEnum::DBO_L_LOG, "Sample Output for DBO_L_LOG");
+	DebugPrintfLn(debugLevelEnum::DBO_L_NONE, "Sample Output for DBO_L_NONE");
+	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
 	DebugEndSection();
 	printf("rc: %hhu, section: %i, categoryStack[section]: %hhi\n", (unsigned char)resultantCategory, section, (u8)categoryStack[section]);
 	DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Sample Output for DBO_L_WARN");
+#endif
 }
-char noneLabel[]						 = "NONE";										// 0b0000'0000
-char pakLabel[]							 = "PAK";										// 0b0000'0001
-char floorLabel[]						 = "FLOOR";										// 0b0000'0010
-char pakFloorLabel[]					 = "PAK & FLOOR";								// 0b0000'0011
-char maskLabel[]						 = "MASK";										// 0b0000'0100
-char pakMaskLabel[]						 = "PAK & MASK";								// 0b0000'0101
-char floorMaskLabel[]					 = "FLOOR & MASK";								// 0b0000'0110
-char pakFloorMaskLabel[]				 = "PAK & FLOOR & MASK";						// 0b0000'0111
-char cameraLabel[]						 = "CAMERA";									// 0b0000'1000
-char pakCameraLabel[]					 = "PAK & CAMERA";								// 0b0000'1001
-char floorCameraLabel[]					 = "FLOOR & CAMERA";							// 0b0000'1010
-char pakFloorCameraLabel[]				 = "PAK & FLOOR & CAMERA";						// 0b0000'1011
-char maskCameraLabel[]					 = "MASK & CAMERA";								// 0b0000'1100
-char pakMaskCameraLabel[]				 = "PAK & MASK & CAMERA";						// 0b0000'1101
-char floorMaskCameraLabel[]				 = "FLOOR & MASK & CAMERA";						// 0b0000'1110
-char pakFloorMaskCameraLabel[]			 = "PAK & FLOOR & MASK & CAMERA";				// 0b0000'1111
-char soundLabel[]						 = "SOUND";										// 0b0001'0000
-char soundPakLabel[]					 = "SOUND & PAK";								// 0b0001'0001
-char soundFloorLabel[]					 = "SOUND & FLOOR";								// 0b0001'0010
-char soundPakFloorLabel[]				 = "SOUND & PAK & FLOOR";						// 0b0001'0011
-char soundMaskLabel[]					 = "SOUND & MASK";								// 0b0001'0100
-char soundPakMaskLabel[]				 = "SOUND & PAK & MASK";						// 0b0001'0101
-char soundFloorMaskLabel[]				 = "SOUND & FLOOR & MASK";						// 0b0001'0110
-char soundPakFloorMaskLabel[]			 = "SOUND & PAK & FLOOR & MASK";				// 0b0001'0111
-char soundCameraLabel[]					 = "SOUND & CAMERA";							// 0b0001'1000
-char soundPakCameraLabel[]				 = "SOUND & PAK & CAMERA";						// 0b0001'1001
-char soundFloorCameraLabel[]			 = "SOUND & FLOOR & CAMERA";					// 0b0001'1010
-char soundPakFloorCameraLabel[]			 = "SOUND & PAK & FLOOR & CAMERA";				// 0b0001'1011
-char soundMaskCameraLabel[]				 = "SOUND & MASK & CAMERA";						// 0b0001'1100
-char soundPakMaskCameraLabel[]			 = "SOUND & PAK & MASK & CAMERA";				// 0b0001'1101
-char soundFloorMaskCameraLabel[]		 = "SOUND & FLOOR & MASK & CAMERA";				// 0b0001'1110
-char soundPakFloorMaskCameraLabel[]		 = "SOUND & PAK & FLOOR & MASK & CAMERA";		// 0b0001'1111
-char itdNoneLabel[]						 = "ITD & NONE";								// 0b0000'0000
-char itdPakLabel[]						 = "ITD & PAK";									// 0b0000'0001
-char itdFloorLabel[]					 = "ITD & FLOOR";								// 0b0000'0010
-char itdPakFloorLabel[]					 = "ITD & PAK & FLOOR";							// 0b0000'0011
-char itdMaskLabel[]						 = "ITD & MASK";								// 0b0000'0100
-char itdPakMaskLabel[]					 = "ITD & PAK & MASK";							// 0b0000'0101
-char itdFloorMaskLabel[]				 = "ITD & FLOOR & MASK";						// 0b0000'0110
-char itdPakFloorMaskLabel[]				 = "ITD & PAK & FLOOR & MASK";					// 0b0000'0111
-char itdCameraLabel[]					 = "ITD & CAMERA";								// 0b0000'1000
-char itdPakCameraLabel[]				 = "ITD & PAK & CAMERA";						// 0b0000'1001
-char itdFloorCameraLabel[]				 = "ITD & FLOOR & CAMERA";						// 0b0000'1010
-char itdPakFloorCameraLabel[]			 = "ITD & PAK & FLOOR & CAMERA";				// 0b0000'1011
-char itdMaskCameraLabel[]				 = "ITD & MASK & CAMERA";						// 0b0000'1100
-char itdPakMaskCameraLabel[]			 = "ITD & PAK & MASK & CAMERA";					// 0b0000'1101
-char itdFloorMaskCameraLabel[]			 = "ITD & FLOOR & MASK & CAMERA";				// 0b0000'1110
-char itdPakFloorMaskCameraLabel[]		 = "ITD & PAK & FLOOR & MASK & CAMERA";			// 0b0000'1111
-char itdSoundLabel[]					 = "ITD & SOUND";								// 0b0001'0000
-char itdSoundPakLabel[]					 = "ITD & SOUND & PAK";							// 0b0001'0001
-char itdSoundFloorLabel[]				 = "ITD & SOUND & FLOOR";						// 0b0001'0010
-char itdSoundPakFloorLabel[]			 = "ITD & SOUND & PAK & FLOOR";					// 0b0001'0011
-char itdSoundMaskLabel[]				 = "ITD & SOUND & MASK";						// 0b0001'0100
-char itdSoundPakMaskLabel[]				 = "ITD & SOUND & PAK & MASK";					// 0b0001'0101
-char itdSoundFloorMaskLabel[]			 = "ITD & SOUND & FLOOR & MASK";				// 0b0001'0110
-char itdSoundPakFloorMaskLabel[]		 = "ITD & SOUND & PAK & FLOOR & MASK";			// 0b0001'0111
-char itdSoundCameraLabel[]				 = "ITD & SOUND & CAMERA";						// 0b0001'1000
-char itdSoundPakCameraLabel[]			 = "ITD & SOUND & PAK & CAMERA";				// 0b0001'1001
-char itdSoundFloorCameraLabel[]			 = "ITD & SOUND & FLOOR & CAMERA";				// 0b0001'1010
-char itdSoundPakFloorCameraLabel[]		 = "ITD & SOUND & PAK & FLOOR & CAMERA";		// 0b0001'1011
-char itdSoundMaskCameraLabel[]			 = "ITD & SOUND & MASK & CAMERA";				// 0b0001'1100
-char itdSoundPakMaskCameraLabel[]		 = "ITD & SOUND & PAK & MASK & CAMERA";			// 0b0001'1101
-char itdSoundFloorMaskCameraLabel[]		 = "ITD & SOUND & FLOOR & MASK & CAMERA";		// 0b0001'1110
-char itdSoundPakFloorMaskCameraLabel[]	 = "ITD & SOUND & PAK & FLOOR & MASK & CAMERA";	// 0b0001'1111
+
+#if 1 // LABELS
+char noneLabel[]							 = "NONE";												// 0b0000'0000
+char pakLabel[]								 = "PAK";												// 0b0000'0001
+char floorLabel[]							 = "FLOOR";												// 0b0000'0010
+char pakFloorLabel[]						 = "PAK & FLOOR";										// 0b0000'0011
+char maskLabel[]							 = "MASK";												// 0b0000'0100
+char pakMaskLabel[]							 = "PAK & MASK";										// 0b0000'0101
+char floorMaskLabel[]						 = "FLOOR & MASK";										// 0b0000'0110
+char pakFloorMaskLabel[]					 = "PAK & FLOOR & MASK";								// 0b0000'0111
+char cameraLabel[]							 = "CAMERA";											// 0b0000'1000
+char pakCameraLabel[]						 = "PAK & CAMERA";										// 0b0000'1001
+char floorCameraLabel[]						 = "FLOOR & CAMERA";									// 0b0000'1010
+char pakFloorCameraLabel[]					 = "PAK & FLOOR & CAMERA";								// 0b0000'1011
+char maskCameraLabel[]						 = "MASK & CAMERA";										// 0b0000'1100
+char pakMaskCameraLabel[]					 = "PAK & MASK & CAMERA";								// 0b0000'1101
+char floorMaskCameraLabel[]					 = "FLOOR & MASK & CAMERA";								// 0b0000'1110
+char pakFloorMaskCameraLabel[]				 = "PAK & FLOOR & MASK & CAMERA";						// 0b0000'1111
+char soundLabel[]							 = "SOUND";												// 0b0001'0000
+char soundPakLabel[]						 = "SOUND & PAK";										// 0b0001'0001
+char soundFloorLabel[]						 = "SOUND & FLOOR";										// 0b0001'0010
+char soundPakFloorLabel[]					 = "SOUND & PAK & FLOOR";								// 0b0001'0011
+char soundMaskLabel[]						 = "SOUND & MASK";										// 0b0001'0100
+char soundPakMaskLabel[]					 = "SOUND & PAK & MASK";								// 0b0001'0101
+char soundFloorMaskLabel[]					 = "SOUND & FLOOR & MASK";								// 0b0001'0110
+char soundPakFloorMaskLabel[]				 = "SOUND & PAK & FLOOR & MASK";						// 0b0001'0111
+char soundCameraLabel[]						 = "SOUND & CAMERA";									// 0b0001'1000
+char soundPakCameraLabel[]					 = "SOUND & PAK & CAMERA";								// 0b0001'1001
+char soundFloorCameraLabel[]				 = "SOUND & FLOOR & CAMERA";							// 0b0001'1010
+char soundPakFloorCameraLabel[]				 = "SOUND & PAK & FLOOR & CAMERA";						// 0b0001'1011
+char soundMaskCameraLabel[]					 = "SOUND & MASK & CAMERA";								// 0b0001'1100
+char soundPakMaskCameraLabel[]				 = "SOUND & PAK & MASK & CAMERA";						// 0b0001'1101
+char soundFloorMaskCameraLabel[]			 = "SOUND & FLOOR & MASK & CAMERA";						// 0b0001'1110
+char soundPakFloorMaskCameraLabel[]			 = "SOUND & PAK & FLOOR & MASK & CAMERA";				// 0b0001'1111
+char itdNoneLabel[]							 = "ITD & NONE";										// 0b0000'0000
+char itdPakLabel[]							 = "ITD & PAK";											// 0b0000'0001
+char itdFloorLabel[]						 = "ITD & FLOOR";										// 0b0000'0010
+char itdPakFloorLabel[]						 = "ITD & PAK & FLOOR";									// 0b0000'0011
+char itdMaskLabel[]							 = "ITD & MASK";										// 0b0000'0100
+char itdPakMaskLabel[]						 = "ITD & PAK & MASK";									// 0b0000'0101
+char itdFloorMaskLabel[]					 = "ITD & FLOOR & MASK";								// 0b0000'0110
+char itdPakFloorMaskLabel[]					 = "ITD & PAK & FLOOR & MASK";							// 0b0000'0111
+char itdCameraLabel[]						 = "ITD & CAMERA";										// 0b0000'1000
+char itdPakCameraLabel[]					 = "ITD & PAK & CAMERA";								// 0b0000'1001
+char itdFloorCameraLabel[]					 = "ITD & FLOOR & CAMERA";								// 0b0000'1010
+char itdPakFloorCameraLabel[]				 = "ITD & PAK & FLOOR & CAMERA";						// 0b0000'1011
+char itdMaskCameraLabel[]					 = "ITD & MASK & CAMERA";								// 0b0000'1100
+char itdPakMaskCameraLabel[]				 = "ITD & PAK & MASK & CAMERA";							// 0b0000'1101
+char itdFloorMaskCameraLabel[]				 = "ITD & FLOOR & MASK & CAMERA";						// 0b0000'1110
+char itdPakFloorMaskCameraLabel[]			 = "ITD & PAK & FLOOR & MASK & CAMERA";					// 0b0000'1111
+char itdSoundLabel[]						 = "ITD & SOUND";										// 0b0001'0000
+char itdSoundPakLabel[]						 = "ITD & SOUND & PAK";									// 0b0001'0001
+char itdSoundFloorLabel[]					 = "ITD & SOUND & FLOOR";								// 0b0001'0010
+char itdSoundPakFloorLabel[]				 = "ITD & SOUND & PAK & FLOOR";							// 0b0001'0011
+char itdSoundMaskLabel[]					 = "ITD & SOUND & MASK";								// 0b0001'0100
+char itdSoundPakMaskLabel[]					 = "ITD & SOUND & PAK & MASK";							// 0b0001'0101
+char itdSoundFloorMaskLabel[]				 = "ITD & SOUND & FLOOR & MASK";						// 0b0001'0110
+char itdSoundPakFloorMaskLabel[]			 = "ITD & SOUND & PAK & FLOOR & MASK";					// 0b0001'0111
+char itdSoundCameraLabel[]					 = "ITD & SOUND & CAMERA";								// 0b0001'1000
+char itdSoundPakCameraLabel[]				 = "ITD & SOUND & PAK & CAMERA";						// 0b0001'1001
+char itdSoundFloorCameraLabel[]				 = "ITD & SOUND & FLOOR & CAMERA";						// 0b0001'1010
+char itdSoundPakFloorCameraLabel[]			 = "ITD & SOUND & PAK & FLOOR & CAMERA";				// 0b0001'1011
+char itdSoundMaskCameraLabel[]				 = "ITD & SOUND & MASK & CAMERA";						// 0b0001'1100
+char itdSoundPakMaskCameraLabel[]			 = "ITD & SOUND & PAK & MASK & CAMERA";					// 0b0001'1101
+char itdSoundFloorMaskCameraLabel[]			 = "ITD & SOUND & FLOOR & MASK & CAMERA";				// 0b0001'1110
+char itdSoundPakFloorMaskCameraLabel[]		 = "ITD & SOUND & PAK & FLOOR & MASK & CAMERA";			// 0b0001'1111
+char lifeLabel[]							 = "LIFE";												// 0b0010'0000
+char lifePakLabel[]							 = "LIFE & PAK";										// 0b0010'0001
+char lifeFloorLabel[]						 = "LIFE & FLOOR";										// 0b0010'0010
+char lifePakFloorLabel[]					 = "LIFE & PAK & FLOOR";								// 0b0010'0011
+char lifeMaskLabel[]						 = "LIFE & MASK";										// 0b0010'0100
+char lifePakMaskLabel[]						 = "LIFE & PAK & MASK";									// 0b0010'0101
+char lifeFloorMaskLabel[]					 = "LIFE & FLOOR & MASK";								// 0b0010'0110
+char lifePakFloorMaskLabel[]				 = "LIFE & PAK & FLOOR & MASK";							// 0b0010'0111
+char lifeCameraLabel[]						 = "LIFE & CAMERA";										// 0b0010'1000
+char lifePakCameraLabel[]					 = "LIFE & PAK & CAMERA";								// 0b0010'1001
+char lifeFloorCameraLabel[]					 = "LIFE & FLOOR & CAMERA";								// 0b0010'1010
+char lifePakFloorCameraLabel[]				 = "LIFE & PAK & FLOOR & CAMERA";						// 0b0010'1011
+char lifeMaskCameraLabel[]					 = "LIFE & MASK & CAMERA";								// 0b0010'1100
+char lifePakMaskCameraLabel[]				 = "LIFE & PAK & MASK & CAMERA";						// 0b0010'1101
+char lifeFloorMaskCameraLabel[]				 = "LIFE & FLOOR & MASK & CAMERA";						// 0b0010'1110
+char lifePakFloorMaskCameraLabel[]			 = "LIFE & PAK & FLOOR & MASK & CAMERA";				// 0b0010'1111
+char lifeSoundLabel[]						 = "LIFE & SOUND";										// 0b0011'0000
+char lifeSoundPakLabel[]					 = "LIFE & SOUND & PAK";								// 0b0011'0001
+char lifeSoundFloorLabel[]					 = "LIFE & SOUND & FLOOR";								// 0b0011'0010
+char lifeSoundPakFloorLabel[]				 = "LIFE & SOUND & PAK & FLOOR";						// 0b0011'0011
+char lifeSoundMaskLabel[]					 = "LIFE & SOUND & MASK";								// 0b0011'0100
+char lifeSoundPakMaskLabel[]				 = "LIFE & SOUND & PAK & MASK";							// 0b0011'0101
+char lifeSoundFloorMaskLabel[]				 = "LIFE & SOUND & FLOOR & MASK";						// 0b0011'0110
+char lifeSoundPakFloorMaskLabel[]			 = "LIFE & SOUND & PAK & FLOOR & MASK";					// 0b0011'0111
+char lifeSoundCameraLabel[]					 = "LIFE & SOUND & CAMERA";								// 0b0011'1000
+char lifeSoundPakCameraLabel[]				 = "LIFE & SOUND & PAK & CAMERA";						// 0b0011'1001
+char lifeSoundFloorCameraLabel[]			 = "LIFE & SOUND & FLOOR & CAMERA";						// 0b0011'1010
+char lifeSoundPakFloorCameraLabel[]			 = "LIFE & SOUND & PAK & FLOOR & CAMERA";				// 0b0011'1011
+char lifeSoundMaskCameraLabel[]				 = "LIFE & SOUND & MASK & CAMERA";						// 0b0011'1100
+char lifeSoundPakMaskCameraLabel[]			 = "LIFE & SOUND & PAK & MASK & CAMERA";				// 0b0011'1101
+char lifeSoundFloorMaskCameraLabel[]		 = "LIFE & SOUND & FLOOR & MASK & CAMERA";				// 0b0011'1110
+char lifeSoundPakFloorMaskCameraLabel[]		 = "LIFE & SOUND & PAK & FLOOR & MASK & CAMERA";		// 0b0011'1111
+char lifeItdNoneLabel[]						 = "LIFE & ITD & NONE";									// 0b0010'0000
+char lifeItdPakLabel[]						 = "LIFE & ITD & PAK";									// 0b0010'0001
+char lifeItdFloorLabel[]					 = "LIFE & ITD & FLOOR";								// 0b0010'0010
+char lifeItdPakFloorLabel[]					 = "LIFE & ITD & PAK & FLOOR";							// 0b0010'0011
+char lifeItdMaskLabel[]						 = "LIFE & ITD & MASK";									// 0b0010'0100
+char lifeItdPakMaskLabel[]					 = "LIFE & ITD & PAK & MASK";							// 0b0010'0101
+char lifeItdFloorMaskLabel[]				 = "LIFE & ITD & FLOOR & MASK";							// 0b0010'0110
+char lifeItdPakFloorMaskLabel[]				 = "LIFE & ITD & PAK & FLOOR & MASK";					// 0b0010'0111
+char lifeItdCameraLabel[]					 = "LIFE & ITD & CAMERA";								// 0b0010'1000
+char lifeItdPakCameraLabel[]				 = "LIFE & ITD & PAK & CAMERA";							// 0b0010'1001
+char lifeItdFloorCameraLabel[]				 = "LIFE & ITD & FLOOR & CAMERA";						// 0b0010'1010
+char lifeItdPakFloorCameraLabel[]			 = "LIFE & ITD & PAK & FLOOR & CAMERA";					// 0b0010'1011
+char lifeItdMaskCameraLabel[]				 = "LIFE & ITD & MASK & CAMERA";						// 0b0010'1100
+char lifeItdPakMaskCameraLabel[]			 = "LIFE & ITD & PAK & MASK & CAMERA";					// 0b0010'1101
+char lifeItdFloorMaskCameraLabel[]			 = "LIFE & ITD & FLOOR & MASK & CAMERA";				// 0b0010'1110
+char lifeItdPakFloorMaskCameraLabel[]		 = "LIFE & ITD & PAK & FLOOR & MASK & CAMERA";			// 0b0010'1111
+char lifeItdSoundLabel[]					 = "LIFE & ITD & SOUND";								// 0b0011'0000
+char lifeItdSoundPakLabel[]					 = "LIFE & ITD & SOUND & PAK";							// 0b0011'0001
+char lifeItdSoundFloorLabel[]				 = "LIFE & ITD & SOUND & FLOOR";						// 0b0011'0010
+char lifeItdSoundPakFloorLabel[]			 = "LIFE & ITD & SOUND & PAK & FLOOR";					// 0b0011'0011
+char lifeItdSoundMaskLabel[]				 = "LIFE & ITD & SOUND & MASK";							// 0b0011'0100
+char lifeItdSoundPakMaskLabel[]				 = "LIFE & ITD & SOUND & PAK & MASK";					// 0b0011'0101
+char lifeItdSoundFloorMaskLabel[]			 = "LIFE & ITD & SOUND & FLOOR & MASK";					// 0b0011'0110
+char lifeItdSoundPakFloorMaskLabel[]		 = "LIFE & ITD & SOUND & PAK & FLOOR & MASK";			// 0b0011'0111
+char lifeItdSoundCameraLabel[]				 = "LIFE & ITD & SOUND & CAMERA";						// 0b0011'1000
+char lifeItdSoundPakCameraLabel[]			 = "LIFE & ITD & SOUND & PAK & CAMERA";					// 0b0011'1001
+char lifeItdSoundFloorCameraLabel[]			 = "LIFE & ITD & SOUND & FLOOR & CAMERA";				// 0b0011'1010
+char lifeItdSoundPakFloorCameraLabel[]		 = "LIFE & ITD & SOUND & PAK & FLOOR & CAMERA";			// 0b0011'1011
+char lifeItdSoundMaskCameraLabel[]			 = "LIFE & ITD & SOUND & MASK & CAMERA";				// 0b0011'1100
+char lifeItdSoundPakMaskCameraLabel[]		 = "LIFE & ITD & SOUND & PAK & MASK & CAMERA";			// 0b0011'1101
+char lifeItdSoundFloorMaskCameraLabel[]		 = "LIFE & ITD & SOUND & FLOOR & MASK & CAMERA";		// 0b0011'1110
+char lifeItdSoundPakFloorMaskCameraLabel[]	 = "LIFE & ITD & SOUND & PAK & FLOOR & MASK & CAMERA";	// 0b0011'1111
 char* debugCategoryLabels[] = {
 	noneLabel,
 	pakLabel,
@@ -609,21 +637,11 @@ char* debugCategoryLabels[] = {
 	itdSoundFloorMaskCameraLabel,
 	itdSoundPakFloorMaskCameraLabel,
 };
-// Foreground: 3x
-// Background: 4x
-// 0: Black
-// 1: Red
-// 2: Green
-// 3: Yellow
-// 4: Blue
-// 5: Magenta
-// 6: Cyan
-// 7: White
-// char noneLabel[]	= "NONE";	// 0b0000'0000
+
 char debugLabel[]	= FormatDleLabel(DLE_C_DEBUG, DEBUG);	// 0b0000'0001
-char logLabel[]		= FormatDleLabel(DLE_C_LOG, LOG);	// 0b0000'0010
-char infoLabel[]	= FormatDleLabel(DLE_C_INFO, INFO);	// 0b0000'0100
-char warnLabel[]	= FormatDleLabel(DLE_C_WARN, WARN);	// 0b0000'1000
+char logLabel[]		= FormatDleLabel(DLE_C_LOG, LOG);		// 0b0000'0010
+char infoLabel[]	= FormatDleLabel(DLE_C_INFO, INFO);		// 0b0000'0100
+char warnLabel[]	= FormatDleLabel(DLE_C_WARN, WARN);		// 0b0000'1000
 char errorLabel[]	= FormatDleLabel(DLE_C_ERROR, ERROR);	// 0b0001'0000
 char* debugLevelLabels[] = {
 	noneLabel,	// 0b0000'0000
@@ -659,6 +677,7 @@ char* debugLevelLabels[] = {
 	errorLabel,	// 0b0001'1110
 	errorLabel,	// 0b0001'1111
 };
+#endif
 
 /// @brief 
 /// @param category 
@@ -666,14 +685,6 @@ char* debugLevelLabels[] = {
 /// @return true if 1 or more enabled categories are included & 1 or more of the included categories have the debug level enabled, false otherwise.
 bool _shouldPrint(debugCategoryEnum category, debugLevelEnum level = (debugLevelEnum)DBO_L_ALL)
 {
-	// if (outputConfig.debugOutputEnabled & category &&
-	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_PAK) * sizeof(debugCategoryEnum)] & level ||
-	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_FLOOR) * sizeof(debugCategoryEnum)] & level ||
-	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_MASK) * sizeof(debugCategoryEnum)] & level ||
-	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_CAMERA) * sizeof(debugCategoryEnum)] & level ||
-	// 	((debugLevelEnum*)&outputConfig)[(category & debugCategoryEnum::DBO_SOUND) * sizeof(debugCategoryEnum)] & level
-	// 	) {
-	// 	return true;
 	if (outputConfig.debugOutputEnabled & category) {
 		unsigned int flag = DBO_NONE + 1;
 		while (flag < DBO_ALL) {
@@ -793,7 +804,7 @@ void DebugBPrintf(debugLevelEnum level, const char* format, ...)
 	if (_shouldPrint(resultantCategory, level)) {
 		va_list argList;
 		va_start(argList, format);
-		
+
 		if (buffer[0] != '\000') {
 			vsprintf(buffer, format, argList);
 
@@ -835,3 +846,9 @@ ___DEBUG_B_PRINT_RAW__SIGNATURE(u32)
 #undef ___DEBUG_B_PRINT_RAW__SIGNATURE
 #undef ____DEBUG_B_PRINT_RAW__SIGNATURE
 #endif
+void DebugSPrintZVStruct(char* destination, ZVStruct& zv) {
+	sprintf(destination, "{ ZVX1: %i, ZVX2: %i, ZVY1: %i, ZVY2: %i, ZVZ1: %i, ZVZ2: %i }", zv.ZVX1, zv.ZVX2, zv.ZVY1, zv.ZVY2, zv.ZVZ1, zv.ZVZ2);
+}
+// void DebugSPrintZVStruct(char* destination, ZVStruct* zv) {
+// 	sprintf(destination, "{ ZVX1: %i, ZVX2: %i, ZVY1: %i, ZVY2: %i, ZVZ1: %i, ZVZ2: %i }", zv->ZVX1, zv->ZVX2, zv->ZVY1, zv->ZVY2, zv->ZVZ1, zv->ZVZ2);
+// }

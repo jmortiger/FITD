@@ -58,12 +58,10 @@ void getZvMax(char* bodyPtr, ZVStruct* zvPtr)
 	z1 = zvPtr->ZVZ1;
 	z2 = zvPtr->ZVZ2;
 
-	x2 = -x1 + x2;
-	z2 = -z1 + z2;
+	x2 = -x1 + x2;// x2 = abs(-x1 + x2);
+	z2 = -z1 + z2;// z2 = abs(-z1 + z2);
 
-	if (x2 < z2) {
-		x2 = z2;
-	}
+	if (x2 < z2) { x2 = z2; }
 
 	x2 /= 2;
 

@@ -32,8 +32,9 @@ enum debugCategoryEnum : unsigned char {
 	DBO_CAMERA	 = 0b0000'1000,
 	DBO_SOUND	 = 0b0001'0000,
 	DBO_ITD		 = 0b0010'0000,
+	DBO_LIFE	 = 0b0100'0000,
 };
-#define DBO_ALL 0b0011'1111
+#define DBO_ALL 0b0111'1111
 typedef enum debugCategoryEnum debugCategoryEnum;
 
 // debugCategoryEnum debugCategoryEnumFlags[] = {
@@ -59,6 +60,16 @@ enum debugLevelEnum : unsigned char {
 
 typedef enum debugLevelEnum debugLevelEnum;
 
+// Foreground: 3x
+// Background: 4x
+// 0: Black
+// 1: Red
+// 2: Green
+// 3: Yellow
+// 4: Blue
+// 5: Magenta
+// 6: Cyan
+// 7: White
 #define ANSI_RESET "\033[0m"
 #define ANSI_BLACK 0
 #define ANSI_RED 1
@@ -104,6 +115,7 @@ struct debugOutputConfig {
 	unsigned char verbosity_camera;
 	unsigned char verbosity_sound;
 	unsigned char verbosity_itd;
+	unsigned char verbosity_life;
 	/// @brief A bit flag of `debugCategoryEnum`
 	unsigned char debugOutputEnabled;
 	/// @todo enable recursive debug toggling
@@ -114,6 +126,7 @@ struct debugOutputConfig {
 	// bool recurse_camera;
 	// bool recurse_sound;
 	// bool recurse_itd;
+	// bool recurse_life;
 };
 
 typedef struct debugOutputConfig debugOutputConfig;
@@ -187,4 +200,6 @@ void DebugPrintfLnCategory(debugLevelEnum level, debugCategoryEnum category, con
 template <typename T> void DebugBPrintRaw(debugLevelEnum level, const char* typeSpecifier, T result, T raw);
 void DebugBPrintf(debugLevelEnum level, const char* format, ...);
 void DebugBFlushLn();
+void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
+// void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
 #endif
