@@ -73,7 +73,7 @@ public:
 /// @param size The size of the sample in bits(?); CURRENTLY UNUSED (size is determined by reading info from the start of `samplePtr`).
 ITD_AudioSource::ITD_AudioSource(char* samplePtr, int size) : SoLoud::AudioSource()
 {
-	DebugPrintfLnCategory(DBO_L_INFO, DBO_SOUND, "ITD_AudioSource::ITD_AudioSource(char* samplePtr, %i):%s", size, samplePtr[26] == 1 ? " early exit (expected samplePtr[26] to be 1; was not)." : "");
+	DebugPrintfLnCategory(DBO_L_INFO, DBO_SOUND, "ITD_AudioSource::ITD_AudioSource(char* samplePtr, %i):%s", size, samplePtr[26] != 1 ? " early exit (expected samplePtr[26] to be 1; was not)." : "");
 	assert(samplePtr[26] == 1); //assert first block is of sound data type
 	DebugBeginSection(DBO_SOUND);
 	// DebugBPrintf(DBO_L_DEBUG, "sampleSize: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData + 4)); DebugBFlushLn();
