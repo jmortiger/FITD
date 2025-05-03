@@ -248,4 +248,10 @@ FORCEINLINE s32 READ_BE_S32(void* ptr)
 	return (s32)READ_LE_U32(ptr);
 }
 
+/// @brief Add a breakpoint here to catch all fatal exits.
+FORCEINLINE void FITD_throwFatal()
+{ 
+	assert(0);
+}
+
 #endif

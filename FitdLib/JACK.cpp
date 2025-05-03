@@ -29,6 +29,6 @@ void JACK_ReadBook(int index, int type)
 			break;
 		}
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 	}
 }

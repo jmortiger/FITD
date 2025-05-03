@@ -418,7 +418,7 @@ void updateAnimation(void)
 					}
 
 					if (stepY) {
-						//assert(0); //not implemented
+						//FITD_throwFatal(); // assert(0); //not implemented
 					}
 				}
 			}

@@ -188,7 +188,7 @@ int evalVar(const char* name)
 						default:
 						{
 							printf("Unsupported evalVar %X when actor not in room !\n", var1 & 0x7FFF);
-							assert(0);
+							FITD_throwFatal(); // assert(0);
 						}
 					}
 				}
@@ -496,7 +496,9 @@ int evalVar(const char* name)
 					default:
 					{
 						printf("Unhandled test type %X in evalVar\n", var1);
-						assert(0);
+						FITD_throwFatal(); 
+						assert(0); // Won't make it here, this just kills a compiler warning.
+						// return -1; // Won't make it here, this just kills a compiler warning.
 						break;
 					}
 				}
@@ -567,7 +569,7 @@ int evalVar2(const char* name)
 						default:
 						{
 							printf("Unsupported evalVar2 %X when actor not in room !\n", var1 & 0x7FFF);
-							//assert(0);
+							//FITD_throwFatal(); // assert(0);
 							return false;
 						}
 					}
@@ -912,7 +914,7 @@ int evalVar2(const char* name)
 					default:
 					{
 						printf("Unhandled test type %X in evalVar\n", var1);
-						assert(0);
+						FITD_throwFatal(); // assert(0);
 						return 0;
 						break;
 					}

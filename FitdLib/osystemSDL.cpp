@@ -252,7 +252,7 @@ void osystem_init()  // that's the constructor of the system dependent
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		assert(0);
+		FITD_throwFatal(); // assert(0);
 	}
 
 	// SDL_ShowCursor (SDL_DISABLE);

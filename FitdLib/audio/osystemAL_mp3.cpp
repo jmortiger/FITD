@@ -72,7 +72,7 @@ void decodeMP3()
 					decompressionFinished = true;
 					break;
 				} else {
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 			}
 		}

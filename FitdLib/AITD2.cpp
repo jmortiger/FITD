@@ -257,7 +257,7 @@ void drawInventoryAITD2()
 			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_GRACE, logicalScreen);
 			break;
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 	}
 
 	statusLeft = 27;
@@ -321,6 +321,6 @@ void AITD2_ReadBook(int index, int type)
 			break;
 		}
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 	}
 }

@@ -552,5 +552,5 @@ void PAK_Error(char* txt)
 {
 	printf("%s", txt);
 	getchar();
-	assert(0);
+	FITD_throwFatal(); // assert(0);
 }

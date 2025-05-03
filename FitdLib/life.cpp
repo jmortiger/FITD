@@ -489,7 +489,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 			if (var_6 == -1) {
 				printf("Unsupported newVar = -1\n");
-				assert(0);
+				FITD_throwFatal(); // assert(0);
 			} else {
 				currentProcessedActorIdx = ListWorldObjets[var_6].objIndex;
 
@@ -691,7 +691,7 @@ void processLife(int lifeNum, bool callFoundLife)
 						default:
 						{
 							printf("Unsupported opcode %X when actor isn't in floor\n", currentOpcode & 0x7FFF);
-							assert(0);
+							FITD_throwFatal(); // assert(0);
 							break;
 						}
 					}
@@ -2293,7 +2293,7 @@ void processLife(int lifeNum, bool callFoundLife)
 				default:
 				{
 					printf("Unknown opcode %X (%i) in processLife\n", currentOpcode & 0x7FFF, opcodeLocated);
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 			}
 		}

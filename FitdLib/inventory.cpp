@@ -202,7 +202,7 @@ void processInventory(void)
 			drawInventoryAITD3();
 			break;
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 	}
 
 	while (!exitMenu) {

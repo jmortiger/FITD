@@ -5,7 +5,7 @@ void fatalError(int type, const char* name)
 	//  freeScene();
 	freeAll();
 	printf("Error: %s\n", name);
-	assert(0);
+	FITD_throwFatal(); // assert(0);
 }
 
 extern "C" {

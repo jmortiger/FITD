@@ -96,7 +96,7 @@ void drawInventoryAITD3()
 			loadPakTo("ITD_RESS", AITD3_INVENTAIRE_COUGUAR, logicalScreen);
 			break;
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 	}
 
 	statusLeft = 27;

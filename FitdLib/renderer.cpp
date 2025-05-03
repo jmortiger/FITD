@@ -642,7 +642,7 @@ char* primVar2;
 void primFunctionDefault(int primType, char** ptr, char** out)
 {
 	printf("UnHandled primType %d\n", primType);
-	assert(0);
+	FITD_throwFatal(); // assert(0);
 }
 
 void processPrim_Line(int primType, char** ptr, char** out) // line tested
@@ -1001,7 +1001,7 @@ int AffObjet(int x, int y, int z, int alpha, int beta, int gamma, void* modelPtr
 				break;
 			default:
 				return 0;
-				assert(0);
+				FITD_throwFatal(); // assert(0);
 		}
 
 	}

@@ -130,7 +130,7 @@ void fillpoly(s16* datas, int n, unsigned char c)
 #ifdef DEBUGGING_POLYS
 				if ((!dots[i][j]) || !(dots[i][j + 1])) {
 					printf("fillpoly: BLARGH!\n");
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 #endif
 			}

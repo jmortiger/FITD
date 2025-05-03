@@ -642,7 +642,7 @@ void processTrack(void)
 				default:
 				{
 					printf("Unknown track macro %X\n", trackMacro);
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 					break;
 				}
 			}
@@ -1091,7 +1091,7 @@ void processTrack2(void)
 				default:
 				{
 					printf("Unknown track macro %X\n", trackMacro);
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 					break;
 				}
 			}

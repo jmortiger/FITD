@@ -289,7 +289,7 @@ void allocTextes(void)
 
 	if (!languageNameString[0]) {
 		printf("Unable to detect language file..\n");
-		assert(0);
+		FITD_throwFatal(); // assert(0);
 	}
 
 	systemTextes = (u8*)CheckLoadMallocPak(languageNameString, 0); // todo: use real language name
@@ -423,7 +423,7 @@ void OpenProgram(void)
 			PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
 			break;
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 	}
 
 	ExtSetFont(PtrFont, 14);
@@ -587,7 +587,7 @@ void readBook(int index, int type)
 			AITD2_ReadBook(index, type);
 			break;
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 
 	}
 
@@ -696,7 +696,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 							}
 
 							if (loadPakTo("ITD_RESS", 9, aux2)) {
-								assert(0); // when is this used?
+								FITD_throwFatal(); // assert(0); // when is this used?
 								/*  var_C = printTextSub3(currentTextIdx,aux2);
 								var_A = printTextSub4(currentTextIdx,aux2);
 
@@ -1857,7 +1857,7 @@ void updateAllActorAndObjectsAITD2()
 					}
 					break;
 				default:
-					//assert(0);
+					//FITD_throwFatal(); // assert(0);
 					break;
 			}
 
@@ -4194,7 +4194,7 @@ void detectGame(void)
 	}
 
 	printf("FATAL: Game detection failed...\n");
-	assert(0);
+	FITD_throwFatal(); // assert(0);
 }
 
 extern "C" {
@@ -4235,7 +4235,7 @@ int FitdMain(int argc, char* argv[])
 			startGame(0, 5, 1);
 			break;
 		default:
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 			break;
 	}
 

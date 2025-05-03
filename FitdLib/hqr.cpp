@@ -185,7 +185,7 @@ sBody* createBodyFromPtr(void* ptr)
 	}
 
 	if (newBody->m_flags & INFO_TORTUE) {
-		assert(0); // never used
+		FITD_throwFatal(); // assert(0); // never used
 	}
 
 	if (newBody->m_flags & INFO_ANIM) {
@@ -307,7 +307,7 @@ sBody* createBodyFromPtr(void* ptr)
 				}
 				break;
 			default:
-				assert(0);
+				FITD_throwFatal(); // assert(0);
 				break;
 		}
 	}

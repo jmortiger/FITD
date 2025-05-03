@@ -207,7 +207,7 @@ int copyObjectToActor(int body, int typeZv, int hardZvIdx, s16 objectType, int x
 			printf("Unsupported ZV type in copyObjectToActor\n");
 			printf("var1: %d\n", typeZv);
 			ASSERT(0);
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 			break;
 		}
 	}

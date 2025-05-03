@@ -561,7 +561,7 @@ void setupChannelFrequency(int channelIdx, int cl, int dx, int bp)
 	di = globTable[cl & 0xF];
 
 	if (bp & 0x80) {
-		// assert(0);
+		// FITD_throwFatal(); // assert(0);
 	}
 
 	if (cl & 0x80) {
@@ -743,7 +743,7 @@ void command5(channelTable2Element* entry, int param, u8* ptr)
 
 void command6(channelTable2Element* entry, int param, u8* ptr)
 {
-	assert(0);
+	FITD_throwFatal(); // assert(0);
 }
 
 musicCommandType musicCommandTable[10] =
@@ -774,7 +774,7 @@ void executeMusicCommand(channelTable2Element* entry)
 		entry->var18 = 0;
 	} else {
 		if (entry->var1A != entry->var1D) {
-			assert(0);
+			FITD_throwFatal(); // assert(0);
 		}
 
 		entry->varE--; // voice delay
@@ -1065,7 +1065,7 @@ int musicFade(void* param)
 		{
 			if (channelTable2[i].dataPtr) {
 				if (dx & 0x100) {
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 
 				if (dx & 0x40) {
@@ -1089,11 +1089,11 @@ int musicFade(void* param)
 				}
 
 				if (dx & 0x20) {
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 
 				if (dx & 0x2000) {
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 
 				if (dx & 0x8000) {
@@ -1101,7 +1101,7 @@ int musicFade(void* param)
 				}
 
 				if (dx & 0x1000) {
-					assert(0);
+					FITD_throwFatal(); // assert(0);
 				}
 
 				if (dx & 0x10) // still running ?
@@ -1145,7 +1145,7 @@ musicDrvFunctionType musicDrvFunc[14] =
 int callMusicDrv(int commandArg, void* ptr)
 {
 	if (!musicDrvFunc[commandArg]) {
-		assert(0);
+		FITD_throwFatal(); // assert(0);
 	}
 
 	return musicDrvFunc[commandArg](ptr);
