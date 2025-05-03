@@ -60,8 +60,10 @@ enum debugLevelEnum : unsigned char {
 
 typedef enum debugLevelEnum debugLevelEnum;
 
-// Foreground: 3x
-// Background: 4x
+// Foreground Dark: 3x
+// Foreground Light: 9x
+// Background Dark: 4x
+// Background Light: 10x
 // 0: Black
 // 1: Red
 // 2: Green
@@ -70,6 +72,7 @@ typedef enum debugLevelEnum debugLevelEnum;
 // 5: Magenta
 // 6: Cyan
 // 7: White
+#ifndef ANSI_RESET
 #define ANSI_RESET "\033[0m"
 #define ANSI_BLACK 0
 #define ANSI_RED 1
@@ -79,6 +82,7 @@ typedef enum debugLevelEnum debugLevelEnum;
 #define ANSI_MAGENTA 5
 #define ANSI_CYAN 6
 #define ANSI_WHITE 7
+#endif
 #define Str(x) #x
 #define XStr(x) Str(x)
 #define _AnsiInvertFg(x) "\033[7;3" Str(x) "m"
@@ -202,4 +206,6 @@ void DebugBPrintf(debugLevelEnum level, const char* format, ...);
 void DebugBFlushLn();
 void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
 // void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
+
+extern char* varsNameTable[];
 #endif

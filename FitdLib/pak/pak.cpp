@@ -321,7 +321,7 @@ char* loadPak(const char* name, int index)
 		fclose(fileHandle);
 	}
 
-	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Successfully loaded %s at %i", bufferName, (long)ptr);
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Successfully loaded %s to address %lX", bufferName, (unsigned long)ptr);
 	DebugEndSection();
 	return ptr;
 #endif

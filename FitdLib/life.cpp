@@ -489,8 +489,9 @@ void processLife(int lifeNum, bool callFoundLife)
 #ifdef DEBUG
 		strcpy(currentDebugLifeLine, "");
 #endif
-		appendFormatted("%d:opcode: %02X: ", lifeNum, currentOpcode & 0xFFFF);
+		appendFormatted("[LIFE %*d] opcode:%02X: ", 3, lifeNum, currentOpcode & 0xFFFF);
 
+		// If it's a higher order opcode...
 		if (currentOpcode & 0x8000) {
 			var_6 = *(s16*)(currentLifePtr);
 			currentLifePtr += 2;
@@ -2080,9 +2081,9 @@ void processLife(int lifeNum, bool callFoundLife)
 					break;
 				}
 				////////////////////////////////////////////////////////////////////////
-				case LM_IF_EGAL:
+				case LM_IF_EGAL: // if x == y
 				{
-					appendFormatted("LM_IF_EGAL ");
+					appendFormatted("LM_IF_EGAL: if ");
 					lifeTempVar1 = evalVar();
 					lifeTempVar2 = evalVar();
 
@@ -2096,10 +2097,11 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_IF_DIFFERENT:
+				case LM_IF_DIFFERENT: // if x != y
 				{
-					appendFormatted("LM_IF_DIFFERENT ");
+					appendFormatted("LM_IF_DIFFERENT: if ");
 					lifeTempVar1 = evalVar();
+					appendFormatted("!= ");
 					lifeTempVar2 = evalVar();
 
 					if (lifeTempVar1 != lifeTempVar2) {
@@ -2112,10 +2114,11 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_IF_SUP_EGAL:
+				case LM_IF_SUP_EGAL: // if x >= y
 				{
-					appendFormatted("LM_IF_SUP_EGAL ");
+					appendFormatted("LM_IF_SUP_EGAL: if ");
 					lifeTempVar1 = evalVar();
+					appendFormatted(">= ");
 					lifeTempVar2 = evalVar();
 
 					if (lifeTempVar1 >= lifeTempVar2) {
@@ -2128,10 +2131,11 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_IF_SUP:
+				case LM_IF_SUP: // if x > y
 				{
-					appendFormatted("LM_IF_SUP ");
+					appendFormatted("LM_IF_SUP: if ");
 					lifeTempVar1 = evalVar();
+					appendFormatted("> ");
 					lifeTempVar2 = evalVar();
 
 					if (lifeTempVar1 > lifeTempVar2) {
@@ -2144,10 +2148,11 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_IF_INF_EGAL:
+				case LM_IF_INF_EGAL: // if x <= y
 				{
-					appendFormatted("LM_IF_INF_EGAL ");
+					appendFormatted("LM_IF_INF_EGAL: if ");
 					lifeTempVar1 = evalVar();
+					appendFormatted("<= ");
 					lifeTempVar2 = evalVar();
 
 					if (lifeTempVar1 <= lifeTempVar2) {
@@ -2160,10 +2165,11 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_IF_INF:
+				case LM_IF_INF: // if x < y
 				{
-					appendFormatted("LM_IF_INF ");
+					appendFormatted("LM_IF_INF: if ");
 					lifeTempVar1 = evalVar();
+					appendFormatted("< ");
 					lifeTempVar2 = evalVar();
 
 					if (lifeTempVar1 < lifeTempVar2) {

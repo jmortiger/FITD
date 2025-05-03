@@ -53,11 +53,13 @@ char localKey;
 char localJoyD;
 char localClick;
 
+/// @brief The filenames of supported languages.
+/// @todo Earlier entries take priority over later entries; change order with system locale or something.
 const std::vector<std::string> languageNameTable =
 {
+	"ENGLISH",
 	"FRANCAIS",
 	"ITALIANO",
-	"ENGLISH",
 	"ESPAGNOL",
 	"DEUTSCH",
 };

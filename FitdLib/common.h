@@ -114,6 +114,7 @@ typedef signed int S32;
 #define ANIM_UNINTERRUPTABLE  2
 #define ANIM_RESET            4
 
+#include "debugging/logging_defines.h"
 #include "room.h"
 #include "vars.h"
 #include "main.h"

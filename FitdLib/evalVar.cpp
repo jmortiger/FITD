@@ -137,373 +137,415 @@ int testZvEndAnim(tObject* actorPtr, char* animPtr, int param)
 	return(0);
 }
 
+/// @brief 
+/// @param name 
+/// @return 
+/// @todo Eliminate overlap w/ evalVar2
 int evalVar(const char* name)
 {
-	int var1;
+	if (g_gameId >= JACK) { return evalVar2(name); }
 
-	if (g_gameId >= JACK) {
-		return evalVar2(name);
-	}
-
-	var1 = *(s16*)(currentLifePtr);
+	int var1 = *(s16*)(currentLifePtr);
 	currentLifePtr += 2;
 
 	if (var1 == -1) {
 		int temp = *(s16*)(currentLifePtr);
 		currentLifePtr += 2;
 
+		if (name)
+			appendFormatted("%s:", name);
+		appendFormatted("%d ", temp);
+
 		return(temp);
-	} else
-		if (var1 == 0) {
-			int temp = *(s16*)(currentLifePtr);
+	} else if (var1 == 0) {
+		int temp = *(s16*)(currentLifePtr);
+		currentLifePtr += 2;
+
+		if (name)
+			appendFormatted("%s:", name);
+		// appendFormatted("vars[%d] <%i>, ", temp, vars[temp]);
+		appendFormatted("vars[%d] (" ANSI_FG_DARK_GREY "%s %i) " ANSI_RESET, temp, varsNameTable != NULL ? varsNameTable [temp]: "", vars[temp]);
+
+		return(vars[temp]);
+	} else {
+		tObject* actorPtr = currentLifeActorPtr;
+		int actorIdx = currentLifeActorIdx;
+
+		if (var1 & 0x8000) {
+			int objectNumber;
+
+			objectNumber = *(s16*)currentLifePtr;
+
+			actorIdx = ListWorldObjets[objectNumber].objIndex;
+
 			currentLifePtr += 2;
+			actorPtr = &objectTable[actorIdx];
 
-			return(vars[temp]);
-		} else {
-			tObject* actorPtr = currentLifeActorPtr;
-			int actorIdx = currentLifeActorIdx;
-
-			if (var1 & 0x8000) {
-				int objectNumber;
-
-				objectNumber = *(s16*)currentLifePtr;
-
-				actorIdx = ListWorldObjets[objectNumber].objIndex;
-
-				currentLifePtr += 2;
-				actorPtr = &objectTable[actorIdx];
-
-				if (actorIdx == -1) {
-					switch (var1 & 0x7FFF) {
-						case 0x1F:
-						{
-							return(ListWorldObjets[objectNumber].room);
-							break;
-						}
-						case 0x26:
-						{
-							return(ListWorldObjets[objectNumber].stage);
-							break;
-						}
-						default:
-						{
-							printf("Unsupported evalVar %X when actor not in room !\n", var1 & 0x7FFF);
-							FITD_throwFatal(); // assert(0);
-						}
-					}
-				}
-			}
-			{
-
-				var1 &= 0x7FFF;
-
-				var1--;
-
-				switch (var1) {
-					case 0x0:
-					{
-						int temp1 = actorPtr->COL[0];
-
-						if (temp1 != -1) {
-							return(objectTable[temp1].indexInWorld);
-						} else {
-							return(-1);
-						}
-						break;
-					}
-					case 0x1:
-					{
-						return(actorPtr->HARD_DEC);
-						break;
-					}
-					case 0x2:
-					{
-						return(actorPtr->HARD_COL);
-						break;
-					}
-					case 0x3:
-					{
-						int temp = actorPtr->HIT;
-
-						if (temp == -1) {
-							return(-1);
-						} else {
-							return(objectTable[temp].indexInWorld);
-						}
-
-						break;
-					}
-					case 0x4:
-					{
-						int temp = actorPtr->HIT_BY;
-
-						if (temp == -1) {
-							return(-1);
-						} else {
-							return(objectTable[temp].indexInWorld);
-						}
-
-						break;
-					}
-					case 0x5:
-					{
-						return(actorPtr->ANIM);
-						break;
-					}
-					case 0x6:
-					{
-						return(actorPtr->END_ANIM);
-						break;
-					}
-					case 0x7:
-					{
-						return(actorPtr->FRAME);
-						break;
-					}
-					case 0x8:
-					{
-						return(actorPtr->END_FRAME);
-						break;
-					}
-					case 0x9:
-					{
-						return(actorPtr->bodyNum);
-						break;
-					}
-					case 0xA: // MARK
-					{
-						return(actorPtr->MARK);
-						break;
-					}
-					case 0xB: // NUM_TRACK
-					{
-						return(actorPtr->trackNumber);
-						break;
-					}
-					case 0xC: // CHRONO
-					{
-						return(evalChrono(&actorPtr->CHRONO) / 60); // recheck
-						break;
-					}
-					case 0xD:
-					{
-						return(evalChrono(&actorPtr->ROOM_CHRONO) / 60); // recheck
-						break;
-					}
-					case 0xE: // DIST
-					{
-						int actorNumber = ListWorldObjets[*(s16*)currentLifePtr].objIndex;
-						currentLifePtr += 2;
-
-						if (actorNumber == -1) {
-							return(32000);
-						} else {
-							int tempX = objectTable[actorNumber].worldX;
-							int tempY = objectTable[actorNumber].worldY;
-							int tempZ = objectTable[actorNumber].worldZ;
-
-							return(calcDist(actorPtr->worldX, actorPtr->worldY, actorPtr->worldZ, tempX, tempY, tempZ));
-						}
-
-						break;
-					}
-					case 0xF: // COL_BY
-					{
-						if (actorPtr->COL_BY == -1)
-							return(-1);
-						else
-							return(objectTable[actorPtr->COL_BY].indexInWorld);
-						break;
-					}
-					case 0x10: // found
-					{
-						if (ListWorldObjets[evalVar()].flags2 & 0x8000) {
-							return(1);
-						} else {
-							return(0);
-						}
-
-						break;
-					}
-					case 0x11:
-					{
-						return action;
-						break;
-					}
-					case 0x12: // POSREL
-					{
-						int objNum;
-
-						objNum = *(s16*)currentLifePtr;
-						currentLifePtr += 2;
-
-						if (ListWorldObjets[objNum].objIndex == -1) {
-							return 0;
-						}
-
-						return (getPosRel(actorPtr, &objectTable[ListWorldObjets[objNum].objIndex]));
-
-						break;
-					}
-					case 0x13:
-					{
-						if (localJoyD & 4)
-							return 4;
-						if (localJoyD & 8)
-							return 8;
-						if (localJoyD & 1)
-							return 1;
-						if (localJoyD & 2)
-							return 2;
-
-						return 0;
-						break;
-					}
-					case 0x14:
-					{
-						return(localClick);
-						break;
-					}
-					case 0x15:
-					{
-						int temp1 = actorPtr->COL[0];
-						if (temp1 == -1) {
-							temp1 = actorPtr->COL_BY;
-							if (temp1 == -1)
-								return -1;
-						}
-
-						return objectTable[temp1].indexInWorld;
-						break;
-					}
-					case 0x16:
-					{
-						return(actorPtr->alpha);
-						break;
-					}
-					case 0x17:
-					{
-						return(actorPtr->beta);
-						break;
-					}
-					case 0x18:
-					{
-						return(actorPtr->gamma);
-						break;
-					}
-					case 0x19:
-					{
-						return(inHandTable[currentInventory]);
-						break;
-					}
-					case 0x1A:
-					{
-						return(actorPtr->hitForce);
-						break;
-					}
-					case 0x1B:
-					{
-						return(*(u16*)(((currentCamera + 6) * 2) + cameraPtr));
-						break;
-					}
-					case 0x1C:
-					{
-						int temp = *(s16*)currentLifePtr;
-						currentLifePtr += 2;
-						return(rand() % temp);
-						break;
-					}
-					case 0x1D:
-					{
-						return(actorPtr->falling);
-						break;
-					}
-					case 0x1E:
-					{
-						return(actorPtr->room);
-						break;
-					}
+			if (actorIdx == -1) {
+				switch (var1 & 0x7FFF) {
 					case 0x1F:
 					{
-						return(actorPtr->life);
-						break;
+						if (name)
+							appendFormatted("%s:", name);
+						appendFormatted("worldObjects[%d].room " ANSI_FG_DARK_GREY "%hi " ANSI_RESET, objectNumber, ListWorldObjets[objectNumber].room);
+
+						return(ListWorldObjets[objectNumber].room);
+						// break;
 					}
-					case 0x20:
+					case 0x26: // 0x24 for later games
 					{
-						int objNum;
+						if (name)
+							appendFormatted("%s:", name);
+						appendFormatted("worldObjects[%d].stage " ANSI_FG_DARK_GREY " %hi " ANSI_RESET, objectNumber, ListWorldObjets[objectNumber].stage);
 
-						objNum = *(s16*)currentLifePtr;
-						currentLifePtr += 2;
-
-						if (ListWorldObjets[objNum].flags2 & 0xC000) {
-							return(1);
-						} else {
-							return(0);
-						}
-
-						break;
-					}
-					case 0x21:
-					{
-						return(actorPtr->roomY);
-						break;
-					}
-					case 0x22: // TEST_ZV_END_ANIM
-					{
-						int temp1;
-						int temp2;
-
-						temp1 = *(s16*)currentLifePtr;
-						currentLifePtr += 2;
-						temp2 = *(s16*)currentLifePtr;
-						currentLifePtr += 2;
-
-						return(testZvEndAnim(actorPtr, HQR_Get(listAnim, temp1), temp2));
-
-						break;
-					}
-					case 0x23: // TODO: music
-					{
-						return(currentMusic);
-						break;
-					}
-					case 0x24:
-					{
-						int temp = CVars[*(s16*)currentLifePtr];
-						currentLifePtr += 2;
-						return(temp);
-						break;
-					}
-					case 0x25:
-					{
-						return(actorPtr->stage);
-						break;
-					}
-					case 0x26: // THROW
-					{
-						int objNum;
-
-						objNum = *(s16*)currentLifePtr;
-						currentLifePtr += 2;
-
-						if (ListWorldObjets[objNum].flags2 & 0x1000) {
-							return 1;
-						} else {
-							return 0;
-						}
-						break;
+						return(ListWorldObjets[objectNumber].stage);
+						// break;
 					}
 					default:
 					{
-						printf("Unhandled test type %X in evalVar\n", var1);
-						FITD_throwFatal(); 
-						assert(0); // Won't make it here, this just kills a compiler warning.
-						// return -1; // Won't make it here, this just kills a compiler warning.
-						break;
+						printf("Unsupported evalVar %X when actor not in room !\n", var1 & 0x7FFF);
+						FITD_throwFatal(); // assert(0);
+						return -1; break;
 					}
 				}
 			}
 		}
+		{
+
+			var1 &= 0x7FFF;
+
+			var1--;
+
+			switch (var1) {
+				case 0x0: // ACTOR_COLLIDER/COL[0]
+				{
+					int temp = actorPtr->COL[0];
+
+					if (name)
+						appendFormatted("%s:", name);
+					// appendFormatted("objectTable[%d].COL " ANSI_FG_DARK_GREY, temp);
+					appendFormatted("actor_collider (" ANSI_FG_DARK_GREY);
+					
+					if (temp != -1) {
+						appendFormatted("%hi) " ANSI_RESET, objectTable[temp].indexInWorld);
+						return(objectTable[temp].indexInWorld);
+					} else {
+						appendFormatted("-1) " ANSI_RESET);
+						return(-1);
+					}
+					break;
+				}
+				case 0x1: // HARD_DEC/TRIGGER_COLLIDER
+				{
+					appendFormatted("trigger_collider " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->HARD_DEC);
+					return(actorPtr->HARD_DEC);
+					break;
+				}
+				case 0x2: // HARD_COLLIDER
+				{
+					appendFormatted("hard_collider " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->HARD_COL);
+					return(actorPtr->HARD_COL);
+					break;
+				}
+				case 0x3: // TODO: Figure out specific name
+				{
+					int temp = actorPtr->HIT;
+
+					if (temp == -1) {
+						appendFormatted("-1 ");
+						return(-1);
+					} else {
+						appendFormatted("%hi ", objectTable[temp].indexInWorld);
+						return(objectTable[temp].indexInWorld);
+					}
+
+					break;
+				}
+				case 0x4: // HIT_BY
+				{
+					int temp = actorPtr->HIT_BY;
+					appendFormatted("actor_collider (" ANSI_FG_DARK_GREY);
+
+					if (temp == -1) {
+						appendFormatted("-1) " ANSI_RESET);
+						return(-1);
+					} else {
+						appendFormatted("%hi) " ANSI_RESET, objectTable[temp].indexInWorld);
+						return(objectTable[temp].indexInWorld);
+					}
+
+					break;
+				}
+				case 0x5: // ANIM
+				{
+					appendFormatted("anim " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->ANIM);
+					return(actorPtr->ANIM);
+					break;
+				}
+				case 0x6: // END_ANIM
+				{
+					appendFormatted("end_anim " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->END_ANIM);
+					return(actorPtr->END_ANIM);
+					break;
+				}
+				case 0x7: // FRAME
+				{
+					appendFormatted("frame " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->FRAME);
+					return(actorPtr->FRAME);
+					break;
+				}
+				case 0x8: // END_FRAME
+				{
+					appendFormatted("end_frame " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->END_FRAME);
+					return(actorPtr->END_FRAME);
+					break;
+				}
+				case 0x9: // BODY
+				{
+					appendFormatted("body " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->bodyNum);
+					return(actorPtr->bodyNum);
+					break;
+				}
+				case 0xA: // MARK
+				{
+					appendFormatted("mark " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->MARK);
+					return(actorPtr->MARK);
+					break;
+				}
+				case 0xB: // NUM_TRACK
+				{
+					appendFormatted("num_track " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->trackNumber);
+					return(actorPtr->trackNumber);
+					break;
+				}
+				case 0xC: // CHRONO
+				{
+					appendFormatted("chrono " ANSI_FG_DARK_GREY "(%i) " ANSI_RESET, evalChrono(&actorPtr->CHRONO) / 60);
+					return(evalChrono(&actorPtr->CHRONO) / 60); // recheck
+					break;
+				}
+				case 0xD: // TODO: CHRONO again? What's happening here?
+				{
+					appendFormatted("chrono " ANSI_FG_DARK_GREY "(%i) " ANSI_RESET, evalChrono(&actorPtr->CHRONO) / 60);
+					return(evalChrono(&actorPtr->ROOM_CHRONO) / 60); // recheck
+					break;
+				}
+				case 0xE: // DIST
+				{
+					int actorNumber = ListWorldObjets[*(s16*)currentLifePtr].objIndex;
+					currentLifePtr += 2;
+
+					if (actorNumber == -1) {
+						return(32000);
+					} else {
+						int tempX = objectTable[actorNumber].worldX;
+						int tempY = objectTable[actorNumber].worldY;
+						int tempZ = objectTable[actorNumber].worldZ;
+
+						return(calcDist(actorPtr->worldX, actorPtr->worldY, actorPtr->worldZ, tempX, tempY, tempZ));
+					}
+
+					break;
+				}
+				case 0xF: // COL_BY
+				{
+					if (actorPtr->COL_BY == -1)
+						return(-1);
+					else
+						return(objectTable[actorPtr->COL_BY].indexInWorld);
+					break;
+				}
+				case 0x10: // FOUND
+				{
+					if (ListWorldObjets[evalVar()].flags2 & 0x8000) {
+						return(1);
+					} else {
+						return(0);
+					}
+
+					break;
+				}
+				case 0x11:
+				{
+					return action;
+					break;
+				}
+				case 0x12: // POSREL
+				{
+					int objNum;
+
+					objNum = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+
+					if (ListWorldObjets[objNum].objIndex == -1) {
+						return 0;
+					}
+
+					return (getPosRel(actorPtr, &objectTable[ListWorldObjets[objNum].objIndex]));
+
+					break;
+				}
+				case 0x13: // TODO: Directional input; What exactly is this?
+				{
+					if (localJoyD & 4)
+						return 4;
+					if (localJoyD & 8)
+						return 8;
+					if (localJoyD & 1)
+						return 1;
+					if (localJoyD & 2)
+						return 2;
+
+					return 0;
+					break;
+				}
+				case 0x14: // SPACE (Set to 1 if you hold SPACE or numpad 0.)
+				{
+					return(localClick);
+					break;
+				}
+				case 0x15: // CONTACT (Returns COL[0] or (if empty) COL_BY)
+				{
+					int temp1 = actorPtr->COL[0];
+					if (temp1 == -1) {
+						temp1 = actorPtr->COL_BY;
+						if (temp1 == -1)
+							return -1;
+					}
+
+					return objectTable[temp1].indexInWorld;
+					break;
+				}
+				case 0x16: // ALPHA
+				{
+					return(actorPtr->alpha);
+					break;
+				}
+				case 0x17: // BETA
+				{
+					return(actorPtr->beta);
+					break;
+				}
+				case 0x18: // GAMMA
+				{
+					return(actorPtr->gamma);
+					break;
+				}
+				case 0x19: // TODO: What is this?
+				{
+					return(inHandTable[currentInventory]);
+					break;
+				}
+				case 0x1A: // HIT_FORCE
+				{
+					return(actorPtr->hitForce);
+					break;
+				}
+				case 0x1B: // TODO: What is this?
+				{
+					return(*(u16*)(((currentCamera + 6) * 2) + cameraPtr));
+					break;
+				}
+				case 0x1C: // RAND(ceil) (I think)
+				{
+					int temp = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+					return(rand() % temp);
+					break;
+				}
+				case 0x1D: // FALLING
+				{
+					appendFormatted("FALLING " ANSI_FG_DARK_GREY "%hi " ANSI_RESET, actorPtr->falling);
+					return(actorPtr->falling);
+					break;
+				}
+				case 0x1E: // ROOM
+				{
+					return(actorPtr->room);
+					break;
+				}
+				case 0x1F: // LIFE
+				{
+					appendFormatted("life " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->life);
+					return(actorPtr->life);
+					break;
+				}
+				case 0x20: // OBJECT(id) (I think)
+				{
+					int objNum;
+
+					objNum = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+
+					if (ListWorldObjets[objNum].flags2 & 0xC000) {
+						return(1);
+					} else {
+						return(0);
+					}
+
+					break;
+				}
+				case 0x21: // ROOMY
+				{
+					return(actorPtr->roomY);
+					break;
+				}
+				case 0x22: // TODO: TEST_ZV_END_ANIM? What is that? It's used once in the scripts
+				{
+					int temp1;
+					int temp2;
+
+					temp1 = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+					temp2 = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+
+					return(testZvEndAnim(actorPtr, HQR_Get(listAnim, temp1), temp2));
+
+					break;
+				}
+				case 0x23: // TODO: music
+				{
+					return(currentMusic);
+					break;
+				}
+				case 0x24: // TODO: What is this?
+				{
+					int temp = CVars[*(s16*)currentLifePtr];
+					currentLifePtr += 2;
+					return(temp);
+					break;
+				}
+				case 0x25: // STAGE
+				{
+					return(actorPtr->stage);
+					break;
+				}
+				case 0x26: // THROW
+				{
+					int objNum;
+
+					objNum = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+
+					if (ListWorldObjets[objNum].flags2 & 0x1000) {
+						return 1;
+					} else {
+						return 0;
+					}
+					break;
+				}
+				default:
+				{
+					printf("Unhandled test type %X in evalVar\n", var1);
+					FITD_throwFatal();
+					assert(0); // Won't make it here, this just kills a compiler warning.
+					// return -1; // Won't make it here, this just kills a compiler warning.
+					break;
+				}
+			}
+		}
+	}
 }
 
 int evalVar2(const char* name)
