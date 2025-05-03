@@ -17,6 +17,9 @@ void getZvCube(char* bodyPtr, ZVStruct* zvPtr)
 	zvPtr->ZVX1 = zvPtr->ZVZ1 = -zvPtr->ZVZ2;
 }
 
+/// @brief Sets the given bounding box with the default values stored in every BODY (viewable through the Model Viewer). This is simply the smallest box that contains all vertices. `DO_NORMAL_ZV`
+/// @param bodyPtr 
+/// @param zvPtr 
 void GiveZVObjet(char* bodyPtr, ZVStruct* zvPtr)
 {
 	s16* ptr;

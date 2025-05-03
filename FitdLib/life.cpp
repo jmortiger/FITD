@@ -223,6 +223,14 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 	return(i);
 }
 
+/// @brief Returns the bounding box of the first hard collider an actor is
+/// colliding with. Used for rendering the Vagabond (in the library): when rendering the 
+/// individual pixels, any pixel which is inside that bounding box won't be 
+/// rendered (it will get "clipped"). Because of this the Vagabond will 
+/// progressively disappear when entering a wall, and then progressively 
+/// reappear on the other side. The function is specific for the Vagabond. 
+/// Without that special trick the vagabond would produce weird rendering 
+/// glitches, similar to when the player is OOB.
 void getHardClip()
 {
 	ZVStruct* zvPtr = &currentProcessedActorPtr->zv;

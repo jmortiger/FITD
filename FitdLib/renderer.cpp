@@ -285,6 +285,16 @@ void ZoomGroupe(int zoomX, int zoomY, int zoomZ, sGroup* ptr)
 	}
 }
 
+/// @brief AnimCloud
+/// @param x 
+/// @param y 
+/// @param z 
+/// @param alpha 
+/// @param beta 
+/// @param gamma 
+/// @param pBody 
+/// @return 
+/// @todo Investigate
 int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 {
 	renderX = x - translateX;
