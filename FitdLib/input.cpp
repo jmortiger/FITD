@@ -18,6 +18,15 @@ void handleKeyDown(SDL_Event& event)
 	}
 }
 
+bool wasMouseClicked = false;
+void handleButtonDown(SDL_Event& event) {
+	switch (event.button.button) {
+		case SDL_BUTTON_LEFT:
+			wasMouseClicked = true;
+			break;
+	}
+}
+
 void readKeyboard(void)
 {
 	SDL_Event event;
@@ -36,6 +45,9 @@ void readKeyboard(void)
 		switch (event.type) {
 			case SDL_EVENT_KEY_DOWN:
 				handleKeyDown(event);
+				break;
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+				handleButtonDown(event);
 				break;
 			case SDL_EVENT_QUIT:
 				cleanupAndExit();
@@ -87,21 +99,26 @@ void readKeyboard(void)
 					key = 0x1C;
 					break;
 				case SDL_SCANCODE_ESCAPE:
+				// case SDL_SCANCODE_P: // TODO: Is the `P` pause menu & the `Esc` pause menu different?
 					key = 0x1B;
 					break;
 				case SDL_SCANCODE_UP:
+				case SDL_SCANCODE_W:
 					JoyD |= 1;
 					break;
 
 				case SDL_SCANCODE_DOWN:
+				case SDL_SCANCODE_S:
 					JoyD |= 2;
 					break;
 
 				case SDL_SCANCODE_RIGHT:
+				case SDL_SCANCODE_D:
 					JoyD |= 8;
 					break;
 
 				case SDL_SCANCODE_LEFT:
+				case SDL_SCANCODE_A:
 					JoyD |= 4;
 					break;
 				case SDL_SCANCODE_SPACE:
@@ -116,12 +133,12 @@ void readKeyboard(void)
 					break;
 				case SDL_SCANCODE_T:
 					debuggerVar_topCamera = true;
-					backgroundMode = backgroundModeEnum_3D;
+					// backgroundMode = backgroundModeEnum_3D; // This is redundant; it'll get overwritten later anyways & doesn't stop the other keys changing it.
 					break;
 				case SDL_SCANCODE_Y:
 					debuggerVar_topCamera = false;
 					backgroundMode = backgroundModeEnum_2D;
-					flagInitView = 1;
+					flagInitView = 1; // ???
 					break;
 				case SDL_SCANCODE_C:
 					debuggerVar_noHardClip = !debuggerVar_noHardClip;
@@ -146,4 +163,8 @@ void readKeyboard(void)
 		backgroundMode = backgroundModeEnum_3D;
 	}
 #endif
+	if (wasMouseClicked) {
+		wasMouseClicked = false;
+		Click = 1;
+	}
 }

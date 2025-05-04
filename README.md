@@ -60,7 +60,17 @@ Requires dependencies to be installed locally; look at the end of the Dockerfile
 7. For Linux users
 
 ## General Notes
-If using a debug build, pressing `~` will bring up a debug view.
+If using a debug build, the following options can be used:
+#### Key Binds
+ * `~` will bring up a debug view.
+ * `B`: Deactivate rendering of 2D elements (backgrounds, masks, etc).
+ * `N`: Activate rendering of 2D elements (backgrounds, masks, etc).
+ * `T`: Switch to a top-down view & deactivate rendering of 2D elements (backgrounds, masks, etc).
+ 	* `P`: Zooms the top-down camera in.
+ 	* `O`: Zooms the top-down camera out.
+	* `Y`: Restores the normal view.
+ * `C`: Toggle clipping
+ * `F`: Hold for fast forward
 
 ## Platform Notes
 ### Building with Visual Studio on Windows
