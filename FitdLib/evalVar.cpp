@@ -84,11 +84,11 @@ int getPosRel(tObject* actor1, tObject* actor2)
 
 int calcDist(int X1, int Y1, int Z1, int X2, int Y2, int Z2)
 {
-	int Xdist = abs(X1 - X2);
-	int Ydist = abs(Y1 - Y2);
-	int Zdist = abs(Z1 - Z2);
+	int xDist = abs(X1 - X2);
+	int yDist = abs(Y1 - Y2);
+	int zDist = abs(Z1 - Z2);
 
-	return(Xdist + Ydist + Zdist); // recheck overflow
+	return(xDist + yDist + zDist); // recheck overflow
 }
 
 int testZvEndAnim(tObject* actorPtr, char* animPtr, int param)
@@ -145,6 +145,32 @@ int testZvEndAnim(tObject* actorPtr, char* animPtr, int param)
 	return(0);
 }
 
+/// @brief Prints the given function name, parameter, & value in the standard fashion & returns the given value.
+/// @param param 
+/// @param val 
+/// @param name 
+/// @return `val`
+int _printFuncReturn(int param, int val, const char* name) {
+	appendFormatted("%s(%i):%i ", name, param, val);
+	return(val);
+}
+/// @brief Prints the given name alias & value in the standard fashion & returns the given value.
+/// @param val 
+/// @param name 
+/// @return `val`
+int _printReturn(int val, const char* name = NULL) {
+	appendFormatted("%s:%i ", name, val);
+	return(val);
+}
+/// @brief Gets the `indexInWorld` of the object at the specified index in `objectTable`, while outputting to `appendFormatted`.
+/// @details A simple way to strip repeated code from `evalVar` & standardize/change output formatting w/o editing a million switch cases.
+/// @param idx 
+/// @param name 
+/// @return -1 if `idx` was -1, `objectTable[idx].indexInWorld` otherwise.
+int _worldIdxFromObjTbl(int idx, const char* name = NULL) {
+	return _printReturn(idx != -1 ? objectTable[idx].indexInWorld : idx, name);
+}
+
 /// @brief 
 /// @param name 
 /// @return 
@@ -172,7 +198,7 @@ int evalVar(const char* name)
 		if (name)
 			appendFormatted("%s:", name);
 		// appendFormatted("vars[%d] <%i>, ", temp, vars[temp]);
-		appendFormatted("vars[%d] (" ANSI_FG_DARK_GREY "%s %i) " ANSI_RESET, temp, varsNameTable != NULL ? varsNameTable [temp]: "", vars[temp]);
+		appendFormatted("vars[%d]:%s:%i ", temp, varsNameTable != NULL ? varsNameTable[temp] : "", vars[temp]);
 
 		return(vars[temp]);
 	} else {
@@ -195,7 +221,7 @@ int evalVar(const char* name)
 					{
 						if (name)
 							appendFormatted("%s:", name);
-						appendFormatted("worldObjects[%d].room " ANSI_FG_DARK_GREY "%hi " ANSI_RESET, objectNumber, ListWorldObjets[objectNumber].room);
+						appendFormatted("worldObjects[%d].room:%hi ", objectNumber, ListWorldObjets[objectNumber].room);
 
 						return(ListWorldObjets[objectNumber].room);
 						// break;
@@ -204,7 +230,7 @@ int evalVar(const char* name)
 					{
 						if (name)
 							appendFormatted("%s:", name);
-						appendFormatted("worldObjects[%d].stage " ANSI_FG_DARK_GREY " %hi " ANSI_RESET, objectNumber, ListWorldObjets[objectNumber].stage);
+						appendFormatted("worldObjects[%d].stage:%hi ", objectNumber, ListWorldObjets[objectNumber].stage);
 
 						return(ListWorldObjets[objectNumber].stage);
 						// break;
@@ -219,336 +245,280 @@ int evalVar(const char* name)
 			}
 		}
 		{
-
 			var1 &= 0x7FFF;
 
 			var1--;
 
+			if (name) {
+				appendFormatted("%s:", name);
+			}
 			switch (var1) {
 				case 0x0: // ACTOR_COLLIDER/COL[0]
 				{
-					int temp = actorPtr->COL[0];
-
-					if (name)
-						appendFormatted("%s:", name);
-					// appendFormatted("objectTable[%d].COL " ANSI_FG_DARK_GREY, temp);
-					appendFormatted("actor_collider (" ANSI_FG_DARK_GREY);
-					
-					if (temp != -1) {
-						appendFormatted("%hi) " ANSI_RESET, objectTable[temp].indexInWorld);
-						return(objectTable[temp].indexInWorld);
-					} else {
-						appendFormatted("-1) " ANSI_RESET);
-						return(-1);
-					}
-					break;
+					return _worldIdxFromObjTbl(actorPtr->COL[0], "actor_collider"); break;
 				}
 				case 0x1: // HARD_DEC/TRIGGER_COLLIDER
 				{
-					appendFormatted("trigger_collider " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->HARD_DEC);
-					return(actorPtr->HARD_DEC);
-					break;
+					return _printReturn(actorPtr->HARD_DEC, "trigger_collider"); break;
 				}
 				case 0x2: // HARD_COLLIDER
 				{
-					appendFormatted("hard_collider " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->HARD_COL);
-					return(actorPtr->HARD_COL);
-					break;
+					return _printReturn(actorPtr->HARD_COL, "hard_collider"); break;
 				}
-				case 0x3: // TODO: Figure out specific name
+				case 0x3: // HIT
 				{
-					int temp = actorPtr->HIT;
-
-					if (temp == -1) {
-						appendFormatted("-1 ");
-						return(-1);
-					} else {
-						appendFormatted("%hi ", objectTable[temp].indexInWorld);
-						return(objectTable[temp].indexInWorld);
-					}
-
-					break;
+					return _worldIdxFromObjTbl(actorPtr->HIT, "hit"); break;
 				}
 				case 0x4: // HIT_BY
 				{
-					int temp = actorPtr->HIT_BY;
-					appendFormatted("actor_collider (" ANSI_FG_DARK_GREY);
-
-					if (temp == -1) {
-						appendFormatted("-1) " ANSI_RESET);
-						return(-1);
-					} else {
-						appendFormatted("%hi) " ANSI_RESET, objectTable[temp].indexInWorld);
-						return(objectTable[temp].indexInWorld);
-					}
-
-					break;
+					return _worldIdxFromObjTbl(actorPtr->HIT_BY, "actor_collider"); break;
 				}
 				case 0x5: // ANIM
 				{
-					appendFormatted("anim " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->ANIM);
-					return(actorPtr->ANIM);
-					break;
+					return _printReturn(actorPtr->ANIM, "anim"); break;
 				}
 				case 0x6: // END_ANIM
 				{
-					appendFormatted("end_anim " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->END_ANIM);
-					return(actorPtr->END_ANIM);
-					break;
+					return _printReturn(actorPtr->END_ANIM, "end_anim"); break;
 				}
 				case 0x7: // FRAME
 				{
-					appendFormatted("frame " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->FRAME);
-					return(actorPtr->FRAME);
-					break;
+					return _printReturn(actorPtr->FRAME, "frame"); break;
 				}
 				case 0x8: // END_FRAME
 				{
-					appendFormatted("end_frame " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->END_FRAME);
-					return(actorPtr->END_FRAME);
-					break;
+					return _printReturn(actorPtr->END_FRAME, "end_frame"); break;
 				}
 				case 0x9: // BODY
 				{
-					appendFormatted("body " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->bodyNum);
-					return(actorPtr->bodyNum);
-					break;
+					return _printReturn(actorPtr->bodyNum, "body"); break;
 				}
 				case 0xA: // MARK
 				{
-					appendFormatted("mark " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->MARK);
-					return(actorPtr->MARK);
-					break;
+					return _printReturn(actorPtr->MARK, "mark"); break;
 				}
 				case 0xB: // NUM_TRACK
 				{
-					appendFormatted("num_track " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->trackNumber);
-					return(actorPtr->trackNumber);
+					return _printReturn(actorPtr->trackNumber, "num_track"); break;
+				}
+				case 0xC: // TODO: CHRONO; Why recheck?
+				{
+					return _printReturn(evalChrono(&actorPtr->CHRONO) / 60, "chrono"); // recheck
 					break;
 				}
-				case 0xC: // CHRONO
+				case 0xD: // TODO: ROOM_CHRONO; Why recheck?
 				{
-					appendFormatted("chrono " ANSI_FG_DARK_GREY "(%i) " ANSI_RESET, evalChrono(&actorPtr->CHRONO) / 60);
-					return(evalChrono(&actorPtr->CHRONO) / 60); // recheck
-					break;
-				}
-				case 0xD: // TODO: CHRONO again? What's happening here?
-				{
-					appendFormatted("chrono " ANSI_FG_DARK_GREY "(%i) " ANSI_RESET, evalChrono(&actorPtr->CHRONO) / 60);
-					return(evalChrono(&actorPtr->ROOM_CHRONO) / 60); // recheck
+					return _printReturn(evalChrono(&actorPtr->ROOM_CHRONO) / 60, "room_chrono"); // recheck
 					break;
 				}
 				case 0xE: // DIST
 				{
+					// TODO: Better output?
 					int actorNumber = ListWorldObjets[*(s16*)currentLifePtr].objIndex;
 					currentLifePtr += 2;
 
-					if (actorNumber == -1) {
-						return(32000);
-					} else {
+					int val = 32000; // TODO: Why is this value given when the actor is invalid?
+					if (actorNumber != -1) {
 						int tempX = objectTable[actorNumber].worldX;
 						int tempY = objectTable[actorNumber].worldY;
 						int tempZ = objectTable[actorNumber].worldZ;
-
-						return(calcDist(actorPtr->worldX, actorPtr->worldY, actorPtr->worldZ, tempX, tempY, tempZ));
+						val = calcDist(actorPtr->worldX, actorPtr->worldY, actorPtr->worldZ, tempX, tempY, tempZ);
 					}
-
-					break;
+					/* appendFormatted("dist(%i):%i ", actorNumber, val);
+					return(val); break; */
+					return _printFuncReturn(actorNumber, val, "dist"); break;
 				}
 				case 0xF: // COL_BY
 				{
-					if (actorPtr->COL_BY == -1)
-						return(-1);
-					else
-						return(objectTable[actorPtr->COL_BY].indexInWorld);
-					break;
+					return _worldIdxFromObjTbl(actorPtr->COL_BY, "col_by"); break;
 				}
 				case 0x10: // FOUND
 				{
+					// NOTE: Currently doesn't route output to a standardized method. Will need to be changed if output formatting changes.
+					// NOTE: Nested `evalVar` call; watch for output oddities.
+					appendFormatted("isFound(" ANSI_FG_DARK_GREY);
 					if (ListWorldObjets[evalVar()].flags2 & 0x8000) {
+						appendFormatted(ANSI_RESET "):1");
 						return(1);
 					} else {
+						appendFormatted(ANSI_RESET "):0");
 						return(0);
 					}
-
 					break;
 				}
-				case 0x11:
+				case 0x11: // ACTION
 				{
-					return action;
-					break;
+					return _printReturn(action, "action"); break;
 				}
 				case 0x12: // POSREL
 				{
-					int objNum;
-
-					objNum = *(s16*)currentLifePtr;
+					int objNum = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
 
-					if (ListWorldObjets[objNum].objIndex == -1) {
-						return 0;
+					int retVal = 0;
+					if (ListWorldObjets[objNum].objIndex != -1) {
+						retVal = getPosRel(actorPtr, &objectTable[ListWorldObjets[objNum].objIndex]);
 					}
 
-					return (getPosRel(actorPtr, &objectTable[ListWorldObjets[objNum].objIndex]));
-
-					break;
+					return _printFuncReturn(objNum, retVal, "posrel"); break;
+					/* appendFormatted("posrel(%i):", objNum);
+					appendFormatted("%i ", retVal);
+					return retVal; break; */
 				}
-				case 0x13: // TODO: Directional input; What exactly is this?
+				case 0x13: // keyboard_input
 				{
+					// TODO: Validate priority & inability to be more than one.
+					// TODO: Output actual value along with returned value?
+					int retVal = 0;
 					if (localJoyD & 4)
-						return 4;
+						retVal = 4;
 					if (localJoyD & 8)
-						return 8;
+						retVal = 8;
 					if (localJoyD & 1)
-						return 1;
+						retVal = 1;
 					if (localJoyD & 2)
-						return 2;
+						retVal = 2;
 
-					return 0;
-					break;
+					return _printReturn(retVal, "keyboard_input"); break;
 				}
 				case 0x14: // SPACE (Set to 1 if you hold SPACE or numpad 0.)
 				{
-					return(localClick);
-					break;
+					return _printReturn(localClick, "space"); break;
 				}
 				case 0x15: // CONTACT (Returns COL[0] or (if empty) COL_BY)
 				{
-					int temp1 = actorPtr->COL[0];
+					/* int temp1 = actorPtr->COL[0];
 					if (temp1 == -1) {
 						temp1 = actorPtr->COL_BY;
 						if (temp1 == -1)
 							return -1;
 					}
-
 					return objectTable[temp1].indexInWorld;
-					break;
+					break; */
+					/* int temp1 = actorPtr->COL[0];
+					if (temp1 == -1) temp1 = actorPtr->COL_BY;
+					if (temp1 != -1) temp1 = objectTable[temp1].indexInWorld;
+					appendFormatted("contact " ANSI_FG_DARK_GREY "%hi " ANSI_RESET, temp1);
+					return temp1; break; */
+					int temp = actorPtr->COL[0];
+					if (temp == -1) temp = actorPtr->COL_BY;
+					return _worldIdxFromObjTbl(temp, "contact"); break;
 				}
 				case 0x16: // ALPHA
 				{
-					return(actorPtr->alpha);
-					break;
+					return _printReturn(actorPtr->alpha, "alpha"); break;
 				}
 				case 0x17: // BETA
 				{
-					return(actorPtr->beta);
-					break;
+					return _printReturn(actorPtr->beta, "beta"); break;
 				}
 				case 0x18: // GAMMA
 				{
-					return(actorPtr->gamma);
-					break;
+					return _printReturn(actorPtr->gamma, "gamma"); break;
 				}
-				case 0x19: // TODO: What is this?
+				case 0x19: // INHAND
 				{
-					return(inHandTable[currentInventory]);
-					break;
+					return _printReturn(inHandTable[currentInventory], "inhand"); break;
 				}
 				case 0x1A: // HIT_FORCE
 				{
-					return(actorPtr->hitForce);
-					break;
+					return _printReturn(actorPtr->hitForce, "hitforce"); break;
 				}
-				case 0x1B: // TODO: What is this?
+				case 0x1B: // CAMERA (used in L469 for the spider)
 				{
-					return(*(u16*)(((currentCamera + 6) * 2) + cameraPtr));
-					break;
+					return _printReturn(*(u16*)(((currentCamera + 6) * 2) + cameraPtr), "camera"); break;
 				}
 				case 0x1C: // RAND(ceil) (I think)
 				{
 					int temp = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
-					return(rand() % temp);
-					break;
+					int val = rand() % temp;
+					// appendFormatted("rand(%i):%i ", temp, val);
+					// return(val); break;
+					return _printFuncReturn(temp, val, "rand"); break;
 				}
 				case 0x1D: // FALLING
 				{
-					appendFormatted("FALLING " ANSI_FG_DARK_GREY "%hi " ANSI_RESET, actorPtr->falling);
-					return(actorPtr->falling);
-					break;
+					return _printReturn(actorPtr->falling, "falling"); break;
 				}
 				case 0x1E: // ROOM
 				{
-					return(actorPtr->room);
-					break;
+					return _printReturn(actorPtr->room, "room"); break;
 				}
 				case 0x1F: // LIFE
 				{
-					appendFormatted("life " ANSI_FG_DARK_GREY "(%hi) " ANSI_RESET, actorPtr->life);
-					return(actorPtr->life);
-					break;
+					return _printReturn(actorPtr->life, "life"); break;
 				}
 				case 0x20: // OBJECT(id) (I think)
 				{
-					int objNum;
-
-					objNum = *(s16*)currentLifePtr;
+					int objNum = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
 
+					int retVal;
 					if (ListWorldObjets[objNum].flags2 & 0xC000) {
-						return(1);
+						retVal = 1;
 					} else {
-						return(0);
+						retVal = 0;
 					}
-
-					break;
+					// appendFormatted("object(%i):%i ", objNum, retVal);
+					// return(retVal); break;
+					return _printFuncReturn(objNum, retVal, "object"); break;
 				}
 				case 0x21: // ROOMY
 				{
-					return(actorPtr->roomY);
-					break;
+					return _printReturn(actorPtr->roomY, "room_y"); break;
 				}
 				case 0x22: // TODO: TEST_ZV_END_ANIM? What is that? It's used once in the scripts
 				{
-					int temp1;
-					int temp2;
-
-					temp1 = *(s16*)currentLifePtr;
+					// NOTE: Currently doesn't route output to a standardized method. Will need to be changed if output formatting changes.
+					int animNum = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
-					temp2 = *(s16*)currentLifePtr;
+					int temp = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
 
-					return(testZvEndAnim(actorPtr, HQR_Get(listAnim, temp1), temp2));
-
-					break;
+					int retVal = testZvEndAnim(actorPtr, HQR_Get(listAnim, animNum), temp);
+					appendFormatted("test_zv_end_anim(anim:%i,%i):%i ", animNum, temp, retVal);
+					return(retVal); break;
 				}
-				case 0x23: // TODO: music
+				case 0x23: // TODO: music; Used to check if the correct music is playing to appease the dance hall ghosts
 				{
-					return(currentMusic);
-					break;
+					return _printReturn(currentMusic, "music"); break;
 				}
-				case 0x24: // TODO: What is this?
+				case 0x24: // TODO: Is this just CVars?
 				{
-					int temp = CVars[*(s16*)currentLifePtr];
+					/* int temp = CVars[*(s16*)currentLifePtr];
 					currentLifePtr += 2;
-					return(temp);
-					break;
+					return(temp); break; */
+					// NOTE: Currently doesn't route output to a standardized method. Will need to be changed if output formatting changes.
+					// TODO: Print CVar name
+					int idx = *(s16*)currentLifePtr;
+					currentLifePtr += 2;
+					int temp = CVars[idx];
+					appendFormatted("cvars[%i]:%i ", idx, temp);
+					return(temp); break;
 				}
 				case 0x25: // STAGE
 				{
-					return(actorPtr->stage);
-					break;
+					return _printReturn(actorPtr->stage, "stage"); break;
 				}
 				case 0x26: // THROW
 				{
-					int objNum;
-
-					objNum = *(s16*)currentLifePtr;
+					int objNum = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
 
+					int retVal;
 					if (ListWorldObjets[objNum].flags2 & 0x1000) {
-						return 1;
+						retVal = 1;
 					} else {
-						return 0;
+						retVal = 0;
 					}
-					break;
+					return _printFuncReturn(objNum, retVal, "throw"); break;
 				}
 				default:
 				{
 					printf("Unhandled test type %X in evalVar\n", var1);
 					FITD_throwFatal();
 					assert(0); // Won't make it here, this just kills a compiler warning.
-					// return -1; // Won't make it here, this just kills a compiler warning.
 					break;
 				}
 			}
