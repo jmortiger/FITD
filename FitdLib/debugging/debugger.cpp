@@ -689,7 +689,7 @@ bool _shouldPrint(debugCategoryEnum category, debugLevelEnum level = (debugLevel
 		unsigned int flag = DBO_NONE + 1;
 		while (flag < DBO_ALL) {
 			if (category & flag && 
-				((debugLevelEnum*)&outputConfig)[getBitFlagIndex(flag) * sizeof(debugCategoryEnum)]) {
+				((debugLevelEnum*)&outputConfig)[getBitFlagIndex(flag) * sizeof(debugLevelEnum)] & level) {
 				return true;
 			} else { flag <<= 1; }
 		}
