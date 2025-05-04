@@ -23,22 +23,22 @@
 
 enum enumCVars
 {
-	SAMPLE_PAGE,
-	BODY_FLAMME,
-	MAX_WEIGHT_LOADABLE,
-	TEXTE_CREDITS,
-	SAMPLE_TONNERRE,
-	INTRO_DETECTIVE,
-	INTRO_HERITIERE,
-	WORLD_NUM_PERSO,
-	CHOOSE_PERSO,
-	SAMPLE_CHOC,
-	SAMPLE_PLOUF,
-	REVERSE_OBJECT,
-	KILLED_SORCERER,
-	LIGHT_OBJECT,
-	FOG_FLAG,
-	DEAD_PERSO,
+	SAMPLE_PAGE = 0,
+	BODY_FLAMME = 1, // gun flash body
+	MAX_WEIGHT_LOADABLE = 2, // max inventory weight
+	TEXTE_CREDITS = 3, // Credits text
+	SAMPLE_TONNERRE = 4, // Thunder SFX
+	INTRO_DETECTIVE = 5, // Detective intro text (Edward)
+	INTRO_HERITIERE = 6, // Heiress intro text (Emily)
+	WORLD_NUM_PERSO = 7, // initial camera target
+	CHOOSE_PERSO = 8, // The selected protagonist (0 for Edward, 1 for Emily)
+	SAMPLE_CHOC = 9, // Hit SFX
+	SAMPLE_PLOUF = 10, // Splash SFX
+	REVERSE_OBJECT = 11, // revert lantern object id
+	KILLED_SORCERER = 12, // Pregtz dead
+	LIGHT_OBJECT = 13,
+	FOG_FLAG = 14, // ashtray smoke flag
+	DEAD_PERSO = 15, // Game over flag
 	JET_SARBACANE, // Blowgun jet
 	TIR_CANON, // Cannon shot
 	JET_SCALPEL,
@@ -67,23 +67,23 @@ int getCVarsIdx(enumCVars);
 int getCVarsIdx(int);
 
 //////////////////////
-
-#define	SAMPLE_PAGE				0
-#define	BODY_FLAMME				1 // Flame
-#define	MAX_WEIGHT_LOADABLE		2
-#define	TEXTE_CREDITS			3 // Credits text
-#define	SAMPLE_TONNERRE			4 // Thunder sfx
-#define	INTRO_DETECTIVE			5 // Detective intro (Edward)
-#define	INTRO_HERITIERE			6 // Heiress intro (Emily)
-#define	WORLD_NUM_PERSO			7
-#define	CHOOSE_PERSO			8
-#define	SAMPLE_CHOC				9
-#define	SAMPLE_PLOUF			10 // Splash sfx
-#define	REVERSE_OBJECT			11
-#define	KILLED_SORCERER			12
-#define	LIGHT_OBJECT			13
-#define	FOG_FLAG				14
-#define	DEAD_PERSO				15
+// TODO: Why are these overwriting the enum?
+// #define	SAMPLE_PAGE				0
+// #define	BODY_FLAMME				1 // Flame
+// #define	MAX_WEIGHT_LOADABLE		2
+// #define	TEXTE_CREDITS			3 // Credits text
+// #define	SAMPLE_TONNERRE			4 // Thunder sfx
+// #define	INTRO_DETECTIVE			5 // Detective intro (Edward)
+// #define	INTRO_HERITIERE			6 // Heiress intro (Emily)
+// #define	WORLD_NUM_PERSO			7
+// #define	CHOOSE_PERSO			8
+// #define	SAMPLE_CHOC				9
+// #define	SAMPLE_PLOUF			10 // Splash sfx
+// #define	REVERSE_OBJECT			11
+// #define	KILLED_SORCERER			12 // Pregtz
+// #define	LIGHT_OBJECT			13
+// #define	FOG_FLAG				14
+// #define	DEAD_PERSO				15
 
 
 //////////////////
@@ -148,7 +148,6 @@ typedef signed int S32;
 #include "audio/fmopl.h"
 #include "main.h"
 #include "sequence.h"
-// #include "./debug/debug.h"
 
 // include game specific stuff
 #include "AITD1.h"
