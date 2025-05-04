@@ -613,7 +613,7 @@ char _lbl_var204[]	= "temporary (used by LIFE 59 for returning previous BODY aft
 char _lbl_var205[]	= "flag_unusedIsUnderground"; // initVal = 0
 char _lbl_var206[]	= "fallHeight"; // initVal = 0
 
-char* varsNameTable[] = {
+const char* varsNameTable[] = {
 	_lbl_var0,
 	_lbl_var1,
 	_lbl_var2,

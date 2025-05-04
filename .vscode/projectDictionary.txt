@@ -16,6 +16,7 @@ Fitd*
 FMOPL
 FOUNDABLE
 FRANCAIS
+hitforce
 imgui
 ITALIANO
 ITD*

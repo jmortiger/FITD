@@ -66,28 +66,6 @@ extern int* currentCVarTable;
 int getCVarsIdx(enumCVars);
 int getCVarsIdx(int);
 
-//////////////////////
-// TODO: Why are these overwriting the enum?
-// #define	SAMPLE_PAGE				0
-// #define	BODY_FLAMME				1 // Flame
-// #define	MAX_WEIGHT_LOADABLE		2
-// #define	TEXTE_CREDITS			3 // Credits text
-// #define	SAMPLE_TONNERRE			4 // Thunder sfx
-// #define	INTRO_DETECTIVE			5 // Detective intro (Edward)
-// #define	INTRO_HERITIERE			6 // Heiress intro (Emily)
-// #define	WORLD_NUM_PERSO			7
-// #define	CHOOSE_PERSO			8
-// #define	SAMPLE_CHOC				9
-// #define	SAMPLE_PLOUF			10 // Splash sfx
-// #define	REVERSE_OBJECT			11
-// #define	KILLED_SORCERER			12 // Pregtz
-// #define	LIGHT_OBJECT			13
-// #define	FOG_FLAG				14
-// #define	DEAD_PERSO				15
-
-
-//////////////////
-
 #if !AITD_UE4
 typedef unsigned char uint8;
 typedef unsigned short uint16;

@@ -343,7 +343,7 @@ debugCategoryEnum categoryStack[10];
 
 debugLevelEnum defaultLevels = (debugLevelEnum)(debugLevelEnum::DBO_L_ERROR | debugLevelEnum::DBO_L_WARN | debugLevelEnum::DBO_L_INFO);
 debugOutputConfig outputConfig;
-// #define __DEBUG_parseDebugParam__
+// #define __DEBUG_parseDebugParam__ // Uncomment to turn on `parseDebugParam` output
 void parseDebugParam(int argc, char* argv[])
 {
 #ifdef __DEBUG_parseDebugParam__

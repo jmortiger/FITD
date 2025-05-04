@@ -18,6 +18,14 @@ int getMatrix(int param1, int actorIdx, int param2)
 	return *(char*)matrixPtr;
 }
 
+/// @brief 
+/// @param actor1 
+/// @param actor2 
+/// @return 
+/// @todo Change to be more self-documenting.
+/// @details Evaluates the position of the current actor (the one that executes the script) relative to another actor specified in the parameter. Note that the angle of the current actor is considered, not only the position.
+/// 
+/// The possible values are: 0 (any), 1 (left), 2 (right), 4 (front) and 8 (back).
 int getPosRel(tObject* actor1, tObject* actor2)
 {
 	int beta1 = actor1->beta;

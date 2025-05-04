@@ -207,5 +207,5 @@ void DebugBFlushLn();
 void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
 // void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
 
-extern char* varsNameTable[];
+extern const char* varsNameTable[];
 #endif
