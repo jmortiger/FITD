@@ -208,4 +208,8 @@ void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
 // void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
 
 extern const char* varsNameTable[];
+
+#define _MAX_LOGGED_LIFE_SCRIPTS 100
+extern int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
+extern int numLoggedLifeScripts;
 #endif

@@ -443,6 +443,17 @@ char currentDebugLifeLine[1024 * 1024];
 
 void appendFormatted(const char* format, ...)
 {
+	if (numLoggedLifeScripts <= 0) {
+		goto doContinue;
+	}
+	for (int i = 0; i < numLoggedLifeScripts; i++)
+	{
+		if (loggedLifeScripts[i] == currentLifeNum) {
+			goto doContinue;
+		}
+	}
+	return;
+doContinue:
 	va_list argList;
 
 	va_start(argList, format);
