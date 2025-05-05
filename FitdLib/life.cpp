@@ -102,10 +102,10 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 
 	// If there's no free actor entry, abort
 	if (i == NUM_MAX_OBJECT) {
-		printf("No space for flow actor of type %d\n", mode);
+		DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "No space for flow actor of type %d", mode);
 		return(-1);
 	}
-	printf("Spawning Flow actor of type %d in index %d of %d...\n", mode, i, NUM_MAX_OBJECT - 1);
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Spawning Flow actor of type %d (%s) in index %d of %d...", mode, i, NUM_MAX_OBJECT - 1);
 
 	currentActorPtr->_flags = AF_SPECIAL;
 	currentActorPtr->indexInWorld = -2;
@@ -154,7 +154,7 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 			flowPtr = HQ_PtrMalloc(HQ_Memory, currentActorPtr->FRAME);
 
 			if (!flowPtr) {
-				printf("Failed to allocate memory for flow actor of type ()");
+				DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Failed to allocate memory for flow actor of type (%i), aborting.", mode);
 				currentActorPtr->indexInWorld = -1;
 				return(-1);
 			}
@@ -469,6 +469,8 @@ doContinue:
 
 void processLife(int lifeNum, bool callFoundLife)
 {
+	DebugPrintfLnCategory(debugLevelEnum::DBO_L_INFO, debugCategoryEnum::DBO_LIFE, "processLife(lifeNum:%i, callFoundLife:%i)", lifeNum, callFoundLife);
+	DebugBeginSection(debugCategoryEnum::DBO_LIFE);
 	int exitLife = 0;
 	//int switchVal = 0;
 	int var_6;
@@ -508,7 +510,7 @@ void processLife(int lifeNum, bool callFoundLife)
 			currentLifePtr += 2;
 
 			if (var_6 == -1) {
-				printf("Unsupported newVar = -1\n");
+				DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Unsupported newVar = -1");
 				FITD_throwFatal(); // assert(0);
 			} else {
 				currentProcessedActorIdx = ListWorldObjets[var_6].objIndex;
@@ -582,7 +584,7 @@ void processLife(int lifeNum, bool callFoundLife)
 								ListWorldObjets[var_6].frame = 0;
 							break;
 						}
-						case	LM_ANIM_RESET:
+						case LM_ANIM_RESET:
 						{
 							ASSERT(g_gameId >= JACK);
 							ListWorldObjets[var_6].anim = *(s16*)(currentLifePtr);
@@ -703,14 +705,19 @@ void processLife(int lifeNum, bool callFoundLife)
 
 							break;
 						}
-						case  LM_START_CHRONO: // arrive in original interpreter too
+						case LM_START_CHRONO: // arrive in original interpreter too
 						{
-							break;
+							break; // TODO: Is this right?
 						}
 						////////////////////////////////////////////////////////////////////////
 						default:
 						{
-							printf("Unsupported opcode %X when actor isn't in floor\n", currentOpcode & 0x7FFF);
+#ifdef DEBUG
+							if (strlen(currentDebugLifeLine)) {
+								printf("%s\n", currentDebugLifeLine);
+							}
+#endif
+							DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Unsupported opcode %X when actor isn't in floor\n", currentOpcode & 0x7FFF);
 							FITD_throwFatal(); // assert(0);
 							break;
 						}
@@ -1031,7 +1038,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_FIRE_UP_DOWN: // TODO AITD3 only
+				case LM_FIRE_UP_DOWN: // TODO: AITD3 only
 				{
 					appendFormatted("LM_FIRE_UP_DOWN ");
 
@@ -1199,15 +1206,12 @@ void processLife(int lifeNum, bool callFoundLife)
 					appendFormatted("LM_COPY_ANGLE ");
 					int object = readNextArgument("object");
 					int localObjectIndex = ListWorldObjets[object].objIndex;
-					if (localObjectIndex == -1) {
-						currentProcessedActorPtr->alpha = ListWorldObjets[object].alpha;
-						currentProcessedActorPtr->beta = ListWorldObjets[object].beta;
-						currentProcessedActorPtr->gamma = ListWorldObjets[object].gamma;
-					} else {
-						currentProcessedActorPtr->alpha = objectTable[localObjectIndex].alpha;
-						currentProcessedActorPtr->beta = objectTable[localObjectIndex].beta;
-						currentProcessedActorPtr->gamma = objectTable[localObjectIndex].gamma;
+					if (localObjectIndex != -1) {
+						object = localObjectIndex;
 					}
+					currentProcessedActorPtr->alpha = ListWorldObjets[object].alpha;
+					currentProcessedActorPtr->beta = ListWorldObjets[object].beta;
+					currentProcessedActorPtr->gamma = ListWorldObjets[object].gamma;
 					break;
 				}
 				case LM_STAGE: // STAGE
@@ -1299,8 +1303,9 @@ void processLife(int lifeNum, bool callFoundLife)
 					appendFormatted("LM_SPECIAL ");
 					lifeTempVar1 = readNextArgument("type");
 
+					// TODO: Muzzle Flash & Debris is absent
 					switch (lifeTempVar1) {
-						case 0: // evaporate
+						case FLOW_DEATH: // evaporate
 						{
 							InitSpecialObjet(0,
 								currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
@@ -1314,7 +1319,7 @@ void processLife(int lifeNum, bool callFoundLife)
 								&currentProcessedActorPtr->zv);
 							break;
 						}
-						case 1: // flow
+						case FLOW_BLOOD: // flow
 						{
 							currentProcessedActorPtr = &objectTable[currentProcessedActorPtr->HIT_BY];
 
@@ -1334,7 +1339,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 							break;
 						}
-						case 4: // cigar smoke
+						case FLOW_SMOKE: // cigar smoke
 						{
 							InitSpecialObjet(4,
 								currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
@@ -1600,7 +1605,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					}
 					break;
 				}
-				case	LM_2D_ANIM_SAMPLE:
+				case LM_2D_ANIM_SAMPLE:
 				{
 					appendFormatted("LM_2D_ANIM_SAMPLE ");
 					int sampleNumber;
@@ -1636,22 +1641,20 @@ void processLife(int lifeNum, bool callFoundLife)
 					//setSampleFreq(0);
 					break;
 				}
-				case LM_REP_SAMPLE: // sample TODO!
+				case LM_REP_SAMPLE: // TODO: Implement
 				{
 					appendFormatted("LM_REP_SAMPLE ");
-					if ((g_gameId == AITD1) || (g_gameId == TIMEGATE)) {
+					if (g_gameId == AITD1 || g_gameId == TIMEGATE) {
 						evalVar();
 						currentLifePtr += 2;
 					} else {
 						currentLifePtr += 4;
 					}
-					//printf("LM_REP_SAMPLE\n");
 					break;
 				}
-				case LM_STOP_SAMPLE: // todo
+				case LM_STOP_SAMPLE: // TODO: Implement
 				{
 					appendFormatted("LM_STOP_SAMPLE ");
-					//printf("LM_STOP_SAMPLE\n");
 
 					if (g_gameId == TIMEGATE) {
 						readNextArgument();
@@ -1659,7 +1662,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_SAMPLE_THEN: //todo
+				case LM_SAMPLE_THEN: // TODO: Something?
 				{
 					appendFormatted("LM_SAMPLE_THEN ");
 					if (g_gameId == AITD1) {
@@ -1691,7 +1694,6 @@ void processLife(int lifeNum, bool callFoundLife)
 					playSound(evalVar());
 					nextSample = evalVar() | 0x4000;
 					// setSampleFreq(0);
-					//printf("LM_SAMPLE_THEN_REPEAT\n");
 					break;
 				}
 				////////////////////////////////////////////////////////////////////////
@@ -1704,7 +1706,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					playMusic(newMusicIdx);
 					break;
 				}
-				case LM_NEXT_MUSIC: // TODO
+				case LM_NEXT_MUSIC: // TODO: Something?
 				{
 					appendFormatted("LM_NEXT_MUSIC ");
 					int musicIdx = *(s16*)(currentLifePtr);
@@ -1718,7 +1720,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
-				case LM_FADE_MUSIC: // ? fade out music and play another music ?
+				case LM_FADE_MUSIC: // Exclusive to floppy disc version
 				{
 					appendFormatted("LM_FADE_MUSIC ");
 					lifeTempVar1 = *(s16*)(currentLifePtr);
@@ -1738,7 +1740,6 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_RND_FREQ: // TODO
 				{
 					appendFormatted("LM_RND_FREQ ");
-					//printf("LM_RND_FREQ\n");
 					currentLifePtr += 2;
 					break;
 				}
@@ -1771,19 +1772,17 @@ void processLife(int lifeNum, bool callFoundLife)
 					} */
 					break;
 				}
-				case LM_PLUIE:
+				case LM_PLUIE: // TODO: This
 				{
 					appendFormatted("LM_PLUIE ");
-					//printf("LM_PLUIE\n");
-					// TODO
 					currentLifePtr += 2;
 					break;
 				}
 				case LM_WATER: // ? shaking related
 				{
 					appendFormatted("LM_WATER ");
+					// TODO: This
 					// TODO: Warning, AITD1/AITD2 diff
-					printf("LM_WATER\n");
 					//          mainLoopVar1 = shakeVar1 = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
 
@@ -2317,7 +2316,12 @@ void processLife(int lifeNum, bool callFoundLife)
 				}
 				default:
 				{
-					printf("Unknown opcode %X (%i) in processLife\n", currentOpcode & 0x7FFF, opcodeLocated);
+#ifdef DEBUG
+					if (strlen(currentDebugLifeLine)) {
+						printf("%s\n", currentDebugLifeLine);
+					}
+#endif
+					DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Unknown opcode %X (%i) in processLife\n", currentOpcode & 0x7FFF, opcodeLocated);
 					FITD_throwFatal(); // assert(0);
 				}
 			}
@@ -2337,4 +2341,6 @@ void processLife(int lifeNum, bool callFoundLife)
 	}
 
 	currentLifeNum = -1;
+
+	DebugEndSection();
 }

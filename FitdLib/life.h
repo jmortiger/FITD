@@ -137,6 +137,19 @@ typedef enum enumLifeMacro enumLifeMacro;
 extern enumLifeMacro AITD1LifeMacroTable[];
 extern enumLifeMacro AITD2LifeMacroTable[];
 
+/// @brief 
+/// @todo Double Check Values 
+enum FlowActorType : unsigned char {
+	FLOW_DEATH, // Death bubbles (0)
+	FLOW_BLOOD, // Blood (1)
+	FLOW_DEBRIS, // Impact Debris (2)
+	FLOW_FLASH, // Muzzle flash (3)
+	FLOW_SMOKE, // Smoke (4)
+
+	FLOW_BUBBLES = FLOW_DEATH, // Death bubbles (0)
+	FLOW_MUZZLE = FLOW_FLASH, // Muzzle flash (3)
+}; typedef enum FlowActorType FlowActorType;
+
 void processLife(int lifeNum, bool callFoundLife);
 
 /// @brief Creates [flow actors](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#FLOW_ACTORS).

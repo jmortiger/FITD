@@ -219,27 +219,21 @@ int evalVar(const char* name)
 				switch (var1 & 0x7FFF) {
 					case 0x1F:
 					{
-						if (name)
-							appendFormatted("%s:", name);
+						if (name) appendFormatted("%s:", name);
 						appendFormatted("worldObjects[%d].room:%hi ", objectNumber, ListWorldObjets[objectNumber].room);
-
 						return(ListWorldObjets[objectNumber].room);
-						// break;
 					}
 					case 0x26: // 0x24 for later games
 					{
-						if (name)
-							appendFormatted("%s:", name);
+						if (name) appendFormatted("%s:", name);
 						appendFormatted("worldObjects[%d].stage:%hi ", objectNumber, ListWorldObjets[objectNumber].stage);
-
 						return(ListWorldObjets[objectNumber].stage);
-						// break;
 					}
 					default:
 					{
-						printf("Unsupported evalVar %X when actor not in room !\n", var1 & 0x7FFF);
+						DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Unsupported evalVar %X when actor not in room !\n", var1 & 0x7FFF);
 						FITD_throwFatal(); // assert(0);
-						return -1; break;
+						return -1;
 					}
 				}
 			}
@@ -249,67 +243,63 @@ int evalVar(const char* name)
 
 			var1--;
 
-			if (name) {
-				appendFormatted("%s:", name);
-			}
+			if (name) appendFormatted("%s:", name);
 			switch (var1) {
 				case 0x0: // ACTOR_COLLIDER/COL[0]
 				{
-					return _worldIdxFromObjTbl(actorPtr->COL[0], "actor_collider"); break;
+					return _worldIdxFromObjTbl(actorPtr->COL[0], "actor_collider");
 				}
 				case 0x1: // HARD_DEC/TRIGGER_COLLIDER
 				{
-					return _printReturn(actorPtr->HARD_DEC, "trigger_collider"); break;
+					return _printReturn(actorPtr->HARD_DEC, "trigger_collider");
 				}
 				case 0x2: // HARD_COLLIDER
 				{
-					return _printReturn(actorPtr->HARD_COL, "hard_collider"); break;
+					return _printReturn(actorPtr->HARD_COL, "hard_collider");
 				}
 				case 0x3: // HIT
 				{
-					return _worldIdxFromObjTbl(actorPtr->HIT, "hit"); break;
+					return _worldIdxFromObjTbl(actorPtr->HIT, "hit");
 				}
 				case 0x4: // HIT_BY
 				{
-					return _worldIdxFromObjTbl(actorPtr->HIT_BY, "actor_collider"); break;
+					return _worldIdxFromObjTbl(actorPtr->HIT_BY, "actor_collider");
 				}
 				case 0x5: // ANIM
 				{
-					return _printReturn(actorPtr->ANIM, "anim"); break;
+					return _printReturn(actorPtr->ANIM, "anim");
 				}
 				case 0x6: // END_ANIM
 				{
-					return _printReturn(actorPtr->END_ANIM, "end_anim"); break;
+					return _printReturn(actorPtr->END_ANIM, "end_anim");
 				}
 				case 0x7: // FRAME
 				{
-					return _printReturn(actorPtr->FRAME, "frame"); break;
+					return _printReturn(actorPtr->FRAME, "frame");
 				}
 				case 0x8: // END_FRAME
 				{
-					return _printReturn(actorPtr->END_FRAME, "end_frame"); break;
+					return _printReturn(actorPtr->END_FRAME, "end_frame");
 				}
 				case 0x9: // BODY
 				{
-					return _printReturn(actorPtr->bodyNum, "body"); break;
+					return _printReturn(actorPtr->bodyNum, "body");
 				}
 				case 0xA: // MARK
 				{
-					return _printReturn(actorPtr->MARK, "mark"); break;
+					return _printReturn(actorPtr->MARK, "mark");
 				}
 				case 0xB: // NUM_TRACK
 				{
-					return _printReturn(actorPtr->trackNumber, "num_track"); break;
+					return _printReturn(actorPtr->trackNumber, "num_track");
 				}
 				case 0xC: // TODO: CHRONO; Why recheck?
 				{
 					return _printReturn(evalChrono(&actorPtr->CHRONO) / 60, "chrono"); // recheck
-					break;
 				}
 				case 0xD: // TODO: ROOM_CHRONO; Why recheck?
 				{
 					return _printReturn(evalChrono(&actorPtr->ROOM_CHRONO) / 60, "room_chrono"); // recheck
-					break;
 				}
 				case 0xE: // DIST
 				{
@@ -324,31 +314,24 @@ int evalVar(const char* name)
 						int tempZ = objectTable[actorNumber].worldZ;
 						val = calcDist(actorPtr->worldX, actorPtr->worldY, actorPtr->worldZ, tempX, tempY, tempZ);
 					}
-					/* appendFormatted("dist(%i):%i ", actorNumber, val);
-					return(val); break; */
-					return _printFuncReturn(actorNumber, val, "dist"); break;
+					return _printFuncReturn(actorNumber, val, "dist");
 				}
 				case 0xF: // COL_BY
 				{
-					return _worldIdxFromObjTbl(actorPtr->COL_BY, "col_by"); break;
+					return _worldIdxFromObjTbl(actorPtr->COL_BY, "col_by");
 				}
 				case 0x10: // FOUND
 				{
 					// NOTE: Currently doesn't route output to a standardized method. Will need to be changed if output formatting changes.
 					// NOTE: Nested `evalVar` call; watch for output oddities.
 					appendFormatted("isFound(" ANSI_FG_DARK_GREY);
-					if (ListWorldObjets[evalVar()].flags2 & 0x8000) {
-						appendFormatted(ANSI_RESET "):1");
-						return(1);
-					} else {
-						appendFormatted(ANSI_RESET "):0");
-						return(0);
-					}
-					break;
+					int retVal = ListWorldObjets[evalVar()].flags2 & 0x8000 ? 1 : 0;
+					appendFormatted(ANSI_RESET "):%i", retVal);
+					return retVal;
 				}
 				case 0x11: // ACTION
 				{
-					return _printReturn(action, "action"); break;
+					return _printReturn(action, "action");
 				}
 				case 0x12: // POSREL
 				{
@@ -360,10 +343,7 @@ int evalVar(const char* name)
 						retVal = getPosRel(actorPtr, &objectTable[ListWorldObjets[objNum].objIndex]);
 					}
 
-					return _printFuncReturn(objNum, retVal, "posrel"); break;
-					/* appendFormatted("posrel(%i):", objNum);
-					appendFormatted("%i ", retVal);
-					return retVal; break; */
+					return _printFuncReturn(objNum, retVal, "posrel");
 				}
 				case 0x13: // keyboard_input
 				{
@@ -379,94 +359,71 @@ int evalVar(const char* name)
 					if (localJoyD & 2)
 						retVal = 2;
 
-					return _printReturn(retVal, "keyboard_input"); break;
+					return _printReturn(retVal, "keyboard_input");
 				}
 				case 0x14: // SPACE (Set to 1 if you hold SPACE or numpad 0.)
 				{
-					return _printReturn(localClick, "space"); break;
+					return _printReturn(localClick, "space");
 				}
 				case 0x15: // CONTACT (Returns COL[0] or (if empty) COL_BY)
 				{
-					/* int temp1 = actorPtr->COL[0];
-					if (temp1 == -1) {
-						temp1 = actorPtr->COL_BY;
-						if (temp1 == -1)
-							return -1;
-					}
-					return objectTable[temp1].indexInWorld;
-					break; */
-					/* int temp1 = actorPtr->COL[0];
-					if (temp1 == -1) temp1 = actorPtr->COL_BY;
-					if (temp1 != -1) temp1 = objectTable[temp1].indexInWorld;
-					appendFormatted("contact " ANSI_FG_DARK_GREY "%hi " ANSI_RESET, temp1);
-					return temp1; break; */
 					int temp = actorPtr->COL[0];
 					if (temp == -1) temp = actorPtr->COL_BY;
-					return _worldIdxFromObjTbl(temp, "contact"); break;
+					return _worldIdxFromObjTbl(temp, "contact");
 				}
 				case 0x16: // ALPHA
 				{
-					return _printReturn(actorPtr->alpha, "alpha"); break;
+					return _printReturn(actorPtr->alpha, "alpha");
 				}
 				case 0x17: // BETA
 				{
-					return _printReturn(actorPtr->beta, "beta"); break;
+					return _printReturn(actorPtr->beta, "beta");
 				}
 				case 0x18: // GAMMA
 				{
-					return _printReturn(actorPtr->gamma, "gamma"); break;
+					return _printReturn(actorPtr->gamma, "gamma");
 				}
 				case 0x19: // INHAND
 				{
-					return _printReturn(inHandTable[currentInventory], "inhand"); break;
+					return _printReturn(inHandTable[currentInventory], "inhand");
 				}
 				case 0x1A: // HIT_FORCE
 				{
-					return _printReturn(actorPtr->hitForce, "hitforce"); break;
+					return _printReturn(actorPtr->hitForce, "hitforce");
 				}
 				case 0x1B: // CAMERA (used in L469 for the spider)
 				{
-					return _printReturn(*(u16*)(((currentCamera + 6) * 2) + cameraPtr), "camera"); break;
+					return _printReturn(*(u16*)(((currentCamera + 6) * 2) + cameraPtr), "camera");
 				}
 				case 0x1C: // RAND(ceil) (I think)
 				{
 					int temp = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
 					int val = rand() % temp;
-					// appendFormatted("rand(%i):%i ", temp, val);
-					// return(val); break;
-					return _printFuncReturn(temp, val, "rand"); break;
+					return _printFuncReturn(temp, val, "rand");
 				}
 				case 0x1D: // FALLING
 				{
-					return _printReturn(actorPtr->falling, "falling"); break;
+					return _printReturn(actorPtr->falling, "falling");
 				}
 				case 0x1E: // ROOM
 				{
-					return _printReturn(actorPtr->room, "room"); break;
+					return _printReturn(actorPtr->room, "room");
 				}
 				case 0x1F: // LIFE
 				{
-					return _printReturn(actorPtr->life, "life"); break;
+					return _printReturn(actorPtr->life, "life");
 				}
 				case 0x20: // OBJECT(id) (I think)
 				{
 					int objNum = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
-
-					int retVal;
-					if (ListWorldObjets[objNum].flags2 & 0xC000) {
-						retVal = 1;
-					} else {
-						retVal = 0;
-					}
-					// appendFormatted("object(%i):%i ", objNum, retVal);
-					// return(retVal); break;
-					return _printFuncReturn(objNum, retVal, "object"); break;
+					int retVal = ListWorldObjets[objNum].flags2 & 0xC000 ? 1 : 0;
+					return _printFuncReturn(objNum, retVal, "object");
 				}
 				case 0x21: // ROOMY
 				{
-					return _printReturn(actorPtr->roomY, "room_y"); break;
+					return _printReturn(actorPtr->roomY, "room_y");
 				}
 				case 0x22: // TODO: TEST_ZV_END_ANIM? What is that? It's used once in the scripts
 				{
@@ -478,28 +435,25 @@ int evalVar(const char* name)
 
 					int retVal = testZvEndAnim(actorPtr, HQR_Get(listAnim, animNum), temp);
 					appendFormatted("test_zv_end_anim(anim:%i,%i):%i ", animNum, temp, retVal);
-					return(retVal); break;
+					return(retVal);
 				}
 				case 0x23: // TODO: music; Used to check if the correct music is playing to appease the dance hall ghosts
 				{
-					return _printReturn(currentMusic, "music"); break;
+					return _printReturn(currentMusic, "music");
 				}
 				case 0x24: // TODO: Is this just CVars?
 				{
-					/* int temp = CVars[*(s16*)currentLifePtr];
-					currentLifePtr += 2;
-					return(temp); break; */
 					// NOTE: Currently doesn't route output to a standardized method. Will need to be changed if output formatting changes.
 					// TODO: Print CVar name
 					int idx = *(s16*)currentLifePtr;
 					currentLifePtr += 2;
 					int temp = CVars[idx];
 					appendFormatted("cvars[%i]:%i ", idx, temp);
-					return(temp); break;
+					return(temp);
 				}
 				case 0x25: // STAGE
 				{
-					return _printReturn(actorPtr->stage, "stage"); break;
+					return _printReturn(actorPtr->stage, "stage");
 				}
 				case 0x26: // THROW
 				{
@@ -512,14 +466,14 @@ int evalVar(const char* name)
 					} else {
 						retVal = 0;
 					}
-					return _printFuncReturn(objNum, retVal, "throw"); break;
+					return _printFuncReturn(objNum, retVal, "throw");
 				}
 				default:
 				{
 					printf("Unhandled test type %X in evalVar\n", var1);
 					FITD_throwFatal();
 					assert(0); // Won't make it here, this just kills a compiler warning.
-					break;
+					return -1;
 				}
 			}
 		}

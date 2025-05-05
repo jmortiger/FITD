@@ -305,9 +305,16 @@ void debugger_draw(void)
 }
 #endif
 
+#if 1 // Life Script logging
 /// @brief Life script numbers to enable output for.
 int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
 int numLoggedLifeScripts = 0;
+#endif
+
+// #if 1 // Replay
+// bool enableReplayRecording;
+// char* replayEvent[];
+// #endif
 
 /// @brief Finds the index of the most-significant bit flag.
 /// @param flag The flag to find the index of.

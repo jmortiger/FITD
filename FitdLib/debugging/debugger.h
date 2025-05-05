@@ -37,16 +37,6 @@ enum debugCategoryEnum : unsigned char {
 #define DBO_ALL 0b0111'1111
 typedef enum debugCategoryEnum debugCategoryEnum;
 
-// debugCategoryEnum debugCategoryEnumFlags[] = {
-// 	DBO_NONE,
-// 	DBO_PAK,
-// 	DBO_FLOOR,
-// 	DBO_MASK,
-// 	DBO_CAMERA,
-// 	DBO_SOUND,
-// 	DBO_ITD,
-// };
-
 /// @brief The debug levels supported, as a bit flag.
 enum debugLevelEnum : unsigned char {
 	DBO_L_NONE	= 0b0000'0000,
@@ -195,6 +185,7 @@ void DebugBFlushLn();
 void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
 // void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
 
+#if 1 // Life Script logging
 /// @brief A list of descriptions for what each var is used for
 /// @details Currently only supported for AITD1.
 extern const char* varsNameTable[];
@@ -206,5 +197,11 @@ extern int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
 
 /// @brief The total number of life scripts to log.
 extern int numLoggedLifeScripts;
+#endif
+
+// #if 1 // Replay
+// extern bool enableReplayRecording;
+// extern char* replayEvent[];
+// #endif
 
 #endif

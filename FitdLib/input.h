@@ -5,11 +5,14 @@ extern "C" {
 	void readKeyboard(void);
 }
 
+/// @brief THe currently loaded button mappings
+// extern int inputMappings[];
+
 /// @brief Used to allow easy input mapping
 /// @todo Implement
 /// @todo Finish
 enum gameInputs {
-	INPUT_SPACE = 1,
+	INPUT_SPACE = 0,
 	INPUT_RETURN,
 	INPUT_ESC,
 	INPUT_UP, // UP
