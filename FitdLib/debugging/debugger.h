@@ -60,18 +60,6 @@ enum debugLevelEnum : unsigned char {
 
 typedef enum debugLevelEnum debugLevelEnum;
 
-// Foreground Dark: 3x
-// Foreground Light: 9x
-// Background Dark: 4x
-// Background Light: 10x
-// 0: Black
-// 1: Red
-// 2: Green
-// 3: Yellow
-// 4: Blue
-// 5: Magenta
-// 6: Cyan
-// 7: White
 #ifndef ANSI_RESET
 #define ANSI_RESET "\033[0m"
 #define ANSI_BLACK 0
@@ -207,9 +195,16 @@ void DebugBFlushLn();
 void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
 // void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
 
+/// @brief A list of descriptions for what each var is used for
+/// @details Currently only supported for AITD1.
 extern const char* varsNameTable[];
 
 #define _MAX_LOGGED_LIFE_SCRIPTS 100
+
+/// @brief Which life scripts should be output? 
 extern int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
+
+/// @brief The total number of life scripts to log.
 extern int numLoggedLifeScripts;
+
 #endif
