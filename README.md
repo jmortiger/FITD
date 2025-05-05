@@ -3,9 +3,10 @@
 Free in the Dark, a Alone in the Dark engine reimplementation.
 
 Long overdue source code update from the version that was released on source forge in the 2000s.
-Only buildable with Visual Studio 2022 for now but other platform should be fairly straight forward.
+Buildable with Visual Studio 2022 & Visual Studio Code.
 
 Rendering is being rewritten to bgfx, for better portability. There is still some graphical artifacts.
+
 #### Table of Contents
 * [Screenshots](#screenshots)
 * [Build instructions](#build-instructions)
@@ -14,9 +15,12 @@ Rendering is being rewritten to bgfx, for better portability. There is still som
     * [Dev Container (Any Platform)](#dev-container-any-platform)
     * [Local (Linux, untested for macOS)](#local-linux-untested-for-macos)
 * [General Notes](#general-notes)
+	* [Key Binds](#key-binds)
+	* [Command Line Arguments](#command-line-arguments)
 * [Platform Notes](#platform-notes)
   * [Building with Visual Studio on Windows](building-with-visual-studio-on-windows)
   * [Building with Vs Code in the Dev Container](building-with-vs-code-in-the-dev-container)
+* [Current Status](#current-status)
 
 ## Screenshots
 ![image](https://github.com/user-attachments/assets/d12b7c66-6c57-4507-b2b3-540cb2cc6806)
@@ -61,6 +65,7 @@ Requires dependencies to be installed locally; look at the end of the Dockerfile
 
 ## General Notes
 If using a debug build, the following options can be used:
+
 #### Key Binds
  * `~` will bring up a debug view.
  * `B`: Deactivate rendering of 2D elements (backgrounds, masks, etc).
@@ -71,6 +76,15 @@ If using a debug build, the following options can be used:
 	* `Y`: Restores the normal view.
  * `C`: Toggle clipping
  * `F`: Hold for fast forward
+
+#### Command Line Arguments
+ * `-pak [levels]`: Enable debug output for pak-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
+ * `-floor [levels]`: Enable debug output for floor-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
+ * `-mask [levels]`: Enable debug output for mask-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
+ * `-camera [levels]`: Enable debug output for camera-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
+ * `-sound [levels]`: Enable debug output for sound-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
+ * `-itd [levels]`: Enable debug output for itd-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
+ * `-life [levels]`: Enable debug output for life-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
 
 ## Platform Notes
 ### Building with Visual Studio on Windows
@@ -83,3 +97,7 @@ Currently, the build ***cannot*** be run *properly* inside the Dev Container; yo
   * If you want to try playing with the configuration to force the Linux Dev Container to build for Windows without relying on WSL and get it to any level of working  beyond building to <25% & failing (e.g. it builds to more than 25% before failing, it almost completely builds, it completely builds but there's early fatal runtime errors, you can start playing but it eventually glitches and/or crashes, it works exactly the same as a native local Windows build made using Visual Studio, it works perfectly), please let us know; we'd love to update this readme & repo to make it easier for potential contributors to get up and running!
 * If you're a macOS user, the build will have targeted Linux. It hasn't been tested on macOS, & it's highly unlikely to work, especially if you don't have the required dependancies (like X11's developer files or X11 itself) installed locally. That being said, there's little harm in trying; macOS, like Linux, is a Unix derivative, so you might get it to work; if you do, let us know! However, if you want to try playing with the configuration to get the Linux Dev Container to build for macOS and you can get it to any level of working beyond building to <25% & failing (e.g. it builds to more than 25% before failing, it almost completely builds, it completely builds but there's early fatal runtime errors, you can start playing but it eventually glitches/crashes, it works perfectly), please let us know; we'd love to update this readme & repo to make it easier for potential contributors to get up and running!
 For all of the above cases, if run locally through VS Code's `Run & Debug` tools, the current debugger config will not correctly find locate the files; this is because the Dev Container has a different arrangement of directories than when outside of it. Most features will still work correctly (including call stack display & readout of local var's when stopped), but the directories are baked into the build output. To fix this, rebuild from outside the Dev Container (if possible).
+
+## Current Status
+ * Currently only supports building for the native platform; any info to enable cross-platform builds would be greatly appreciated.
+ * The Windows build using Visual Studio is the most stable; VS Code on Windows is untested; VS Code on Linux is tested and is the current focus of development.
