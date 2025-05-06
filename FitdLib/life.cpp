@@ -878,6 +878,18 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					break;
 				}
+				case LM_DO_MAX_ZV: // DO_MAX_ZV
+				{
+					appendFormatted("LM_DO_MAX_ZV ");
+					// FITD_throwFatal(); // assert(0);
+					// Adjusts the bbox length and width so they're both as big as whichever one is bigger divided by two, creating a cuboid with a square horizontal cross-section. Leaves the height unaffected. 
+					// char t_b[256];
+					// DebugSPrintZVStruct(t_b, currentProcessedActorPtr->zv);
+					// printf("LM_DO_MAX_ZV: %s", t_b);
+					getZvMax(HQR_Get(listBody, currentProcessedActorPtr->bodyNum), &currentProcessedActorPtr->zv);
+
+					break;
+				}
 				case LM_TYPE: // TYPE
 				{
 					appendFormatted("LM_TYPE ");
