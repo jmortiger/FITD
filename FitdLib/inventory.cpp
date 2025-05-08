@@ -24,7 +24,7 @@ int DrawListObjets(int startIdx, int selectIdx, int selectColor)
 
 	if (g_gameId <= JACK) {
 		// Draw the top box of the inventory
-		AffBigCadre((_SCREEN_INTERNAL_WIDTH / 2), (_SCREEN_INTERNAL_HEIGHT / 4), _SCREEN_INTERNAL_WIDTH, (_SCREEN_INTERNAL_HEIGHT / 2)); // AffBigCadre(CornerRectToCenterRect(0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT / 2));
+		AffBigCadre(CornerRectToCenterRect(0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT / 2));
 		y = WindowY1 + 1;
 	} else {
 		SetClip(27, 25, 292, 98);

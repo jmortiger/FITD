@@ -19,7 +19,7 @@ void AffOption(int n, int num, int selected)
 void AffOptionList(int selectedStringNumber)
 {
 	// Draw a fullscreen border.
-	AffBigCadre((_SCREEN_INTERNAL_WIDTH / 2), (_SCREEN_INTERNAL_HEIGHT / 2), _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+	AffBigCadre(CornerRectToCenterRect(0,0,_SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT));
 
 	int backupTop = WindowY1;
 	int backupBottom = WindowY2;
