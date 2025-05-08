@@ -313,7 +313,7 @@ extern tObject objectTable[NUM_MAX_OBJECT];
 
 extern s16 currentWorldTarget;
 
-extern int fileSize;
+// extern int fileSize;
 
 extern hqrEntryStruct* listBody;
 extern hqrEntryStruct* listAnim;

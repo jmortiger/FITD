@@ -101,7 +101,7 @@ tObject objectTable[NUM_MAX_OBJECT];
 
 s16 currentWorldTarget;
 
-int fileSize;
+// int fileSize;
 
 hqrEntryStruct* listBody;
 hqrEntryStruct* listAnim;
@@ -291,7 +291,9 @@ int lightY = -2000;
 int clipLeft = 0;
 int clipTop = 0;
 int clipRight = 319;
-int clipBottom = 119;
+/// @brief 
+/// @todo This was previously initialized to 119; ensure this was done in error.
+int clipBottom = 199;
 
 unsigned char* g_MaskPtr = NULL;
 

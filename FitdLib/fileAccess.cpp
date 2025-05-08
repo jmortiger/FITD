@@ -12,6 +12,9 @@ extern "C" {
 	extern char homePath[512];
 }
 
+/// @brief Used to avoid returning a tuple.
+int lastFileSize;
+int getLastFileSize() { return lastFileSize; }
 char* loadFromItd(const char* name)
 {
 	FILE* fHandle;
@@ -27,15 +30,15 @@ char* loadFromItd(const char* name)
 		return NULL;
 	}
 	fseek(fHandle, 0, SEEK_END);
-	fileSize = ftell(fHandle);
+	lastFileSize = ftell(fHandle);
 	fseek(fHandle, 0, SEEK_SET);
-	ptr = (char*)malloc(fileSize);
+	ptr = (char*)malloc(lastFileSize);
 
 	if (!ptr) {
 		fatalError(1, name); // TODO: Improve error message
 		return NULL;
 	}
-	fread(ptr, fileSize, 1, fHandle);
+	fread(ptr, lastFileSize, 1, fHandle);
 	fclose(fHandle);
 	return(ptr);
 }

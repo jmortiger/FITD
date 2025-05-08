@@ -1072,9 +1072,10 @@ void initEngine(void)
 
 	free(pObjectDataBackup);
 
+	/* #region Initialize vars */
 	vars = (s16*)loadFromItd("VARS.ITD");
-
-	varSize = fileSize;
+	varSize = getLastFileSize();
+	/* #endregion */
 
 	if (g_gameId == AITD1) {
 		choosePersoBackup = CVars[getCVarsIdx(CHOOSE_PERSO)]; // backup hero selection
