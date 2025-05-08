@@ -1140,7 +1140,7 @@ void initVarsSub1(void)
 
 void initVars()
 {
-	giveUp = 0;
+	fIsGameOver = 0;
 
 	currentInventory = 0;
 

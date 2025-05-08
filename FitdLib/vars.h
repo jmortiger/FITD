@@ -2,13 +2,22 @@
 
 #include "osystem.h"
 
+#define NB_BUFFER_ANIM 25 // AITD1 was  20
+#define SIZE_BUFFER_ANIM (8*41) // AITD1 was 4*31
+
+extern unsigned char frontBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
+
+//extern OSystem osystem;
+extern char rgbaBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 4];
+
 /* #region Current Found Body */
 extern char* currentFoundBody;
 extern int currentFoundBodyIdx;
-/* #endregion */
+/* #endregion Current Found Body */
 extern int statusVar1;
 
-/// @brief Which game are we running?
+// #region Game Type
+/// @brief The games supported.
 enum gameTypeEnum
 {
 	AITD1,
@@ -16,10 +25,31 @@ enum gameTypeEnum
 	AITD2,
 	AITD3,
 	TIMEGATE,
-};
+}; typedef enum gameTypeEnum gameTypeEnum;
 
+/// @brief Which game are we running?
 extern enum gameTypeEnum g_gameId;
+// #endregion Game Type
 
+/// @brief 
+/// @details It doesn't *really* matter if it's signed; it's just easier b/c entries in the save data/arguments in life scripts are all signed 16 bit integers.
+enum actorFlags : s16
+{
+	AF_ANIMATED = 0b0000'0000'0001,
+	// AF_UNUSED = 	0b0000'0000'0010,
+	AF_DRAWABLE = 0b0000'0000'0100,
+	AF_BOXIFY = 0b0000'0000'1000,
+	AF_MOVABLE = 0b0000'0001'0000,
+	AF_SPECIAL = 0b0000'0010'0000,
+	AF_TRIGGER = 0b0000'0100'0000,
+	AF_FOUNDABLE = 0b0000'1000'0000,
+	AF_FALLABLE = 0b0001'0000'0000,
+
+	/// @brief Used to remove invalid flags from values.
+	AF_MASK = AF_ANIMATED + AF_MOVABLE + AF_TRIGGER + AF_FOUNDABLE + AF_FALLABLE,
+}; typedef enum actorFlags actorFlags;
+
+// #region Misc. Structs
 /// @brief A point in 3d space stored in signed 16 bit integers.
 struct point3dStruct
 {
@@ -71,7 +101,7 @@ struct hqrEntryStruct
 	hqrSubEntryStruct* entries;
 }; typedef struct hqrEntryStruct hqrEntryStruct;
 
-/// @brief Axis-Aligned Bounding Box (I think). 32 bit signed integers.
+/// @brief Axis-Aligned Bounding Box; 32 bit signed integers.
 struct ZVStruct
 {
 	s32 ZVX1;
@@ -89,22 +119,6 @@ struct interpolatedValue
 	s16 param;
 	unsigned int timeOfRotate;
 }; typedef struct interpolatedValue interpolatedValue;
-
-enum actorFlags : u16
-{
-	AF_ANIMATED = 0b0000'0000'0001,
-	// AF_UNUSED = 	0b0000'0000'0010,
-	AF_DRAWABLE = 0b0000'0000'0100,
-	AF_BOXIFY = 0b0000'0000'1000,
-	AF_MOVABLE = 0b0000'0001'0000,
-	AF_SPECIAL = 0b0000'0010'0000,
-	AF_TRIGGER = 0b0000'0100'0000,
-	AF_FOUNDABLE = 0b0000'1000'0000,
-	AF_FALLABLE = 0b0001'0000'0000,
-
-	/// @brief Used to remove invalid flags from values.
-	AF_MASK = AF_ANIMATED + AF_MOVABLE + AF_TRIGGER + AF_FOUNDABLE + AF_FALLABLE,
-}; typedef enum actorFlags actorFlags;
 
 struct tObject // used to read data from file too
 {
@@ -233,11 +247,9 @@ struct roomDefStruct
 	s16 worldZ;//8
 	s16 numCameraInRoom;//0xA
 }; typedef struct roomDefStruct roomDefStruct;
+// #endregion Misc. Structs
 
 extern hqrEntryStruct* HQ_Memory;
-
-extern hqrEntryStruct* listMus;
-extern hqrEntryStruct* listSamp;
 
 /* #region Unused */
 extern int videoMode;
@@ -246,13 +258,11 @@ extern int musicEnabled;
 
 extern int screenBufferSize;
 extern int unkScreenVar2;
+extern int actorTurnedToObj;
 /* #endregion */
 
 extern char* aux;
 extern char* aux2;
-
-#define NB_BUFFER_ANIM 25 // AITD1 was  20
-#define SIZE_BUFFER_ANIM (8*41) // AITD1 was 4*31
 
 extern std::vector<std::vector<s16>> BufferAnim;
 
@@ -268,22 +278,19 @@ extern char* PtrCadre;
 
 extern unsigned char currentGamePalette[0x300];
 
-//extern OSystem osystem;
-extern unsigned char frontBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
-extern char rgbaBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 4];
-
+// #region Timers
 extern unsigned int timer;
 extern unsigned int timeGlobal;
+// #endregion Timers
 
+// #region Window Coords
 extern int WindowX1;
 extern int WindowY1;
 extern int WindowX2;
 extern int WindowY2;
+// #endregion Window Coords
 
-extern textEntryStruct* tabTextes;
-extern u8* systemTextes;
-
-/* #region Input Fields */
+// #region Input Fields
 extern "C" {
 	extern char JoyD;
 };
@@ -292,10 +299,15 @@ extern char key;
 extern char localKey;
 extern char localJoyD;
 extern char localClick;
-/* #endregion */
+// #endregion Input Fields
 
-extern char languageNameString[];
+// #region Languages
 extern const std::vector<std::string> languageNameTable;
+extern char languageNameString[];
+// #endregion Languages
+
+extern textEntryStruct* tabTextes;
+extern u8* systemTextes;
 
 extern regularTextEntryStruct textTable[40];
 
@@ -313,13 +325,15 @@ extern tObject objectTable[NUM_MAX_OBJECT];
 
 extern s16 currentWorldTarget;
 
-// extern int fileSize;
-
+// #region Caches
+extern hqrEntryStruct* listMus;
+extern hqrEntryStruct* listSamp;
 extern hqrEntryStruct* listBody;
 extern hqrEntryStruct* listAnim;
 extern hqrEntryStruct* listLife;
 extern hqrEntryStruct* listTrack;
 extern hqrEntryStruct* listMatrix;
+// #endregion Caches
 
 extern s16 maxObjects;
 
@@ -344,13 +358,14 @@ extern int genVar6;
 extern int nextSample;
 extern int nextMusic;
 extern s16 currentCameraTargetActor;
-extern s16 giveUp;
+extern s16 fIsGameOver;
 extern s16 lightOff;
 extern int lightVar2;
 extern int LastPriority;
 extern int LastSample;
 extern s16 statusScreenAllowed;
 
+// #region Floor, Room, & Camera
 extern char* g_currentFloorRoomRawData;
 extern char* g_currentFloorCameraRawData;
 
@@ -361,6 +376,7 @@ extern int needChangeRoom;
 
 extern char* cameraPtr;
 extern roomDefStruct* pCurrentRoomData;
+
 extern s16 currentRoom;
 extern int flagInitView;
 extern int numCameraInRoom;
@@ -395,8 +411,7 @@ extern int cameraFovX;
 extern int cameraFovY;
 
 extern char currentCameraVisibilityList[30];
-
-extern int actorTurnedToObj;
+// #endregion Floor, Room, & Camera
 
 extern int currentProcessedActorIdx;
 extern tObject* currentProcessedActorPtr;

@@ -1,10 +1,15 @@
 #include "common.h"
 
-enum gameTypeEnum g_gameId;
+//OSystem osystem;
+char rgbaBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 4];
 
+// #region Current Found Body
 char* currentFoundBody;
 int currentFoundBodyIdx;
+// #endregion Current Found Body
 int statusVar1;
+
+gameTypeEnum g_gameId;
 
 hqrEntryStruct* HQ_Memory;
 
@@ -18,13 +23,17 @@ int musicConfigured;
 /// @brief A flag indicating if music is enabled; currently unused.
 /// @todo Should this be removed?
 int musicEnabled;
+
 /// @brief Set to 64800 and otherwise unused.
 /// @todo Should this be removed?
 int screenBufferSize;
 /// @brief Set to 3 and otherwise unused.
 /// @todo What was this for, and can it be removed?
 int unkScreenVar2;
-/* #endregion */
+/// @brief Currently unused (set to 1 and otherwise unreferenced).
+/// @todo What was this for, and can it be removed?
+int actorTurnedToObj = 0;
+/* #endregion Unused */
 
 char* aux;
 char* aux2;
@@ -38,17 +47,17 @@ char* PtrPrioritySample;
 
 char* PtrFont;
 
+/// @brief Border Graphics (loaded from [`ITD_RESS.PAK` index 4](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#GAME_FILES))
 char* PtrCadre;
 
 unsigned char currentGamePalette[256 * 3];
 
-//OSystem osystem;
-
-char rgbaBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 4];
-
+// #region Timers
 unsigned int timer;
 unsigned int timeGlobal;
+// #endregion Timers
 
+// #region Window Coords
 /// @brief Something to do w/ `AffBigCadre`
 /// @todo Document
 int WindowX1;
@@ -61,17 +70,18 @@ int WindowX2;
 /// @brief Something to do w/ `AffBigCadre`
 /// @todo Document
 int WindowY2;
+// #endregion Window Coords
 
-textEntryStruct* tabTextes;
-u8* systemTextes;
-
+// #region Input Fields
 char JoyD = 0;
 char Click = 0;
 char key = 0;
 char localKey;
 char localJoyD;
 char localClick;
+// #endregion Input Fields
 
+// #region Languages
 /// @brief The filenames of supported languages.
 /// @todo Earlier entries take priority over later entries; change order with system locale or something.
 const std::vector<std::string> languageNameTable =
@@ -83,7 +93,12 @@ const std::vector<std::string> languageNameTable =
 	"DEUTSCH",
 };
 
+/// @brief The selected language.
 char languageNameString[20] = "";
+// #endregion Languages
+
+textEntryStruct* tabTextes;
+u8* systemTextes;
 
 regularTextEntryStruct textTable[NUM_MAX_TEXT];
 
@@ -101,20 +116,23 @@ tObject objectTable[NUM_MAX_OBJECT];
 
 s16 currentWorldTarget;
 
-// int fileSize;
-
+// #region Caches
+hqrEntryStruct* listMus;
+hqrEntryStruct* listSamp;
 hqrEntryStruct* listBody;
 hqrEntryStruct* listAnim;
 hqrEntryStruct* listLife;
 hqrEntryStruct* listTrack;
 hqrEntryStruct* listMatrix;
+// #endregion Caches
 
 s16 maxObjects;
 
-std::vector<tWorldObject> ListWorldObjets;
+std::vector<tWorldObject> ListWorldObjets; // may be less
 
 s16* vars;
 
+/// @brief The amount of memory taken up by `vars` in bytes (each var is 2 bytes).
 int varSize;
 
 messageStruct messageTable[NUM_MAX_MESSAGE];
@@ -132,13 +150,15 @@ int genVar6;
 int nextSample;
 int nextMusic;
 s16 currentCameraTargetActor;
-s16 giveUp;
+/// @brief A flag indicating the player died; used to stop the main loop & transfer back to the start menu. Is (unnecessarily) included in save file (thus the s16).
+s16 fIsGameOver;
 s16 lightOff;
 int lightVar2;
 int LastPriority;
 int LastSample;
 s16 statusScreenAllowed;
 
+// #region Floor, Room, & Camera
 char* g_currentFloorRoomRawData = NULL;
 char* g_currentFloorCameraRawData = NULL;
 
@@ -158,6 +178,9 @@ char* cameraZoneData;
 int numRoomZone;
 char* roomZoneData;
 char* room_PtrCamera[NUM_MAX_CAMERA_IN_ROOM];
+/// @brief Somehow related to camera indicies.
+/// @todo Rename
+/// @todo Document
 int startGameVar1;
 
 int transformX;
@@ -184,8 +207,7 @@ int cameraFovX;
 int cameraFovY;
 
 char currentCameraVisibilityList[30];
-
-int actorTurnedToObj = 0;
+// #endregion Floor, Room, & Camera
 
 int currentProcessedActorIdx;
 tObject* currentProcessedActorPtr;
@@ -259,8 +281,6 @@ int bgOverlayVar1;
 
 s16 newRoom;
 
-
-
 s16 shakeVar1;
 s16 shakingAmplitude;
 unsigned int timerFreeze1;
@@ -296,9 +316,6 @@ int clipRight = 319;
 int clipBottom = 199;
 
 unsigned char* g_MaskPtr = NULL;
-
-hqrEntryStruct* listMus;
-hqrEntryStruct* listSamp;
 
 #if defined(FITD_DEBUGGER)
 backgroundModeEnum backgroundMode = backgroundModeEnum_2D;

@@ -2272,7 +2272,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					while (evalChrono(&musicChrono) < 120) {
 						process_events();
 					}
-					giveUp = 1;
+					fIsGameOver = 1;
 					exitLife = 1;
 					break;
 				}
@@ -2285,7 +2285,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					while (!key && !JoyD && Click) {
 						process_events();
 					}
-					giveUp = 1;
+					fIsGameOver = 1;
 					exitLife = 1;
 					break;
 				}

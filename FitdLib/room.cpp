@@ -140,7 +140,7 @@ void loadRoom(int roomNumber)
 			currentCameraZoneList[i] = &cameraDataTable[i]->viewedRoomTable[j];
 	}
 
-	// reajust world coordinates
+	// readjust world coordinates
 	if (oldCameraIdx != -1) // if a camera was selected before loading room
 	{
 		int var_E = (roomDataTable[roomNumber].worldX - cameraVar0) * 10;

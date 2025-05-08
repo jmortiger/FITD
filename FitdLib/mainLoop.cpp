@@ -158,7 +158,7 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 				currentProcessedActorPtr++;
 			}
 
-			if (giveUp)
+			if (fIsGameOver)
 				break;
 		}
 
@@ -198,7 +198,7 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 					currentProcessedActorPtr++;
 				}
 
-				if (giveUp)
+				if (fIsGameOver)
 					break;
 
 				currentCamera = tempCurrentCamera;
