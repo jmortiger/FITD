@@ -19,6 +19,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"maptz.regionfolder",
 				"ms-vscode.cpptools-extension-pack",
 				"ms-vscode.cmake-tools",
 				"GitHub.vscode-github-actions"

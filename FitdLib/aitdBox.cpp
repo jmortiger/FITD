@@ -88,6 +88,8 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 /// @param y The y coordinate of the frame's center.
 /// @param width 
 /// @param height 
+/// @details Has side effects:
+/// * `WindowX1`, `WindowY1`, `WindowX2`, `WindowY2`: Changes to define the border of the drawn box (?)
 void AffBigCadre(int x, int y, int width, int height)
 {
 	int top;

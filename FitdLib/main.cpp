@@ -527,6 +527,13 @@ textEntryStruct* getTextFromIdx(int index)
 	return(NULL);
 }
 
+/// @brief 
+/// @param x1 
+/// @param y1 
+/// @param x2 
+/// @param y2 
+/// @param color 
+/// @todo document
 void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 {
 	int width = x2 - x1 + 1;

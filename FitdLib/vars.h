@@ -1,9 +1,11 @@
-#pragma  once
+#pragma once
 
 #include "osystem.h"
 
+/* #region Current Found Body */
 extern char* currentFoundBody;
 extern int currentFoundBodyIdx;
+/* #endregion */
 extern int statusVar1;
 
 /// @brief Which game are we running?
@@ -24,42 +26,32 @@ struct point3dStruct
 	s16 x;
 	s16 y;
 	s16 z;
-};
-
-typedef struct point3dStruct point3dStruct;
+}; typedef struct point3dStruct point3dStruct;
 
 struct textEntryStruct
 {
 	s16 index;
 	u8* textPtr;
 	s16 width;
-};
-
-typedef struct textEntryStruct textEntryStruct;
+}; typedef struct textEntryStruct textEntryStruct;
 
 struct messageStruct
 {
 	textEntryStruct* string;
 	s16 time;
-};
-
-typedef struct messageStruct messageStruct;
+}; typedef struct messageStruct messageStruct;
 
 struct saveEntry
 {
 	void* ptr;
 	unsigned int size;
-};
-
-typedef struct saveEntry saveEntry;
+}; typedef struct saveEntry saveEntry;
 
 struct regularTextEntryStruct
 {
 	u8* textPtr;
 	s16 width;
-};
-
-typedef struct regularTextEntryStruct regularTextEntryStruct;
+}; typedef struct regularTextEntryStruct regularTextEntryStruct;
 
 struct hqrSubEntryStruct
 {
@@ -67,9 +59,7 @@ struct hqrSubEntryStruct
 	s16 size;
 	unsigned int lastTimeUsed;
 	char* ptr;
-};
-
-typedef struct hqrSubEntryStruct hqrSubEntryStruct;
+}; typedef struct hqrSubEntryStruct hqrSubEntryStruct;
 
 struct hqrEntryStruct
 {
@@ -79,9 +69,7 @@ struct hqrEntryStruct
 	u16 numMaxEntry;
 	u16 numUsedEntry;
 	hqrSubEntryStruct* entries;
-};
-
-typedef struct hqrEntryStruct hqrEntryStruct;
+}; typedef struct hqrEntryStruct hqrEntryStruct;
 
 /// @brief Axis-Aligned Bounding Box (I think). 32 bit signed integers.
 struct ZVStruct
@@ -92,9 +80,7 @@ struct ZVStruct
 	s32 ZVY2;
 	s32 ZVZ1;
 	s32 ZVZ2;
-};
-
-typedef struct ZVStruct ZVStruct;
+}; typedef struct ZVStruct ZVStruct;
 
 struct interpolatedValue
 {
@@ -102,21 +88,19 @@ struct interpolatedValue
 	s16 newAngle;
 	s16 param;
 	unsigned int timeOfRotate;
-};
-
-typedef struct interpolatedValue interpolatedValue;
+}; typedef struct interpolatedValue interpolatedValue;
 
 enum actorFlags : u16
 {
-	AF_ANIMATED = 0x0001,
-	// 0x02
-	AF_DRAWABLE = 0x0004,
-	AF_BOXIFY = 0x0008,
-	AF_MOVABLE = 0x0010,
-	AF_SPECIAL = 0x0020,
-	AF_TRIGGER = 0x0040,
-	AF_FOUNDABLE = 0x0080,
-	AF_FALLABLE = 0x0100,
+	AF_ANIMATED = 0b0000'0000'0001,
+	// AF_UNUSED = 	0b0000'0000'0010,
+	AF_DRAWABLE = 0b0000'0000'0100,
+	AF_BOXIFY = 0b0000'0000'1000,
+	AF_MOVABLE = 0b0000'0001'0000,
+	AF_SPECIAL = 0b0000'0010'0000,
+	AF_TRIGGER = 0b0000'0100'0000,
+	AF_FOUNDABLE = 0b0000'1000'0000,
+	AF_FALLABLE = 0b0001'0000'0000,
 
 	/// @brief Used to remove invalid flags from values.
 	AF_MASK = AF_ANIMATED + AF_MOVABLE + AF_TRIGGER + AF_FOUNDABLE + AF_FALLABLE,
@@ -193,9 +177,7 @@ struct tObject // used to read data from file too
 
 	// aitd2
 	s16 hardMat;
-};
-
-typedef struct tObject tObject;
+}; typedef struct tObject tObject;
 
 struct tWorldObject
 {
@@ -232,9 +214,7 @@ struct tWorldObject
 
 	// AITD2
 	s16 mark;
-};
-
-typedef struct tWorldObject tWorldObject;
+}; typedef struct tWorldObject tWorldObject;
 
 struct boxStruct
 {
@@ -242,9 +222,7 @@ struct boxStruct
 	s16 var1;
 	s16 var2;
 	s16 var3;
-};
-
-typedef struct boxStruct boxStruct;
+}; typedef struct boxStruct boxStruct;
 
 struct roomDefStruct
 {
@@ -254,18 +232,21 @@ struct roomDefStruct
 	s16 worldY;//6
 	s16 worldZ;//8
 	s16 numCameraInRoom;//0xA
-};
-
-typedef struct roomDefStruct roomDefStruct;
+}; typedef struct roomDefStruct roomDefStruct;
 
 extern hqrEntryStruct* HQ_Memory;
 
 extern hqrEntryStruct* listMus;
 extern hqrEntryStruct* listSamp;
 
+/* #region Unused */
 extern int videoMode;
 extern int musicConfigured;
 extern int musicEnabled;
+
+extern int screenBufferSize;
+extern int unkScreenVar2;
+/* #endregion */
 
 extern char* aux;
 extern char* aux2;
@@ -276,9 +257,6 @@ extern char* aux2;
 extern std::vector<std::vector<s16>> BufferAnim;
 
 extern char* logicalScreen;
-
-extern int screenBufferSize;
-extern int unkScreenVar2;
 
 extern std::vector<s16> CVars;
 
@@ -305,6 +283,7 @@ extern int WindowY2;
 extern textEntryStruct* tabTextes;
 extern u8* systemTextes;
 
+/* #region Input Fields */
 extern "C" {
 	extern char JoyD;
 };
@@ -313,6 +292,7 @@ extern char key;
 extern char localKey;
 extern char localJoyD;
 extern char localClick;
+/* #endregion */
 
 extern char languageNameString[];
 extern const std::vector<std::string> languageNameTable;
@@ -507,9 +487,7 @@ enum backgroundModeEnum
 {
 	backgroundModeEnum_2D,
 	backgroundModeEnum_3D,
-};
-
-typedef enum backgroundModeEnum backgroundModeEnum;
+}; typedef enum backgroundModeEnum backgroundModeEnum;
 
 extern backgroundModeEnum backgroundMode;
 #endif

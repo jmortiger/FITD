@@ -75,7 +75,8 @@
 		"streambuf": "cpp",
 		"thread": "cpp",
 		"cinttypes": "cpp",
-		"variant": "cpp"
+		"variant": "cpp",
+		"*.life": "life"
 	},
 	"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
 	"editor.tabSize": 4,
@@ -117,5 +118,16 @@
 	"[life]": {
 		"editor.folding": true,
 		"editor.foldingStrategy": "indentation",
+	},
+	"maptz.regionfolder": {
+		"[cpp]": { //Language selector
+			"foldEnd": "// #endregion", //Text inserted at the end of the fold
+			"foldEndRegex": "//[\\s]*#endregion.*$|/*[\\s]*#endregion(?>[^*/]+|(?>\\*+)(?!/)|(?<!\\*)/+)*\\*/", //Regex used to find fold end text.
+			"foldStart": "// #region [NAME]", //Text inserted at the start of the fold.
+			//Use the `[NAME]` placeholder to indicate
+			//where the cursor should be placed after
+			//insertion
+			"foldStartRegex": "//[\\s]*#region.*$|/*[\\s]*#region(?>[^*/]+|(?>\\*+)(?!/)|(?<!\\*)/+)*\\*/" ////Regex used to find fold start text.
+		}
 	}
 }

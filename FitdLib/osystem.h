@@ -42,22 +42,35 @@ extern "C" {
 	void osystem_initGL(int screenWidth, int screenHeight);
 
 	void osystem_delay(int time);
+	/// @todo Unimplemented; Remove?
 	void osystem_fadeBlackToWhite();
 	void osystem_updateImage();
 	void osystem_initBuffer();
+	/// @todo Unimplemented; Remove?
 	void osystem_initVideoBuffer(char* buffer, int width, int height);
+	/// @todo Unimplemented; Remove?
 	void osystem_putpixel(int x, int y, int pixel);
+	/// @todo Unimplemented; Remove?
 	void osystem_setColor(byte i, byte R, byte G, byte B);
+	/// @todo Unimplemented; Remove?
 	void osystem_setPalette(unsigned byte* palette);
+	/// @todo Unimplemented; Remove?
+	/// @todo Rename
 	void osystem_setPalette320x200(byte* palette);
 	void osystem_flip(unsigned char* videoBuffer);
+	/// @todo Unimplemented; Remove?
+	/// @todo Rename
 	void osystem_draw320x200BufferToScreen(unsigned char* videoBuffer);
 	void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int right, int bottom);
 	void osystem_refreshFrontTextureBuffer();
+	/// @todo Unimplemented; Remove?
 	void osystem_drawText(int X, int Y, char* text);
+	/// @todo Unimplemented; Remove?
 	void osystem_drawTextColor(int X, int Y, char* string, unsigned char R, unsigned char G, unsigned char B);
+	/// @todo Unimplemented; Remove?
 	void osystem_drawLine(int X1, int X2, int Y1, int Y2, unsigned char color, unsigned char* palette);
 	void osystem_getPalette(unsigned char* palette);
+	/// @todo Unimplemented; Remove?
 	void osystem_playSampleFromName(char* sampleName);
 	void osystem_playSample(char* samplePtr, int size);
 	//    void getMouseStatus(mouseStatusStruct * mouseData);
@@ -74,6 +87,7 @@ extern "C" {
 	void osystem_setClip(float left, float top, float right, float bottom);
 	void osystem_clearClip();
 
+	/// @todo Unimplemented; Remove?
 	void osystem_cleanScreenKeepZBuffer();
 
 	void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyType);
@@ -83,7 +97,9 @@ extern "C" {
 	void osystem_drawPoint(float X, float Y, float Z, u8 color, u8 material, float size);
 	void osystem_flushPendingPrimitives();
 
+	/// @todo Unimplemented; Remove?
 	void osystem_startBgPoly();
+	/// @todo Unimplemented; Remove?
 	void osystem_endBgPoly();
 	void osystem_addBgPolyPoint(int x, int y);
 

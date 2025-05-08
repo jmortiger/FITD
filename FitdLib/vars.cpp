@@ -8,18 +8,29 @@ int statusVar1;
 
 hqrEntryStruct* HQ_Memory;
 
+/* #region Unused */
+/// @brief Currently unused (set to 1 once and otherwise unreferenced).
+/// @todo What was this for, and can it be removed?
 int videoMode;
+/// @brief A flag indicating if music has been configured; currently unused.
+/// @todo Should this be removed?
 int musicConfigured;
+/// @brief A flag indicating if music is enabled; currently unused.
+/// @todo Should this be removed?
 int musicEnabled;
+/// @brief Set to 64800 and otherwise unused.
+/// @todo Should this be removed?
+int screenBufferSize;
+/// @brief Set to 3 and otherwise unused.
+/// @todo What was this for, and can it be removed?
+int unkScreenVar2;
+/* #endregion */
 
 char* aux;
 char* aux2;
 std::vector<std::vector<s16>> BufferAnim;
 
 char* logicalScreen;
-
-int screenBufferSize;
-int unkScreenVar2;
 
 std::vector<s16> CVars;
 
@@ -33,14 +44,22 @@ unsigned char currentGamePalette[256 * 3];
 
 //OSystem osystem;
 
-char rgbaBuffer[320 * 200 * 4];
+char rgbaBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 4];
 
 unsigned int timer;
 unsigned int timeGlobal;
 
+/// @brief Something to do w/ `AffBigCadre`
+/// @todo Document
 int WindowX1;
+/// @brief Something to do w/ `AffBigCadre`
+/// @todo Document
 int WindowY1;
+/// @brief Something to do w/ `AffBigCadre`
+/// @todo Document
 int WindowX2;
+/// @brief Something to do w/ `AffBigCadre`
+/// @todo Document
 int WindowY2;
 
 textEntryStruct* tabTextes;

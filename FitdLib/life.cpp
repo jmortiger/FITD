@@ -11,10 +11,7 @@ int numSequenceParam = 0;
 
 sequenceParamStruct sequenceParams[NUM_MAX_SEQUENCE_PARAM];
 
-void resetRotateParam(void)
-{
-	currentProcessedActorPtr->rotate.param = 0;
-}
+void resetRotateParam(void) { currentProcessedActorPtr->rotate.param = 0; }
 
 void throwObj(int animThrow, int frameThrow, int arg_4, int objToThrowIdx, int throwRotated, int throwForce, int animNext)
 {
@@ -57,10 +54,11 @@ void put(int x, int y, int z, int room, int stage, int alpha, int beta, int gamm
 	FlagRefreshAux2 = 1; */
 }
 
-void drop(int worldIdx, int worldSource)
-{
-	PutAtObjet(worldIdx, worldSource);
-}
+/// @brief 
+/// @param worldIdx 
+/// @param worldSource 
+/// @todo Convert to function redirect?
+void drop(int worldIdx, int worldSource) { PutAtObjet(worldIdx, worldSource); }
 
 void fire(int fireAnim, int X, int Y, int Z, int hitForce, int nextAnim)
 {
@@ -71,14 +69,10 @@ void fire(int fireAnim, int X, int Y, int Z, int hitForce, int nextAnim)
 		currentProcessedActorPtr->animActionParam = Z;
 		currentProcessedActorPtr->hotPointID = Y;
 		currentProcessedActorPtr->hitForce = hitForce;
-
 	}
 }
 
-int randRange(int min, int max)
-{
-	return((rand() % (max - min)) + min);
-}
+int randRange(int min, int max) { return((rand() % (max - min)) + min); }
 
 int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alpha, int beta, int gamma, ZVStruct* zvPtr)
 {
@@ -720,7 +714,7 @@ void processLife(int lifeNum, bool callFoundLife)
 							}
 #endif
 							DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Unsupported opcode %X when actor isn't in floor\n", currentOpcode & 0x7FFF);
-							FITD_throwFatal(); // assert(0);
+							FITD_throwFatal();
 							break;
 						}
 					}
@@ -883,7 +877,7 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_DO_MAX_ZV: // DO_MAX_ZV
 				{
 					appendFormatted("LM_DO_MAX_ZV ");
-					// FITD_throwFatal(); // assert(0);
+					// FITD_throwFatal();
 					// Adjusts the bbox length and width so they're both as big as whichever one is bigger divided by two, creating a cuboid with a square horizontal cross-section. Leaves the height unaffected. 
 					// char t_b[256];
 					// DebugSPrintZVStruct(t_b, currentProcessedActorPtr->zv);
