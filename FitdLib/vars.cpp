@@ -209,6 +209,7 @@ int cameraFovY;
 char currentCameraVisibilityList[30];
 // #endregion Floor, Room, & Camera
 
+// #region Life Script Fields
 int currentProcessedActorIdx;
 tObject* currentProcessedActorPtr;
 
@@ -231,6 +232,7 @@ s16 readNextArgument(const char* name)
 
 	return value;
 }
+// #endregion Life Script Fields
 
 bool cameraBackgroundChanged = false;
 int flagRedraw;

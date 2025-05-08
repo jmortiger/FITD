@@ -413,6 +413,7 @@ extern int cameraFovY;
 extern char currentCameraVisibilityList[30];
 // #endregion Floor, Room, & Camera
 
+// #region Life Script Fields
 extern int currentProcessedActorIdx;
 extern tObject* currentProcessedActorPtr;
 
@@ -423,6 +424,7 @@ extern int currentLifeNum;
 extern char* currentLifePtr;
 
 s16 readNextArgument(const char* name = NULL);
+// #endregion Life Script Fields
 
 extern bool cameraBackgroundChanged;
 extern int flagRedraw;
