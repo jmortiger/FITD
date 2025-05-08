@@ -23,7 +23,8 @@ int DrawListObjets(int startIdx, int selectIdx, int selectColor)
 	tWorldObject* objPtr;
 
 	if (g_gameId <= JACK) {
-		AffBigCadre(160, 50, 320, 100);
+		// Draw the top box of the inventory
+		AffBigCadre((_SCREEN_INTERNAL_WIDTH / 2), (_SCREEN_INTERNAL_HEIGHT / 4), _SCREEN_INTERNAL_WIDTH, (_SCREEN_INTERNAL_HEIGHT / 2)); // AffBigCadre(CornerRectToCenterRect(0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT / 2));
 		y = WindowY1 + 1;
 	} else {
 		SetClip(27, 25, 292, 98);
@@ -207,7 +208,7 @@ void processInventory(void)
 
 	while (!exitMenu) {
 		/*
-		osystem_CopyBlockPhys((unsigned char*)backbuffer,0,0,320,200);
+		osystem_CopyBlockPhys((unsigned char*)backbuffer,0,0,_SCREEN_INTERNAL_WIDTH,_SCREEN_INTERNAL_HEIGHT);
 		osystem_startFrame();
 		osystem_cleanScreenKeepZBuffer();
 		*/
@@ -233,7 +234,7 @@ void processInventory(void)
 				if ((localKey == 0x1C) || (localClick != 0) || (localJoyD == 0xC)) {
 					DrawListObjets(firstObjectDisplayedIdx, selectedObjectIdx, 14);
 					menuWaitVSync();
-					osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+					osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 					modeSelect = 1;
 					lastSelectedObjectIdx = -1;
 					selectedActions = 0;
@@ -352,7 +353,7 @@ void processInventory(void)
 			}
 		}
 
-		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 		//osystem_flip(NULL);
 	}
 

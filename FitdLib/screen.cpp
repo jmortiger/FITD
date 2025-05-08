@@ -4,9 +4,9 @@
 
 void setupScreen(void)
 {
-	logicalScreen = (char*)malloc(64800);
+	logicalScreen = (char*)malloc(_SCREEN_BUFFER_SIZE);
 
-	screenBufferSize = 64800;
+	screenBufferSize = _SCREEN_BUFFER_SIZE;
 
 	unkScreenVar2 = 3;
 
@@ -19,9 +19,9 @@ void flushScreen(void)
 	int i;
 	int j;
 
-	for (i = 0; i < 200; i++) {
-		for (j = 0; j < 320; j++) {
-			*(logicalScreen + i * 320 + j) = 0;
+	for (i = 0; i < _SCREEN_INTERNAL_HEIGHT; i++) {
+		for (j = 0; j < _SCREEN_INTERNAL_WIDTH; j++) {
+			*(logicalScreen + i * _SCREEN_INTERNAL_WIDTH + j) = 0;
 		}
 	}
 }

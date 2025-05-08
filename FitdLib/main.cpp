@@ -532,7 +532,7 @@ void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 	int width = x2 - x1 + 1;
 	int height = y2 - y1 + 1;
 
-	char* dest = logicalScreen + y1 * 320 + x1;
+	char* dest = logicalScreen + y1 * _SCREEN_INTERNAL_WIDTH + x1;
 
 	int i;
 	int j;
@@ -542,7 +542,7 @@ void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 			*(dest++) = color;
 		}
 
-		dest += 320 - width;
+		dest += _SCREEN_INTERNAL_WIDTH - width;
 	}
 }
 
@@ -829,13 +829,13 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 
 		if (firstpage) {
 			if (demoMode != 1) {
-				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 				FadeInPhys(16, 0);
 			} else {
 				if (turnPageFlag) {
 					turnPageForward();
 				} else {
-					osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+					osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 				}
 			}
 
@@ -848,7 +848,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 					turnPageBackward();
 				}
 			} else {
-				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			}
 		}
 
@@ -1241,7 +1241,7 @@ struct maskStruct
 	u16 deltaX;
 	u16 deltaY;
 
-	std::array<u8, 320 * 200> mask;
+	std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT> mask;
 };
 
 maskStruct g_maskBuffers[10][10];
@@ -1294,7 +1294,7 @@ void loadMask(int cameraIdx)
 
 				unsigned char* pSourceBuffer = (unsigned char*)aux;
 
-				int offset = pDestMask->x1 + pDestMask->y1 * 320 + k * 320;
+				int offset = pDestMask->x1 + pDestMask->y1 * _SCREEN_INTERNAL_WIDTH + k * _SCREEN_INTERNAL_WIDTH;
 
 				for (int l = 0; l < uNumEntryForLine; l++) {
 					unsigned char uNumSkip = *(pMaskData++);
@@ -1393,7 +1393,7 @@ void createAITD1Mask()
 
 		maskStruct* pDestMask = &g_maskBuffers[i][j];
 
-		memset(pDestMask->mask, 0, 320*200);
+		memset(pDestMask->mask, 0, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT);
 
 		pDestMask->x1 = READ_LE_U16(pMaskData);
 		pMaskData += 2;
@@ -1419,7 +1419,7 @@ void createAITD1Mask()
 		unsigned char* pDestBuffer = pDestMask->mask;
 		unsigned char* pSourceBuffer = (unsigned char*)aux;
 
-		int offset = pDestMask->x1 + pDestMask->y1 * 320 + k * 320;
+		int offset = pDestMask->x1 + pDestMask->y1 * _SCREEN_INTERNAL_WIDTH + k * _SCREEN_INTERNAL_WIDTH;
 
 		for(int l=0; l<uNumEntryForLine; l++)
 		{
@@ -2965,7 +2965,7 @@ void mainDraw(int flagFlip)
 	//if(flagFlip == 2)
 	{
 		if (cameraBackgroundChanged) {
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			cameraBackgroundChanged = false;
 		}
 	}
@@ -3199,7 +3199,7 @@ void cleanClip()
 {
 	for (int x = clipLeft; x < clipRight; x++) {
 		for (int y = clipTop; y < clipBottom; y++) {
-			logicalScreen[y * 320 + x] = 0;
+			logicalScreen[y * _SCREEN_INTERNAL_WIDTH + x] = 0;
 		}
 	}
 }
@@ -3318,7 +3318,7 @@ void foundObject(int objIdx, int param)
 
 	statusVar1 = 0;
 
-	memset(frontBuffer, 0, 320 * 200);
+	memset(frontBuffer, 0, _SCREEN_INTERNAL_PIXELS);
 	FastCopyScreen(frontBuffer, logicalScreen);
 
 	AffBigCadre(160, 100, 240, 120);
@@ -3329,7 +3329,7 @@ void foundObject(int objIdx, int param)
 	input5 = 1;
 
 	while (!var_C) {
-		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 		process_events();
 		osystem_drawBackground();

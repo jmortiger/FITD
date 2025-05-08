@@ -18,8 +18,8 @@ void JACK_ReadBook(int index, int type)
 		case 1: // READ_BOOK
 		{
 			unsigned char* pImage = (unsigned char*)loadPak("ITD_RESS", JACK_LIVRE);
-			memcpy(aux, pImage, 320 * 200);
-			unsigned char* lpalette = pImage + 320 * 200;
+			memcpy(aux, pImage, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT);
+			unsigned char* lpalette = pImage + (_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT);
 			convertPaletteIfRequired(lpalette);
 			copyPalette(lpalette, currentGamePalette);
 			setPalette(lpalette);

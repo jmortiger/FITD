@@ -21,7 +21,7 @@ void afficheSprite(int left, int top, int index, char* gfxData)
 	int i;
 	int j;
 
-	outPtr = logicalScreen + top * 320 + left;
+	outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
 	inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe
 
 	inPtr += 4;
@@ -31,7 +31,7 @@ void afficheSprite(int left, int top, int index, char* gfxData)
 	height = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
 
-	offset = 320 - width;
+	offset = _SCREEN_INTERNAL_WIDTH - width;
 
 	for (i = 0; i < height; i++) {
 		for (j = 0; j < width; j++) {
@@ -58,7 +58,7 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 	if (g_gameId >= AITD3)
 		return;
 
-	outPtr = logicalScreen + top * 320 + left;
+	outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
 	inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe
 
 	inPtr += 4;
@@ -68,7 +68,7 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 	height = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
 
-	offset = 320 - width;
+	offset = _SCREEN_INTERNAL_WIDTH - width;
 
 	for (i = 0; i < height; i++) {
 		for (j = 0; j < width; j++) {
@@ -83,6 +83,11 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 	}
 }
 
+/// @brief Poster Big Frame; Plaster the frame graphics data in `PtrCadre` at the specified point on the screen with the specified size.
+/// @param x The x coordinate of the frame's center.
+/// @param y The y coordinate of the frame's center.
+/// @param width 
+/// @param height 
 void AffBigCadre(int x, int y, int width, int height)
 {
 	int top;
@@ -96,7 +101,7 @@ void AffBigCadre(int x, int y, int width, int height)
 	int halfWidth;
 	int halfHeight;
 
-	SetClip(0, 0, 319, 199);
+	SetClip(0, 0, (_SCREEN_INTERNAL_WIDTH - 1), (_SCREEN_INTERNAL_HEIGHT - 1));
 
 	halfWidth = width / 2;
 	currentLeftPosition = left = x - halfWidth;
@@ -167,5 +172,4 @@ void AffBigCadre(int x, int y, int width, int height)
 
 	fillBox(WindowX1, WindowY1, WindowX2, WindowY2, 0);
 	SetClip(WindowX1, WindowY1, WindowX2, WindowY2);
-
 }

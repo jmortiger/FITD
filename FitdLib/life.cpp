@@ -1889,14 +1889,14 @@ void processLife(int lifeNum, bool callFoundLife)
 					if (g_gameId > AITD1) {
 						FadeOutPhys(0x10, 0);
 						unsigned char lpalette[0x300];
-						copyPalette((unsigned char*)aux + 64000, lpalette);
+						copyPalette((unsigned char*)aux + _SCREEN_INTERNAL_PIXELS, lpalette);
 						convertPaletteIfRequired(lpalette);
 						copyPalette(lpalette, currentGamePalette);
 						setPalette(lpalette);
 					}
 
 					FastCopyScreen(aux, frontBuffer);
-					osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, 320, 200);
+					osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 					osystem_drawBackground();
 
 					unsigned int chrono;

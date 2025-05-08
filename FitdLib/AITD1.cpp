@@ -125,9 +125,9 @@ int makeIntroScreens(void)
 
 	data = loadPak("ITD_RESS", AITD1_TITRE);
 	FastCopyScreen(data + 770, frontBuffer);
-	osystem_CopyBlockPhys(frontBuffer, 0, 0, 320, 200);
+	osystem_CopyBlockPhys(frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 	FadeInPhys(8, 0);
-	memcpy(logicalScreen, frontBuffer, 320 * 200);
+	memcpy(logicalScreen, frontBuffer, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT);
 	osystem_flip(NULL);
 	free(data);
 	loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
@@ -165,7 +165,7 @@ void CopyBox_Aux_Log(int x1, int y1, int x2, int y2)
 
 	for (i = y1; i < y2; i++) {
 		for (j = x1; j < x2; j++) {
-			*(screenSm3 + i * 320 + j) = *(screenSm1 + i * 320 + j);
+			*(screenSm3 + i * _SCREEN_INTERNAL_WIDTH + j) = *(screenSm1 + i * _SCREEN_INTERNAL_WIDTH + j);
 		}
 	}
 }
@@ -189,15 +189,17 @@ int ChoosePerso(void)
 		FastCopyScreen(logicalScreen, aux2);
 
 		if (choice == 0) {
-			AffBigCadre(80, 100, 160, 200);
+			// Draw a framed box taking half the width & the whole height
+			AffBigCadre(80, 100, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
 			CopyBox_Aux_Log(10, 10, 149, 190);
 		} else {
-			AffBigCadre(240, 100, 160, 200);
+			// Draw a framed box taking half the width & the whole height
+			AffBigCadre(240, 100, 160, _SCREEN_INTERNAL_HEIGHT);
 			CopyBox_Aux_Log(170, 10, 309, 190);
 		}
 
 		FastCopyScreen(logicalScreen, frontBuffer);
-		osystem_CopyBlockPhys(frontBuffer, 0, 0, 320, 200);
+		osystem_CopyBlockPhys(frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 		if (firsttime != 0) {
 			FadeInPhys(0x40, 0);
@@ -218,9 +220,10 @@ int ChoosePerso(void)
 			if (JoyD & 4) {
 				choice = 0;
 				FastCopyScreen(aux2, logicalScreen);
-				AffBigCadre(80, 100, 160, 200);
+				// Draw a framed box taking half the width & the whole height
+				AffBigCadre(80, 100, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
 				CopyBox_Aux_Log(10, 10, 149, 190);
-				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 				while (JoyD != 0) {
 					process_events();
@@ -231,9 +234,10 @@ int ChoosePerso(void)
 			if (JoyD & 8) {
 				choice = 1;
 				FastCopyScreen(aux2, logicalScreen);
-				AffBigCadre(240, 100, 160, 200);
+				// Draw a framed box taking half the width & the whole height
+				AffBigCadre(240, 100, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
 				CopyBox_Aux_Log(170, 10, 309, 190);
-				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 				while (JoyD != 0) {
 					process_events();

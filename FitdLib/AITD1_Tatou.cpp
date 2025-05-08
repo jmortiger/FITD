@@ -45,7 +45,7 @@ int make3dTatou(void)
 	FastCopyScreen(tatou2d + 770, frontBuffer);
 	FastCopyScreen(frontBuffer, aux2);
 
-	osystem_CopyBlockPhys(frontBuffer, 0, 0, 320, 200);
+	osystem_CopyBlockPhys(frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 	FadeInPhys(8, 0);
 
@@ -82,13 +82,13 @@ int make3dTatou(void)
 			AffObjet(0, 0, 0, 0, 0, 0, tatou3d);
 
 			//blitScreenTatou();
-			osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 			process_events();
 
 			copyPalette(tatouPal, currentGamePalette);
 			setPalette(currentGamePalette);
-			osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 			// boucle de rotation du tatou (armadillo rotation loop)
 			while (key == 0 && Click == 0 && JoyD == 0) {

@@ -129,7 +129,7 @@ void renderText(int x, int y, char* surface, u8* string)
 			for (ch = fontSm1; ch > 0; ch--) {
 				if (bp >= 200)
 					return;
-				char* outPtr = logicalScreen + bp * 320 + fontSm8;
+				char* outPtr = logicalScreen + bp * _SCREEN_INTERNAL_WIDTH + fontSm8;
 
 
 				int dh = fontSm9;

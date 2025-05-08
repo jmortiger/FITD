@@ -289,7 +289,7 @@ void AITD2_ReadBook(int index, int type)
 			convertPaletteIfRequired(lpalette);
 			copyPalette(lpalette, currentGamePalette);
 			setPalette(lpalette);
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			turnPageFlag = 0;
 			Lire(index, 60, 10, 245, 190, 0, 124, 124);
 			break;
@@ -302,7 +302,7 @@ void AITD2_ReadBook(int index, int type)
 			convertPaletteIfRequired(lpalette);
 			copyPalette(lpalette, currentGamePalette);
 			setPalette(lpalette);
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			turnPageFlag = 1;
 			Lire(index, 60, 10, 245, 190, 0, 124, 124);
 			break;
@@ -315,7 +315,7 @@ void AITD2_ReadBook(int index, int type)
 			convertPaletteIfRequired(lpalette);
 			copyPalette(lpalette, currentGamePalette);
 			setPalette(lpalette);
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			turnPageFlag = 0;
 			Lire(index, 60, 10, 245, 190, 0, 124, 124);
 			break;

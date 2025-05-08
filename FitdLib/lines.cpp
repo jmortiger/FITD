@@ -22,8 +22,8 @@ void swapFunc(int* a, int* b)
 
 void pixel(int x, int y, unsigned char c)
 {
-	if (x >= 0 && x < 320 && y >= 0 && y < 200) {
-		*(polyBackBuffer + y * 320 + x) = c;
+	if (x >= 0 && x < _SCREEN_INTERNAL_WIDTH && y >= 0 && y < _SCREEN_INTERNAL_HEIGHT) {
+		*(polyBackBuffer + y * _SCREEN_INTERNAL_WIDTH + x) = c;
 	}
 }
 

@@ -205,7 +205,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 			// TODO: here, timing management
 			// TODO: fade management
 
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, 320, 200);
+			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 			osystem_drawBackground();
 

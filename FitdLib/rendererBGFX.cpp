@@ -330,15 +330,15 @@ void osystem_drawBackground()
 		pVertices++;
 
 		//2
-		pVertices->position[0] = 320.f;
-		pVertices->position[1] = 200.f;
+		pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
+		pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
 		pVertices->position[2] = 1000.f;
 		pVertices->texcoord[0] = 1.f;
 		pVertices->texcoord[1] = 1.f;
 		pVertices++;
 
 		//1
-		pVertices->position[0] = 320.f;
+		pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
 		pVertices->position[1] = 0.f;
 		pVertices->position[2] = 1000.f;
 		pVertices->texcoord[0] = 1.f;
@@ -356,15 +356,15 @@ void osystem_drawBackground()
 
 		//4
 		pVertices->position[0] = 0.f;
-		pVertices->position[1] = 200.f;
+		pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
 		pVertices->position[2] = 1000.f;
 		pVertices->texcoord[0] = 0.f;
 		pVertices->texcoord[1] = 1.f;
 		pVertices++;
 
 		//5
-		pVertices->position[0] = 320.f;
-		pVertices->position[1] = 200.f;
+		pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
+		pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
 		pVertices->position[2] = 1000.f;
 		pVertices->texcoord[0] = 1.f;
 		pVertices->texcoord[1] = 1.f;
@@ -403,11 +403,13 @@ bgfx::TextureHandle fieldModelInspector_Depth = BGFX_INVALID_HANDLE;
 void initBgfxMainResources()
 {
 	// create background texture
-	g_backgroundTexture = bgfx::createTexture2D(320, 200, false, 1, bgfx::TextureFormat::R8U);
+	g_backgroundTexture = bgfx::createTexture2D(_SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, false, 1, bgfx::TextureFormat::R8U);
 	g_paletteTexture = bgfx::createTexture2D(3, 256, false, 1, bgfx::TextureFormat::R8U);
 }
 
-ImVec2 gameResolution = { 320, 200 };
+/// @brief 
+/// @details Game is running in dos resolution mode 13h, ie 320x200x256, but is displayed in 4:3 (320x240), so pixel are not square (1.6:1)
+ImVec2 gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
 
 void renderGameWindow()
 {
@@ -440,7 +442,7 @@ void osystem_startFrame()
 
 			gameResolution = currentWindowSize;
 		} else {
-			gameResolution = { 320, 200 };
+			gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
 		}
 		ImGui::End();
 
@@ -487,14 +489,14 @@ void osystem_startFrame()
 	osystem_drawBackground();
 }
 
-unsigned char frontBuffer[320 * 200];
-unsigned char physicalScreen[320 * 200];
-unsigned char physicalScreenRGB[320 * 200 * 3];
+unsigned char frontBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
+unsigned char physicalScreen[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
+unsigned char physicalScreenRGB[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 3];
 
 void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int right, int bottom)
 {
 	unsigned char* out = physicalScreenRGB;
-	unsigned char* in = (unsigned char*)&videoBuffer[0] + left + top * 320;
+	unsigned char* in = (unsigned char*)&videoBuffer[0] + left + top * _SCREEN_INTERNAL_WIDTH;
 
 	int i;
 	int j;
@@ -508,8 +510,8 @@ void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int ri
 	}
 
 	for (i = top; i < bottom; i++) {
-		in = (unsigned char*)&videoBuffer[0] + left + i * 320;
-		unsigned char* out2 = physicalScreen + left + i * 320;
+		in = (unsigned char*)&videoBuffer[0] + left + i * _SCREEN_INTERNAL_WIDTH;
+		unsigned char* out2 = physicalScreen + left + i * _SCREEN_INTERNAL_WIDTH;
 		for (j = left; j < right; j++) {
 			unsigned char color = *(in++);
 
@@ -521,7 +523,7 @@ void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int ri
 		}
 	}
 
-	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, 320, 200, bgfx::copy(physicalScreen, 320 * 200));
+	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, bgfx::copy(physicalScreen, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT));
 }
 
 void osystem_refreshFrontTextureBuffer()
@@ -532,14 +534,14 @@ void osystem_refreshFrontTextureBuffer()
 	int i;
 	int j;
 
-	for (i = 0; i < 200 * 320; i++) {
+	for (i = 0; i < _SCREEN_INTERNAL_HEIGHT * _SCREEN_INTERNAL_WIDTH; i++) {
 		unsigned char color = *(in++);
 		*(out++) = RGB_Pal[color * 3];
 		*(out++) = RGB_Pal[color * 3 + 1];
 		*(out++) = RGB_Pal[color * 3 + 2];
 	}
 
-	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, 320, 200, bgfx::copy(physicalScreen, 320 * 200));
+	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, bgfx::copy(physicalScreen, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT));
 }
 
 void osystem_initBuffer()
@@ -549,8 +551,8 @@ void osystem_initBuffer()
 
 void gameScreenToViewport(float* X, float* Y)
 {
-	(*X) = (*X) * g_screenWidth / 320.f;
-	(*Y) = (*Y) * g_screenHeight / 200.f;
+	(*X) = (*X) * g_screenWidth / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	(*Y) = (*Y) * g_screenHeight / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 
 	(*Y) = g_screenHeight - (*Y);
 }
@@ -569,10 +571,10 @@ void osystem_setClip(float left, float top, float right, float bottom)
 	float height = y2 - y1;
 
 	float currentScissor[4];
-	currentScissor[0] = ((left - 1) / 320.f) * gameResolution[0];
-	currentScissor[1] = ((top - 1) / 200.f) * gameResolution[1];
-	currentScissor[2] = ((right - left + 2) / 320.f) * gameResolution[0];
-	currentScissor[3] = ((bottom - top + 2) / 200.f) * gameResolution[1];
+	currentScissor[0] = ((left - 1) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0];
+	currentScissor[1] = ((top - 1) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1];
+	currentScissor[2] = ((right - left + 2) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0];
+	currentScissor[3] = ((bottom - top + 2) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1];
 
 	currentScissor[0] = std::max<float>(currentScissor[0], 0);
 	currentScissor[1] = std::max<float>(currentScissor[1], 0);
@@ -751,9 +753,9 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 	assert(numPoint < MAX_POINTS_PER_POLY);
 
 	// compute the polygon bounding box
-	float polyMinX = 320.f;
+	float polyMinX = _SCREEN_INTERNAL_WIDTH_FLOAT;
 	float polyMaxX = 0.f;
-	float polyMinY = 200.f;
+	float polyMinY = _SCREEN_INTERNAL_HEIGHT_FLOAT;
 	float polyMaxY = 0.f;
 
 	for (int i = 0; i < numPoint; i++) {
@@ -826,8 +828,8 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 				pVertex->Y = buffer[i * 3 + 1];
 				pVertex->Z = buffer[i * 3 + 2];
 
-				pVertex->U = (pVertex->X / 320.f) * 50.f + polyMinX * 1.2f + polyMaxX;
-				pVertex->V = (pVertex->Y / 200.f) * 50.f + polyMinY * 0.7f + polyMaxY;
+				pVertex->U = (pVertex->X / _SCREEN_INTERNAL_WIDTH_FLOAT) * 50.f + polyMinX * 1.2f + polyMaxX;
+				pVertex->V = (pVertex->Y / _SCREEN_INTERNAL_HEIGHT_FLOAT) * 50.f + polyMinY * 0.7f + polyMaxY;
 
 				int bank = (color & 0xF0) >> 4;
 				int startColor = color & 0xF;
@@ -1140,7 +1142,7 @@ void osystem_flip(unsigned char* videoBuffer)
 	osystem_flushPendingPrimitives();
 }
 
-void osystem_createMask(const std::array<u8, 320 * 200>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2)
+void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2)
 {
 	if (maskTextures.size() < roomId + 1) {
 		maskTextures.resize(roomId + 1);
@@ -1159,7 +1161,7 @@ void osystem_createMask(const std::array<u8, 320 * 200>& mask, int roomId, int m
 		maskTextures[roomId][maskId].vertexBuffer = BGFX_INVALID_HANDLE;
 	}
 
-	maskTextures[roomId][maskId].maskTexture = bgfx::createTexture2D(320, 200, false, 1, bgfx::TextureFormat::R8U, 0, bgfx::copy(&mask[0], 320 * 200));
+	maskTextures[roomId][maskId].maskTexture = bgfx::createTexture2D(_SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, false, 1, bgfx::TextureFormat::R8U, 0, bgfx::copy(&mask[0], _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT));
 	maskTextures[roomId][maskId].maskX1 = maskX1;
 	maskTextures[roomId][maskId].maskX2 = maskX2 + 1;
 	maskTextures[roomId][maskId].maskY1 = maskY1;
@@ -1189,26 +1191,26 @@ void osystem_createMask(const std::array<u8, 320 * 200>& mask, int roomId, int m
 	pVertices->position[0] = X1;
 	pVertices->position[1] = Y2;
 	pVertices->position[2] = maskZ;
-	pVertices->texcoord[0] = X1 / 320.f;
-	pVertices->texcoord[1] = Y2 / 200.f;
+	pVertices->texcoord[0] = X1 / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->texcoord[1] = Y2 / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 	pVertices++;
 	pVertices->position[0] = X1;
 	pVertices->position[1] = Y1;
 	pVertices->position[2] = maskZ;
-	pVertices->texcoord[0] = X1 / 320.f;
-	pVertices->texcoord[1] = Y1 / 200.f;
+	pVertices->texcoord[0] = X1 / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->texcoord[1] = Y1 / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 	pVertices++;
 	pVertices->position[0] = X2;
 	pVertices->position[1] = Y2;
 	pVertices->position[2] = maskZ;
-	pVertices->texcoord[0] = X2 / 320.f;
-	pVertices->texcoord[1] = Y2 / 200.f;
+	pVertices->texcoord[0] = X2 / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->texcoord[1] = Y2 / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 	pVertices++;
 	pVertices->position[0] = X2;
 	pVertices->position[1] = Y1;
 	pVertices->position[2] = maskZ;
-	pVertices->texcoord[0] = X2 / 320.f;
-	pVertices->texcoord[1] = Y1 / 200.f;
+	pVertices->texcoord[0] = X2 / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->texcoord[1] = Y1 / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 	pVertices++;
 
 	maskTextures[roomId][maskId].vertexBuffer = bgfx::createVertexBuffer(bgfx::copy(vertexBuffer, sizeof(vertexBuffer)), layout);

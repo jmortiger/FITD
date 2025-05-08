@@ -290,8 +290,8 @@ extern char* PtrCadre;
 extern unsigned char currentGamePalette[0x300];
 
 //extern OSystem osystem;
-extern unsigned char frontBuffer[320 * 200];
-extern char rgbaBuffer[320 * 200 * 4];
+extern unsigned char frontBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
+extern char rgbaBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 4];
 
 extern unsigned int timer;
 extern unsigned int timeGlobal;

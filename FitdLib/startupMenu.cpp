@@ -5,7 +5,8 @@ void drawStartupMenu(int selectedEntry)
 	int currentY = 76;
 	int currentTextNum = 0;
 
-	AffBigCadre(160, 100, 320, 80);
+	// Draw a box in the center of the screen spanning the screen's width.
+	AffBigCadre((_SCREEN_INTERNAL_WIDTH / 2), (_SCREEN_INTERNAL_HEIGHT / 2), _SCREEN_INTERNAL_WIDTH, 80);
 
 	while (currentTextNum < 3) {
 		// highlight selected entry
@@ -33,7 +34,7 @@ int processStartupMenu(void)
 
 	osystem_startFrame();
 	osystem_stopFrame();
-	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 	osystem_flip(NULL);
 	FadeInPhys(16, 0);
@@ -41,7 +42,7 @@ int processStartupMenu(void)
 
 	// exit loop only if time out or if choice made
 	while (evalChrono(&chrono) <= 0x10000) {
-		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 		osystem_startFrame();
 
 		if (selectedEntry != -1 || evalChrono(&chrono) > 0x10000) {

@@ -10,15 +10,16 @@ void AffOption(int n, int num, int selected)
 	int y = WindowY1 + ((WindowY2 - WindowY1) / 2) - (NB_OPTIONS * SIZE_FONT) / 2 + (n * SIZE_FONT);
 
 	if (n == selected) {
-		SelectedMessage(160, y, num, SELECT_COUL, MENU_COUL);
+		SelectedMessage((_SCREEN_INTERNAL_WIDTH / 2), y, num, SELECT_COUL, MENU_COUL);
 	} else {
-		SimpleMessage(160, y, num, MENU_COUL);
+		SimpleMessage((_SCREEN_INTERNAL_WIDTH / 2), y, num, MENU_COUL);
 	}
 }
 
 void AffOptionList(int selectedStringNumber)
 {
-	AffBigCadre(160, 100, 320, 200);
+	// Draw a fullscreen border.
+	AffBigCadre((_SCREEN_INTERNAL_WIDTH / 2), (_SCREEN_INTERNAL_HEIGHT / 2), _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 	int backupTop = WindowY1;
 	int backupBottom = WindowY2;
@@ -66,7 +67,7 @@ void processSystemMenu(void)
 
 	while (!exitMenu) {
 		AffOptionList(currentSelectedEntry);
-		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, 320, 200);
+		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 		osystem_startFrame();
 		process_events();
 		flushScreen();

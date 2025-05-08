@@ -62,7 +62,7 @@ extern "C" {
 	void osystem_playSample(char* samplePtr, int size);
 	//    void getMouseStatus(mouseStatusStruct * mouseData);
 
-	void osystem_createMask(const std::array<u8, 320 * 200>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2);
+	void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2);
 	void osystem_drawMask(int roomId, int maskId);
 
 	void osystem_startFrame();

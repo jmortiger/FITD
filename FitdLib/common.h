@@ -7,20 +7,28 @@
 #include "imgui.h"
 #endif
 
-//////////////// GAME SPECIFIC DEFINES
+/* #region Screen */
+/// @todo Why 64800? AITD is 320*200=64000 & is rendered in 4:3 as 320*240=76800.
+#define _SCREEN_BUFFER_SIZE 64800
+#define _SCREEN_INTERNAL_PIXELS 64000
+#define _SCREEN_INTERNAL_WIDTH 320
+#define _SCREEN_INTERNAL_HEIGHT 200
+#define _SCREEN_INTERNAL_WIDTH_FLOAT 320.f
+#define _SCREEN_INTERNAL_HEIGHT_FLOAT 200.f
+/* #endregion */
 
+/* #region GAME SPECIFIC DEFINES */
 #define NUM_MAX_CAMERA_IN_ROOM 20
 //#define NUM_MAX_OBJ         300
 #define NUM_MAX_OBJECT       50
 #define NUM_MAX_TEXT        40
 #define NUM_MAX_MESSAGE     5
 
-
 // 250
 #define NUM_MAX_TEXT_ENTRY  1000
+/* #endregion */
 
-//////////////////
-
+/* #region  CVars */
 enum enumCVars
 {
 	SAMPLE_PAGE = 0,
@@ -55,9 +63,7 @@ enum enumCVars
 	MATRICE_COULEUR, // Color Matrix
 
 	UNKNOWN_CVAR // for table padding, shouldn't be called !
-};
-
-typedef enum enumCVars enumCVars;
+}; typedef enum enumCVars enumCVars;
 
 extern int AITD1KnownCVars[];
 extern int AITD2KnownCVars[];
@@ -65,7 +71,9 @@ extern int* currentCVarTable;
 
 int getCVarsIdx(enumCVars);
 int getCVarsIdx(int);
+/* #endregion */
 
+/* #region Sized types */
 #if !AITD_UE4
 typedef unsigned char uint8;
 typedef unsigned short uint16;
@@ -84,6 +92,7 @@ typedef unsigned int U32;
 typedef signed char S8;
 typedef signed short S16;
 typedef signed int S32;
+/* #endregion */
 
 #define TYPE_MASK 0x1D1
 
@@ -127,27 +136,28 @@ typedef signed int S32;
 #include "main.h"
 #include "sequence.h"
 
-// include game specific stuff
+/* #region include game specific stuff */
 #include "AITD1.h"
 #include "AITD2.h"
 #include "AITD3.h"
 #include "JACK.h"
+/* #endregion */
 
-// debugger
+/* #region debugger */
 #ifdef FITD_DEBUGGER
 #include "debugging/debugger.h"
 #endif
+/* #endregion */
 
-// scripting
+/* #region scripting */
 #include "track.h"
 #include "life.h"
 #include "evalVar.h"
+/* #endregion */
 
 #include "osystem.h"
 
-
-////
-
+/* #region Endianess */
 //typedef unsigned char byte;
 
 #ifdef UNIX
@@ -225,10 +235,11 @@ FORCEINLINE s32 READ_BE_S32(void* ptr)
 {
 	return (s32)READ_LE_U32(ptr);
 }
+/* #endregion */
 
 /// @brief Add a breakpoint here to catch all fatal exits.
 FORCEINLINE void FITD_throwFatal()
-{ 
+{
 	assert(0);
 }
 

@@ -1076,7 +1076,7 @@ int AffObjet(int x, int y, int z, int alpha, int beta, int gamma, void* modelPtr
 
 	if(x>=0 && x < 319 && y>=0 && y<199)
 	{
-	screen[y*320+x] = 15;
+	screen[y*_SCREEN_INTERNAL_WIDTH+x] = 15;
 	}
 	}*/
 	//
