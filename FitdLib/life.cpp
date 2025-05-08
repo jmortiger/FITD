@@ -745,21 +745,15 @@ void processLife(int lifeNum, bool callFoundLife)
 								char* pAnim = HQR_Get(listAnim, currentProcessedActorPtr->ANIM);
 								char* pBody;
 
-								if (g_gameId >= JACK) {
-									/*                  if (bFlagDecal)
-									gereDecal(); */
-								}
+								/* if (g_gameId >= JACK && bFlagDecal) gereDecal(); */
 
 								pBody = HQR_Get(listBody, currentProcessedActorPtr->bodyNum);
 
-								/*    if(gameId >= JACK)
-								{
-								setInterAnimObject2(currentProcessedActorPtr->FRAME, pAnim, pBody, TRUE, Objet->AnimDecal);
-								}
-								else */
-								{
-									SetInterAnimObjet(currentProcessedActorPtr->FRAME, pAnim, pBody);
-								}
+								/* if(gameId >= JACK) {
+									setInterAnimObject2(currentProcessedActorPtr->FRAME, pAnim, pBody, TRUE, Objet->AnimDecal);
+								} else { */
+								SetInterAnimObjet(currentProcessedActorPtr->FRAME, pAnim, pBody);
+								// }
 							}
 						} else {
 							flagInitView = 1;
@@ -783,10 +777,7 @@ void processLife(int lifeNum, bool callFoundLife)
 						char* pAnim = HQR_Get(listAnim, currentProcessedActorPtr->ANIM);
 						char* pBody;
 
-						if (g_gameId >= JACK) {
-							/*                  if (bFlagDecal)
-							gereDecal(); */
-						}
+						/* if (g_gameId >= JACK && bFlagDecal) gereDecal(); */
 
 						pBody = HQR_Get(listBody, currentProcessedActorPtr->bodyNum);
 
@@ -1359,6 +1350,11 @@ void processLife(int lifeNum, bool callFoundLife)
 								currentProcessedActorPtr->beta,
 								currentProcessedActorPtr->gamma,
 								&currentProcessedActorPtr->zv);
+							break;
+						}
+						default:
+						{
+							DebugPrintfLn(DBO_L_WARN, "SPECIAL %i could not be handled.", lifeTempVar1);
 							break;
 						}
 					}

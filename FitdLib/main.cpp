@@ -361,8 +361,7 @@ void OpenProgram(void)
 //	srand(ltime);
 
 	if (!initMusicDriver()) {
-		musicConfigured = 0;
-		musicEnabled = 0;
+		musicConfigured = musicEnabled = false;
 	}
 
 	// TODO: reverse sound init code
