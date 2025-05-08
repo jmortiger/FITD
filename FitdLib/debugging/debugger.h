@@ -24,6 +24,7 @@ void debugger_draw(void);
 void parseDebugParam(int argc, char* argv[]);
 
 /// @brief The categories of debug info supported, as a bit flag.
+/// @todo Add mask to enum
 enum debugCategoryEnum : unsigned char {
 	DBO_NONE	 = 0b0000'0000,
 	DBO_PAK		 = 0b0000'0001,
@@ -38,6 +39,7 @@ enum debugCategoryEnum : unsigned char {
 typedef enum debugCategoryEnum debugCategoryEnum;
 
 /// @brief The debug levels supported, as a bit flag.
+/// @todo Add mask to enum
 enum debugLevelEnum : unsigned char {
 	DBO_L_NONE	= 0b0000'0000,
 	DBO_L_DEBUG	= 0b0000'0001,

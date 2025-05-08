@@ -106,7 +106,7 @@ struct interpolatedValue
 
 typedef struct interpolatedValue interpolatedValue;
 
-enum actorFlags
+enum actorFlags : u16
 {
 	AF_ANIMATED = 0x0001,
 	// 0x02
@@ -118,8 +118,9 @@ enum actorFlags
 	AF_FOUNDABLE = 0x0080,
 	AF_FALLABLE = 0x0100,
 
+	/// @brief Used to remove invalid flags from values.
 	AF_MASK = AF_ANIMATED + AF_MOVABLE + AF_TRIGGER + AF_FOUNDABLE + AF_FALLABLE,
-};
+}; typedef enum actorFlags actorFlags;
 
 struct tObject // used to read data from file too
 {

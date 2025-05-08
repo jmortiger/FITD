@@ -543,12 +543,14 @@ void processLife(int lifeNum, bool callFoundLife)
 						}
 						case LM_TYPE:
 						{
-							lifeTempVar1 = (*(s16*)(currentLifePtr)) & TYPE_MASK;
+							lifeTempVar1 = (*(s16*)(currentLifePtr)) & actorFlags::AF_MASK;
 							currentLifePtr += 2;
 
 							lifeTempVar2 = ListWorldObjets[var_6].flags;
 
-							ListWorldObjets[var_6].flags = (ListWorldObjets[var_6].flags & (~TYPE_MASK)) + lifeTempVar1;
+							// TODO: Is this right?
+							// ??? Preserve prior invalid flags & overwrite valid flags ???
+							ListWorldObjets[var_6].flags = (ListWorldObjets[var_6].flags & ~(actorFlags::AF_MASK)) + lifeTempVar1;
 							break;
 						}
 						////////////////////////////////////////////////////////////////////////

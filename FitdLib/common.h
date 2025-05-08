@@ -94,7 +94,7 @@ typedef signed short S16;
 typedef signed int S32;
 /* #endregion */
 
-#define TYPE_MASK 0x1D1
+// #define TYPE_MASK 0x1D1 // Redundant w/ actorFlags::AF_MASK
 
 #define ANIM_ONCE             0
 #define ANIM_REPEAT           1
