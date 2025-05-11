@@ -112,6 +112,11 @@ int renderVar3;
 void fillpoly(s16* datas, int n, char c);
 #endif
 
+/// @brief 
+/// @param ax 
+/// @param bx 
+/// @param cx 
+/// @todo Document
 void transformPoint(float* ax, float* bx, float* cx)
 {
 	int X = (int)*ax;

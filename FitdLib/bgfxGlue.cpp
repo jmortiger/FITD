@@ -105,20 +105,19 @@ void EndFrame()
 	}
 	bgfx::frame();
 
-	{
-		static Uint64 last_time = SDL_GetPerformanceCounter();
-		Uint64 now = SDL_GetPerformanceCounter();
-
-		double freq = (double)SDL_GetPerformanceFrequency();
-		double secs = (now - last_time) / freq;
-		double timeToWait = ((1.f / gFrameLimit) - secs) * 1000;
-		//timeToWait = 0;
-		if (timeToWait > 0) {
-			SDL_Delay((unsigned int)timeToWait);
-		}
-
-		last_time = SDL_GetPerformanceCounter();
+	// #region SDL Timing
+	static Uint64 last_time = SDL_GetPerformanceCounter();
+	Uint64 now = SDL_GetPerformanceCounter();
+	double freq = (double)SDL_GetPerformanceFrequency();
+	double secs = (now - last_time) / freq;
+	double timeToWait = ((1.f / gFrameLimit) - secs) * 1000;
+	//timeToWait = 0;
+	if (timeToWait > 0) {
+		SDL_Delay((unsigned int)timeToWait);
 	}
+
+	last_time = SDL_GetPerformanceCounter();
+	// #endregion SDL Timing
 }
 
 bgfx::Init initparam;

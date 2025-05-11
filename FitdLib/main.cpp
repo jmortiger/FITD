@@ -150,37 +150,25 @@ const unsigned char defaultPaletteAITD3[0x30] =
 
 void executeFoundLife(int objIdx)
 {
-	int var_2;
-	int actorIdx;
+	if (objIdx == -1 || ListWorldObjets[objIdx].foundLife == -1)
+		return;
+
+	int foundLife = ListWorldObjets[objIdx].foundLife;
+
+	tObject* currentActorPtr = currentProcessedActorPtr;
+	int currentActorIdx = currentProcessedActorIdx;
+	int currentActorLifeIdx = currentLifeActorIdx;
+	tObject* currentActorLifePtr = currentLifeActorPtr;
+	int currentActorLifeNum = currentLifeNum;
+
 	int lifeOffset;
-	int currentActorIdx;
-	int currentActorLifeIdx;
-	int currentActorLifeNum;
-	int foundLife;
-	tObject* currentActorPtr;
-	tObject* currentActorLifePtr;
-
-	if (objIdx == -1)
-		return;
-
-	foundLife = ListWorldObjets[objIdx].foundLife;
-
-	if (ListWorldObjets[objIdx].foundLife == -1)
-		return;
-
-	currentActorPtr = currentProcessedActorPtr;
-	currentActorIdx = currentProcessedActorIdx;
-	currentActorLifeIdx = currentLifeActorIdx;
-	currentActorLifePtr = currentLifeActorPtr;
-	currentActorLifeNum = currentLifeNum;
-
 	if (currentLifeNum != -1) {
 		lifeOffset = (currentLifePtr - HQR_Get(listLife, currentActorLifeNum)) / 2;
 	}
 
-	var_2 = 0;
+	int var_2 = 0;
 
-	actorIdx = ListWorldObjets[objIdx].objIndex;
+	int actorIdx = ListWorldObjets[objIdx].objIndex;
 
 	if (actorIdx == -1) {
 		tObject* currentActorEntryPtr = &objectTable[NUM_MAX_OBJECT - 1];
@@ -194,8 +182,8 @@ void executeFoundLife(int objIdx)
 			currentActorEntry--;
 		}
 
-		if (currentActorEntry == -1) // no space, we will have to overwrite the last actor !
-		{
+		// If there's no space, we will have to overwrite the last actor!
+		if (currentActorEntry == -1) {
 			currentActorEntry = NUM_MAX_OBJECT - 1;
 			currentActorEntryPtr = &objectTable[NUM_MAX_OBJECT - 1];
 		}
@@ -2507,18 +2495,8 @@ void drawMaskZones()
 
 #define DEPTH_THRESHOLD 1000
 
-void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float z1, float z2, float z3, float z4, int color, int transprency)
+void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float z1, float z2, float z3, float z4, int color, int transparency)
 {
-	float transformedX1;
-	float transformedX2;
-	float transformedX3;
-	float transformedX4;
-
-	float transformedY1;
-	float transformedY2;
-	float transformedY3;
-	float transformedY4;
-
 	x1 -= translateX;
 	x2 -= translateX;
 	x3 -= translateX;
@@ -2544,37 +2522,37 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 	z3 += cameraPerspective;
 	z4 += cameraPerspective;
 
-	transformedX1 = ((x1 * cameraFovX) / (float)z1) + cameraCenterX;
-	transformedX2 = ((x2 * cameraFovX) / (float)z2) + cameraCenterX;
-	transformedX3 = ((x3 * cameraFovX) / (float)z3) + cameraCenterX;
-	transformedX4 = ((x4 * cameraFovX) / (float)z4) + cameraCenterX;
-
-	transformedY1 = ((y1 * cameraFovY) / (float)z1) + cameraCenterY;
-	transformedY2 = ((y2 * cameraFovY) / (float)z2) + cameraCenterY;
-	transformedY3 = ((y3 * cameraFovY) / (float)z3) + cameraCenterY;
-	transformedY4 = ((y4 * cameraFovY) / (float)z4) + cameraCenterY;
-
 	if (z1 > DEPTH_THRESHOLD && z2 > DEPTH_THRESHOLD && z3 > DEPTH_THRESHOLD && z4 > DEPTH_THRESHOLD) {
-		osystem_draw3dQuad(transformedX1, transformedY1, z1, transformedX2, transformedY2, z2, transformedX3, transformedY3, z3, transformedX4, transformedY4, z4, color, transprency);
+		float transformedX1 = ((x1 * cameraFovX) / (float)z1) + cameraCenterX;
+		float transformedX2 = ((x2 * cameraFovX) / (float)z2) + cameraCenterX;
+		float transformedX3 = ((x3 * cameraFovX) / (float)z3) + cameraCenterX;
+		float transformedX4 = ((x4 * cameraFovX) / (float)z4) + cameraCenterX;
+
+		float transformedY1 = ((y1 * cameraFovY) / (float)z1) + cameraCenterY;
+		float transformedY2 = ((y2 * cameraFovY) / (float)z2) + cameraCenterY;
+		float transformedY3 = ((y3 * cameraFovY) / (float)z3) + cameraCenterY;
+		float transformedY4 = ((y4 * cameraFovY) / (float)z4) + cameraCenterY;
+
+		osystem_draw3dQuad(transformedX1, transformedY1, z1, transformedX2, transformedY2, z2, transformedX3, transformedY3, z3, transformedX4, transformedY4, z4, color, transparency);
 	}
 
 	//osystem_draw3dQuad(x1,y1,z1, x2,y2,z2, x3,y3,z3, x4,y4,z4, color);
 }
 
-void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transprency)
+void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency)
 {
 	//bottom
-	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y1, (float)y1, (float)y1, (float)y1, (float)z1, (float)z2, (float)z2, (float)z1, color, transprency);
+	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y1, (float)y1, (float)y1, (float)y1, (float)z1, (float)z2, (float)z2, (float)z1, color, transparency);
 	//top
-	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y2, (float)y2, (float)y2, (float)y2, (float)z1, (float)z2, (float)z2, (float)z1, color, transprency);
+	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y2, (float)y2, (float)y2, (float)y2, (float)z1, (float)z2, (float)z2, (float)z1, color, transparency);
 	//left
-	drawProjectedQuad((float)x1, (float)x1, (float)x1, (float)x1, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transprency);
+	drawProjectedQuad((float)x1, (float)x1, (float)x1, (float)x1, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transparency);
 	//right
-	drawProjectedQuad((float)x2, (float)x2, (float)x2, (float)x2, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transprency);
+	drawProjectedQuad((float)x2, (float)x2, (float)x2, (float)x2, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transparency);
 	//front
-	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z1, (float)z1, (float)z1, (float)z1, color, transprency);
+	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z1, (float)z1, (float)z1, (float)z1, color, transparency);
 	//back
-	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z2, (float)z2, (float)z2, (float)z2, color, transprency);
+	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z2, (float)z2, (float)z2, (float)z2, color, transparency);
 }
 
 void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
@@ -2954,27 +2932,22 @@ void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 
 void mainDraw(int flagFlip)
 {
-	int i;
-	//if(flagFlip == 2)
-	{
-		if (cameraBackgroundChanged) {
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
-			cameraBackgroundChanged = false;
-		}
+	if (/* flagFlip == 2 && */ cameraBackgroundChanged) {
+		osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+		cameraBackgroundChanged = false;
 	}
 
-	if (flagFlip == 0) {
-		//restoreDirtyRects();
-	} else {
+	if (flagFlip != 0) {
 		genVar5 = 0;
 		FastCopyScreen(aux2, logicalScreen);
-	}
+	}/*  else { restoreDirtyRects(); } */
 
 	//osystem_drawBackground();
 
 	SetClip(0, 0, 319, 199);
 	genVar6 = 0;
 
+	int i;
 #ifdef FITD_DEBUGGER
 	if (backgroundMode == backgroundModeEnum_3D) {
 		for (i = 0; i < getNumberOfRoom(); i++) {
@@ -2995,8 +2968,8 @@ void mainDraw(int flagFlip)
 
 		actorPtr = &objectTable[currentDrawActor];
 
-		// this is commented out to draw actors incrusted in background
-		//if(actorPtr->_flags & (AF_ANIMATED + AF_DRAWABLE + AF_SPECIAL))
+		// NOTE: This is commented out to draw actors incrusted in background
+		// if(actorPtr->_flags & (AF_ANIMATED + AF_DRAWABLE + AF_SPECIAL))
 		{
 			actorPtr->_flags &= ~AF_DRAWABLE;
 
@@ -3005,9 +2978,9 @@ void mainDraw(int flagFlip)
 			} else {
 				char* bodyPtr = HQR_Get(listBody, actorPtr->bodyNum);
 
-				if (HQ_Load) {
-					//          initAnimInBody(actorPtr->FRAME, HQR_Get(listAnim, actorPtr->ANIM), bodyPtr);
-				}
+				// if (HQ_Load) {
+				// 	initAnimInBody(actorPtr->FRAME, HQR_Get(listAnim, actorPtr->ANIM), bodyPtr);
+				// }
 
 				AffObjet(actorPtr->worldX + actorPtr->stepX, actorPtr->worldY + actorPtr->stepY, actorPtr->worldZ + actorPtr->stepZ, actorPtr->alpha, actorPtr->beta, actorPtr->gamma, bodyPtr);
 
@@ -3018,16 +2991,11 @@ void mainDraw(int flagFlip)
 					}
 				}
 
-				///////////////////////////////////// DEBUG
 #ifdef FITD_DEBUGGER
-				//  if(debuggerVar_drawModelZv)
-				{
-					if (backgroundMode == backgroundModeEnum_3D) {
-						drawZv(actorPtr);
-					}
+				if (/* debuggerVar_drawModelZv && */ backgroundMode == backgroundModeEnum_3D) {
+					drawZv(actorPtr);
 				}
 #endif
-				/////////////////////////////////////
 			}
 
 			if (BBox3D1 < 0)
@@ -3078,14 +3046,9 @@ void mainDraw(int flagFlip)
 				osystem_flip(NULL);
 				FadeInPhys(0x10, 0);
 				lightVar2 = 0;
-			} else {
-				//osystem_flip(NULL);
-			}
-		} else {
-			//mainDrawSub1();
-		}
-	} else {
-	}
+			} // else { osystem_flip(NULL); }
+		} // else { mainDrawSub1(); }
+	} // else { }
 
 	// osystem_stopFrame();
 
@@ -4258,14 +4221,10 @@ int drawTextOverlay(void)
 				int X = 160 - width / 2;
 				int Y = X + width;
 
-				if (X < BBox3D1) {
-					BBox3D1 = X;
-				}
+				if (X < BBox3D1) { BBox3D1 = X; }
+				if (Y > BBox3D3) { BBox3D3 = Y; }
 
-				if (Y > BBox3D3) {
-					BBox3D3 = Y;
-				}
-
+				// If the message has been displayed for more than 55 units of time...
 				if ((currentMessage->time++) > 55) {
 					currentMessage->string = NULL;
 				} else {
@@ -4285,8 +4244,7 @@ int drawTextOverlay(void)
 
 			currentMessage++;
 		}
-	} else {
-	}
+	} // else { }
 
 	BBox3D2 = var_10;
 	return(var_14);

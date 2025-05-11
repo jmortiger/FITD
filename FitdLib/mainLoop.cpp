@@ -211,22 +211,13 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 			}
 		}
 
-		//    if(FlagGenereActiveList)
-		{
-			updateAllActorAndObjects();
-		}
+		/* if (FlagGenereActiveList) */ updateAllActorAndObjects();
 
-		//    if(actorTurnedToObj)
-		{
-			createActorList();
-		}
+		/* if (actorTurnedToObj) */ createActorList();
 
 		sortActorList();
 
-		//    if(FlagRefreshAux2)
-		{
-			//      setupCameraSub4();
-		}
+		// if(FlagRefreshAux2) setupCameraSub4();
 
 		// mainLoopSub1();
 

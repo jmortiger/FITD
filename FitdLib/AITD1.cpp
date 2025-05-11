@@ -160,10 +160,7 @@ int makeIntroScreens(void)
 
 void CopyBox_Aux_Log(int x1, int y1, int x2, int y2)
 {
-	int i;
-	int j;
-
-	for (i = y1; i < y2; i++) {
+	for (int i = y1, j; i < y2; i++) {
 		for (j = x1; j < x2; j++) {
 			*(screenSm3 + i * _SCREEN_INTERNAL_WIDTH + j) = *(screenSm1 + i * _SCREEN_INTERNAL_WIDTH + j);
 		}
@@ -176,11 +173,11 @@ int ChoosePerso(void)
 {
 	int choice = 0;
 	int firsttime = 1;
-	int choiceMade = 0;
+	bool choiceMade = false;
 
 	InitCopyBox(aux, logicalScreen);
 
-	while (choiceMade == 0) {
+	while (!choiceMade) {
 		process_events();
 		osystem_drawBackground();
 
@@ -281,9 +278,9 @@ int ChoosePerso(void)
 			}
 		}
 
-		if (localKey && 0x1C) {
-			choiceMade = 1;
-		}
+		// TODO: What's up with this? Shouldn't this be a bitwise operation instead of a logical one?
+		if (localKey && 0b1'1100)
+			choiceMade = true;
 
 	}
 

@@ -224,11 +224,7 @@ void loadFloor(int floorNumber)
 		if (g_gameId >= AITD3) {
 			char buffer[256];
 
-			if (g_gameId == AITD3) {
-				sprintf(buffer, "CAM%02d", floorNumber);
-			} else {
-				sprintf(buffer, "CAMSAL%02d", floorNumber);
-			}
+			sprintf(buffer, g_gameId == AITD3 ? "CAM%02d" : "CAMSAL%02d", floorNumber);
 
 			offset = 0;
 			g_currentFloorCameraRawDataSize = 1;

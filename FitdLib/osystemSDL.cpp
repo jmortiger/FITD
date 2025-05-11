@@ -131,10 +131,10 @@ int FitdInit(int argc, char* argv[])
 
 		u32 tickDifference = startOfFrame - startOfPreviousFrame;
 
-		if (tickDifference < 1000 / FRAMES_PER_SECOND) {
-			//Sleep the remaining frame time
-			//SDL_Delay((1000 / FRAMES_PER_SECOND) - tickDifference);
-		}
+		// If so, Sleep the remaining frame time
+		/* if (tickDifference < 1000 / FRAMES_PER_SECOND) {
+			SDL_Delay((1000 / FRAMES_PER_SECOND) - tickDifference);
+		} */
 
 		startOfPreviousFrame = startOfFrame;
 
@@ -184,10 +184,9 @@ u32 osystem_startOfFrame()
 
 	static bool firstFrame = true;
 	if (firstFrame) {
-		//
-#ifdef USE_IMGUI
-		//ImGui_ImplSdlGL3_Init(sdl_window);
-#endif
+// #ifdef USE_IMGUI
+// 		ImGui_ImplSdlGL3_Init(sdl_window);
+// #endif
 		lastFrameTime = SDL_GetTicks();
 
 		firstFrame = false;
@@ -200,9 +199,9 @@ u32 osystem_startOfFrame()
 
 	lastFrameTime = SDL_GetTicks();
 
-#ifdef USE_IMGUI
-	//ImGui_ImplSdlGL3_NewFrame(sdl_window);
-#endif
+// #ifdef USE_IMGUI
+// 	ImGui_ImplSdlGL3_NewFrame(sdl_window);
+// #endif
 
 	return numFramesToAdvance;
 }
@@ -215,9 +214,9 @@ void osystem_endOfFrame()
 	debugger_draw();
 #endif
 
-#ifdef USE_IMGUI
-	//ImGui::Render();
-#endif
+// #ifdef USE_IMGUI
+// 	ImGui::Render();
+// #endif
 
    // osystem_flip(NULL);
 
@@ -234,10 +233,7 @@ void osystem_endOfFrame()
 
 int fileExists(const char* name)
 {
-	FILE* fHandle;
-
-	fHandle = fopen(name, "rb");
-
+	FILE* fHandle = fopen(name, "rb");
 	if (fHandle) {
 		fclose(fHandle);
 		return 1;

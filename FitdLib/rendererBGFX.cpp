@@ -460,10 +460,10 @@ void osystem_startFrame()
 
 			fieldModelInspector_Texture = bgfx::createTexture2D(gameResolution[0], gameResolution[1], false, 0, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_RT | tsFlags);
 			fieldModelInspector_Depth = bgfx::createTexture2D(gameResolution[0], gameResolution[1], false, 0, bgfx::TextureFormat::D24S8, BGFX_TEXTURE_RT | tsFlags);
-			std::array<bgfx::Attachment, 2> attachements;
-			attachements[0].init(fieldModelInspector_Texture);
-			attachements[1].init(fieldModelInspector_Depth);
-			fieldModelInspector_FB = bgfx::createFrameBuffer(2, &attachements[0], true);
+			std::array<bgfx::Attachment, 2> attachments;
+			attachments[0].init(fieldModelInspector_Texture);
+			attachments[1].init(fieldModelInspector_Depth);
+			fieldModelInspector_FB = bgfx::createFrameBuffer(2, &attachments[0], true);
 		}
 		bgfx::setViewFrameBuffer(gameViewId, fieldModelInspector_FB);
 		bgfx::setViewRect(gameViewId, 0, 0, gameResolution[0], gameResolution[1]);
