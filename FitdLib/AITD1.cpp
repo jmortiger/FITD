@@ -257,9 +257,9 @@ int ChoosePerso(void)
 			case 0:
 			{
 				FastCopyScreen(frontBuffer, logicalScreen);
-				SetClip(0, 0, 319, 199);
+				SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 				loadPakTo("ITD_RESS", AITD1_FOND_INTRO, aux);
-				CopyBox_Aux_Log(160, 0, 319, 199);
+				CopyBox_Aux_Log(_SCREEN_INTERNAL_WIDTH / 2, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 				FastCopyScreen(logicalScreen, aux);
 				Lire(CVars[getCVarsIdx(INTRO_HERITIERE)] + 1, 165, 5, 314, 194, 2, 15, 0);
 				CVars[getCVarsIdx(CHOOSE_PERSO)] = 1;
@@ -268,9 +268,9 @@ int ChoosePerso(void)
 			case 1:
 			{
 				FastCopyScreen(frontBuffer, logicalScreen);
-				SetClip(0, 0, 319, 199);
+				SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 				loadPakTo("ITD_RESS", AITD1_FOND_INTRO, aux);
-				CopyBox_Aux_Log(0, 0, 159, 199);
+				CopyBox_Aux_Log(0, 0, (_SCREEN_INTERNAL_WIDTH / 2) - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 				FastCopyScreen(logicalScreen, aux);
 				Lire(CVars[getCVarsIdx(INTRO_DETECTIVE)] + 1, 5, 5, 154, 194, 2, 15, 0);
 				CVars[getCVarsIdx(CHOOSE_PERSO)] = 0;

@@ -107,14 +107,14 @@ int copyObjectToActor(int body, int typeZv, int hardZvIdx, s16 objectType, int x
 			if (BBox3D1 < 0)
 				BBox3D1 = 0;
 
-			if (BBox3D3 > 319)
-				BBox3D3 = 319;
+			if (BBox3D3 > _SCREEN_INTERNAL_WIDTH - 1)
+				BBox3D3 = _SCREEN_INTERNAL_WIDTH - 1;
 
 			if (BBox3D2 < 0)
 				BBox3D2 = 0;
 
-			if (BBox3D4 > 199)
-				BBox3D4 = 199;
+			if (BBox3D4 > _SCREEN_INTERNAL_HEIGHT - 1)
+				BBox3D4 = _SCREEN_INTERNAL_HEIGHT - 1;
 
 			actorPtr->screenXMin = BBox3D1;
 			actorPtr->screenYMin = BBox3D2;

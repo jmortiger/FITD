@@ -1086,7 +1086,7 @@ int AffObjet(int x, int y, int z, int alpha, int beta, int gamma, void* modelPtr
 	x = renderPointList[i*3];
 	y = renderPointList[i*3+1];
 
-	if(x>=0 && x < 319 && y>=0 && y<199)
+	if(x>=0 && x < _SCREEN_INTERNAL_WIDTH - 1 && y >= 0 && y < _SCREEN_INTERNAL_HEIGHT - 1)
 	{
 	screen[y*_SCREEN_INTERNAL_WIDTH+x] = 15;
 	}

@@ -23,6 +23,7 @@
 #define NUM_MAX_OBJECT       50
 #define NUM_MAX_TEXT        40
 #define NUM_MAX_MESSAGE     5
+#define MESSAGE_HEIGHT     16
 
 // 250
 #define NUM_MAX_TEXT_ENTRY  1000

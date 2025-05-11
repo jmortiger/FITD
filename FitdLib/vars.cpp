@@ -320,10 +320,10 @@ int lightY = -2000;
 
 int clipLeft = 0;
 int clipTop = 0;
-int clipRight = 319;
+int clipRight = _SCREEN_INTERNAL_WIDTH - 1;
 /// @brief 
 /// @todo This was previously initialized to 119; ensure this was done in error.
-int clipBottom = 199;
+int clipBottom = _SCREEN_INTERNAL_HEIGHT - 1;
 
 unsigned char* g_MaskPtr = NULL;
 

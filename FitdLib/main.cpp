@@ -1228,7 +1228,7 @@ struct maskStruct
 	u16 deltaX;
 	u16 deltaY;
 
-	std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT> mask;
+	std::array<u8, _SCREEN_INTERNAL_PIXELS> mask;
 };
 
 maskStruct g_maskBuffers[10][10];
@@ -1324,9 +1324,9 @@ void createAITD1Mask()
 
 			int numMaskZone = *(s16*)(data);
 
-			int minX = 319;
+			int minX = _SCREEN_INTERNAL_WIDTH - 1;
 			int maxX = 0;
-			int minY = 199;
+			int minY = _SCREEN_INTERNAL_HEIGHT - 1;
 			int maxY = 0;
 
 			/*if(isBgOverlayRequired( actorPtr->zv.ZVX1 / 10, actorPtr->zv.ZVX2 / 10,
@@ -2859,7 +2859,7 @@ void drawBgOverlay(tObject* actorPtr)
 		}
 	}
 
-	SetClip(0, 0, 319, 199);
+	SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 }
 
 /// @brief Draws flow actors. UNIMPLEMENTED.
@@ -2944,7 +2944,7 @@ void mainDraw(int flagFlip)
 
 	//osystem_drawBackground();
 
-	SetClip(0, 0, 319, 199);
+	SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 	genVar6 = 0;
 
 	int i;
@@ -3000,14 +3000,14 @@ void mainDraw(int flagFlip)
 
 			if (BBox3D1 < 0)
 				BBox3D1 = 0;
-			if (BBox3D3 > 319)
-				BBox3D3 = 319;
+			if (BBox3D3 > _SCREEN_INTERNAL_WIDTH - 1)
+				BBox3D3 = _SCREEN_INTERNAL_WIDTH - 1;
 			if (BBox3D2 < 0)
 				BBox3D2 = 0;
-			if (BBox3D4 > 199)
-				BBox3D4 = 199;
+			if (BBox3D4 > _SCREEN_INTERNAL_HEIGHT - 1)
+				BBox3D4 = _SCREEN_INTERNAL_HEIGHT - 1;
 
-			if (BBox3D1 <= 319 && BBox3D2 <= 199 && BBox3D3 >= 0 && BBox3D4 >= 0) // is the character on screen ?
+			if (BBox3D1 <= _SCREEN_INTERNAL_WIDTH - 1 && BBox3D2 <= _SCREEN_INTERNAL_HEIGHT - 1 && BBox3D3 >= 0 && BBox3D4 >= 0) // is the character on screen ?
 			{
 				if (g_gameId == AITD1) {
 					if (actorPtr->indexInWorld == CVars[getCVarsIdx(LIGHT_OBJECT)]) {

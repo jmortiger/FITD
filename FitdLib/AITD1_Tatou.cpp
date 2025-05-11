@@ -71,7 +71,7 @@ int make3dTatou(void)
 
 			paletteFill(currentGamePalette, 63, 63, 63);
 			setPalette(currentGamePalette);
-			/*  setClipSize(0,0,319,199);*/
+			/* setClipSize(0,0,_SCREEN_INTERNAL_WIDTH - 1,_SCREEN_INTERNAL_HEIGHT - 1); */
 
 			clearScreenTatou();
 
