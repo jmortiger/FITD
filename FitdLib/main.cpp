@@ -2523,17 +2523,23 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 	z4 += cameraPerspective;
 
 	if (z1 > DEPTH_THRESHOLD && z2 > DEPTH_THRESHOLD && z3 > DEPTH_THRESHOLD && z4 > DEPTH_THRESHOLD) {
-		float transformedX1 = ((x1 * cameraFovX) / (float)z1) + cameraCenterX;
-		float transformedX2 = ((x2 * cameraFovX) / (float)z2) + cameraCenterX;
-		float transformedX3 = ((x3 * cameraFovX) / (float)z3) + cameraCenterX;
-		float transformedX4 = ((x4 * cameraFovX) / (float)z4) + cameraCenterX;
-
-		float transformedY1 = ((y1 * cameraFovY) / (float)z1) + cameraCenterY;
-		float transformedY2 = ((y2 * cameraFovY) / (float)z2) + cameraCenterY;
-		float transformedY3 = ((y3 * cameraFovY) / (float)z3) + cameraCenterY;
-		float transformedY4 = ((y4 * cameraFovY) / (float)z4) + cameraCenterY;
-
-		osystem_draw3dQuad(transformedX1, transformedY1, z1, transformedX2, transformedY2, z2, transformedX3, transformedY3, z3, transformedX4, transformedY4, z4, color, transparency);
+#define _dpq_transform(axisLower, axis, num) ((##axisLower##num * cameraFov##axis) / (float)z##num) + cameraCenter##axis
+		osystem_draw3dQuad(
+			_dpq_transform(x, X, 1),
+			_dpq_transform(y, Y, 1),
+			z1,
+			_dpq_transform(x, X, 2),
+			_dpq_transform(y, Y, 2),
+			z2,
+			_dpq_transform(x, X, 3),
+			_dpq_transform(y, Y, 3),
+			z3,
+			_dpq_transform(x, X, 4),
+			_dpq_transform(y, Y, 4),
+			z4,
+			color,
+			transparency);
+#undef _dpq_transform
 	}
 
 	//osystem_draw3dQuad(x1,y1,z1, x2,y2,z2, x3,y3,z3, x4,y4,z4, color);
