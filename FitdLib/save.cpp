@@ -493,10 +493,16 @@ int loadSave(int saveNumber)
 	return(1);
 }
 
+/// @brief 
+/// @param arg0 
+/// @param arg1 
+/// @return 
+/// @todo Enable save slots
 int restoreSave(int arg0, int arg1)
 {
-	int selectedSave;
-	//  restoreSaveVar1 = arg0;
+	// NOTE: I'm inferring this was used to persist the last loaded save index so reopening the menu would pre-highlight that index & such.
+	// restoreSaveVar1 = arg0;
+	int selectedSave; // int selectedSave = arg0;
 
 	if (arg1 == 0) {
 		flushScreen();

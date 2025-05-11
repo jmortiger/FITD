@@ -4083,10 +4083,15 @@ void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 	fadeOut(8,0);*/
 }
 
+/// @brief UNIMPLEMENTED
+/// @param arg 
+/// @return A valid save index if one exists, -1 otherwise. Currently always returns 0.
+/// @todo Make real implementation.
+/// @todo Move to `save.cpp`.
+/// @details Only called in `save.cpp`'s `restoreSave`.
 int parseAllSaves(int arg)
 {
 	return(0);
-	// TODO : make real implementation
 }
 
 void configureHqrHero(hqrEntryStruct* hqrPtr, const char* name)

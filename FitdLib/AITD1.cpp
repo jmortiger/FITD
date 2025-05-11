@@ -349,6 +349,8 @@ void startAITD1()
 			{
 				// here, original would ask for protection
 
+				/// @todo: make save slot selection menu
+				/// @todo: make variable for persisting a selected save slot in-between frames
 				if (restoreSave(12, 0)) {
 					// here, original would quit if protection flag was false
 
