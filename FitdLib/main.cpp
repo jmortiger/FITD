@@ -2523,7 +2523,7 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 	z4 += cameraPerspective;
 
 	if (z1 > DEPTH_THRESHOLD && z2 > DEPTH_THRESHOLD && z3 > DEPTH_THRESHOLD && z4 > DEPTH_THRESHOLD) {
-#define _dpq_transform(axisLower, axis, num) ((##axisLower##num * cameraFov##axis) / (float)z##num) + cameraCenter##axis
+#define _dpq_transform(axisLower, axis, num) ((axisLower##num * cameraFov##axis) / (float)z##num) + cameraCenter##axis
 		osystem_draw3dQuad(
 			_dpq_transform(x, X, 1),
 			_dpq_transform(y, Y, 1),
