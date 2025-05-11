@@ -4206,54 +4206,46 @@ int FitdMain(int argc, char* argv[])
 /// @return `0` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `1` otherwise; The current value of `var_14`.
 int drawTextOverlay(void)
 {
-	int var_14 = 0;
+	bool anyEntriesUpdated = false;
 	/// The Y position the messages will be drawn to the screen at. Shifted up for every line of messages.
-	int var_10 = 183;
-	messageStruct* currentMessage;
+	int msgsY = _SCREEN_INTERNAL_HEIGHT - 1 - MESSAGE_HEIGHT;
+	messageStruct* currMsg = messageTable;
 
 	// Should be updated in loop.
-	BBox3D4 = 199;
-	BBox3D1 = 319;
+	BBox3D4 = _SCREEN_INTERNAL_HEIGHT - 1;
+	BBox3D1 = _SCREEN_INTERNAL_WIDTH - 1;
 	BBox3D3 = 0;
 
-	currentMessage = messageTable;
-
 	if (lightOff == 0) {
-		int i;
-
-		for (i = 0; i < 5; i++) {
-			if (currentMessage->string) {
-				int width = currentMessage->string->width;
-				int X = 160 - width / 2;
+		for (int i = 0; i < NUM_MAX_MESSAGE; i++, currMsg++) {
+			if (currMsg->string) {
+				int width = currMsg->string->width;
+				int X = (_SCREEN_INTERNAL_WIDTH / 2) - width / 2;
 				int Y = X + width;
 
 				if (X < BBox3D1) { BBox3D1 = X; }
 				if (Y > BBox3D3) { BBox3D3 = Y; }
 
 				// If the message has been displayed for more than 55 units of time...
-				if ((currentMessage->time++) > 55) {
-					currentMessage->string = NULL;
-				} else {
-					if (currentMessage->time < 26) {
-						ExtSetFont(PtrFont, 16);
-					} else {
-						ExtSetFont(PtrFont, 16 + (currentMessage->time - 26) / 2);
-					}
-
-					renderText(X, var_10 + 1, logicalScreen, currentMessage->string->textPtr);
+				if ((currMsg->time++) > 55) { // NOTE: will overflow after an obscene amount of time; rn idc.
+					// ...the message is expired; clear the reference & don't display the message.
+					// NOTE: Updating the fields & such beforehand means a message will offset subsequent messages for 1 frame after 
+					currMsg->string = NULL;
+				} else { // Otherwise, display the message at full brightness for the first 26 time units, then darken it every 2 time units
+					ExtSetFont(PtrFont, 16 + (currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2));
+					renderText(X, msgsY + 1, logicalScreen, currMsg->string->textPtr);
 				}
 
-				var_10 -= 16;
-				var_14 = 1;
-
+				msgsY -= MESSAGE_HEIGHT;
+				anyEntriesUpdated = true;
 			}
 
-			currentMessage++;
+			// currMsg++;
 		}
 	} // else { }
 
-	BBox3D2 = var_10;
-	return(var_14);
+	BBox3D2 = msgsY;
+	return(anyEntriesUpdated);
 }
 
 void makeMessage(int messageIdx)
