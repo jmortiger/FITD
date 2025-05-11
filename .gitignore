@@ -1,6 +1,7 @@
 data
 FitdLib/shaders/generated
-
+IGNORE_**
+**_IGNORE
 # Build folder
 # Visual Studio
 build/vs2019

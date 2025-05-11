@@ -46,9 +46,21 @@ primEntryStruct primTable[NUM_MAX_PRIM_ENTRY];
 
 u32 positionInPrimEntry = 0;
 
+/// @brief The minimum screen x position of the current element to be rendered. More usage details required.
+/// @todo Validate
+/// @todo Change name
 int BBox3D1 = 0;
+/// @brief The minimum screen y position of the current element to be rendered. More usage details required.
+/// @todo Validate
+/// @todo Change name
 int BBox3D2 = 0;
+/// @brief The maximum screen x position of the current element to be rendered. More usage details required.
+/// @todo Validate
+/// @todo Change name
 int BBox3D3 = 0;
+/// @brief The maximum screen y position of the current element to be rendered. More usage details required.
+/// @todo Validate
+/// @todo Change name
 int BBox3D4 = 0;
 
 int renderVar1 = 0;
@@ -99,12 +111,6 @@ int renderVar3;
 #ifndef AITD_UE4
 void fillpoly(s16* datas, int n, char c);
 #endif
-
-/*
-
-
-
-*/
 
 void transformPoint(float* ax, float* bx, float* cx)
 {
@@ -231,8 +237,8 @@ void RotateList(s16* pointPtr, int numOfPoint)
 
 void RotateGroupeOptimise(sGroup* ptr)
 {
-	if (ptr->m_numGroup) // if group number is 0
-	{
+	// if group number is 0
+	if (ptr->m_numGroup) {
 		int baseBone = ptr->m_start;
 		int numPoints = ptr->m_numVertices;
 
@@ -254,8 +260,8 @@ void RotateGroupe(sGroup* ptr)
 	temp2 = numOfBones - temp;
 
 	do {
-		if (ptr->m_orgGroup == temp) // is it on of this group child
-		{
+		// is it on of this group child
+		if (ptr->m_orgGroup == temp) {
 			RotateGroupe(ptr); // yes, so apply the transformation to him
 		}
 
@@ -692,8 +698,9 @@ void processPrim_Line(int primType, char** ptr, char** out) // line tested
 	}
 }
 
-void processPrim_Line(int primType, sPrimitive* ptr, char** out)
-{}
+/// @brief Unimplemented
+/// @todo IMPLEMENT
+void processPrim_Line(int primType, sPrimitive* ptr, char** out) {}
 
 void processPrim_Poly(int primType, sPrimitive* ptr, char** out)
 {

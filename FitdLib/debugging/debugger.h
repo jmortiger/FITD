@@ -2,8 +2,7 @@
 #define _DEBUGGER_H_
 
 #ifdef FITD_DEBUGGER
-
-////// debug var used in engine
+// #region debug var used in engine
 extern bool debuggerVar_drawModelZv;
 extern bool debuggerVar_drawCameraCoverZone;
 extern bool debuggerVar_noHardClip;
@@ -12,11 +11,12 @@ extern long int debufferVar_topCameraZoom;
 
 extern bool debuggerVar_useBlackBG;
 extern bool debuggerVar_fastForward;
-///////////////////////////////
+// #endregion debug var used in engine
 
 void debugger_draw(void);
-#endif // INTERNAL_DEBUGGER
+#endif // FITD_DEBUGGER
 
+// #region Formatted Standard Out
 /// @brief Read the command-line parameters and accordingly set the debug output.
 /// @param argc 
 /// @param argv 
@@ -52,6 +52,7 @@ enum debugLevelEnum : unsigned char {
 
 typedef enum debugLevelEnum debugLevelEnum;
 
+// #region Color Macros
 #ifndef ANSI_RESET
 #define ANSI_RESET "\033[0m"
 #define ANSI_BLACK 0
@@ -91,6 +92,7 @@ typedef enum debugLevelEnum debugLevelEnum;
 #define DLE_C_ERROR ANSI_RED
 // PrependDle(2)
 // GetDLE_COLOR_(2)
+// #endregion Color Macros
 struct debugOutputConfig {
 	unsigned char verbosity_none;
 	unsigned char verbosity_pak;
@@ -114,49 +116,6 @@ struct debugOutputConfig {
 };
 
 typedef struct debugOutputConfig debugOutputConfig;
-
-/* #define _PF_LE_S8(address, result, raw) "hhi", result, raw
-#define _PF_SPEC_LE_S8 "hhi"
-#define _PF_VAL_LE_S8(address) *(s8*)(address)
-#define PF_LE_S8(address) _PF_LE_S8(READ_LE_S8((address)))
-// #define PF_LE_S8(address) "hhi", READ_LE_S8((address)), *(s8*)(address)
-#define _PF_LE_S16(address, result, raw) "hi", result, raw
-#define _PF_SPEC_LE_S16 "hi"
-#define _PF_VAL_LE_S16(address) *(s16*)(address)
-#define PF_LE_S16(address) _PF_LE_S16(READ_LE_S16((address)))
-// #define PF_LE_S16(address) "hi", READ_LE_S16((address)), *(s16*)(address)
-#define _PF_LE_S32(address, result, raw) "i", result, raw
-#define _PF_SPEC_LE_S32 "i"
-#define _PF_VAL_LE_S32(address) *(s32*)(address)
-#define PF_LE_S32(address) _PF_LE_S32(READ_LE_S32((address)))
-// #define PF_LE_S32(address) "i", READ_LE_S32((address)), *(s32*)(address)
-#define _PF_LE_U8(address, result, raw) "hhu", result, raw
-#define _PF_SPEC_LE_U8 "hhu"
-#define _PF_VAL_LE_U8(address) *(u8*)(address)
-#define PF_LE_U8(address) _PF_LE_U8(READ_LE_U8((address)))
-// #define PF_LE_U8(address) "hhu", READ_LE_U8((address)), *(u8*)(address)
-#define _PF_LE_U16(address, result, raw) "hu", result, raw
-#define _PF_SPEC_LE_U16 "hu"
-#define _PF_VAL_LE_U16(address) *(u16*)(address)
-#define PF_LE_U16(address) _PF_LE_U16(READ_LE_U16((address)))
-// #define PF_LE_U16(address) "hu", READ_LE_U16((address)), *(u16*)(address)
-#define _PF_LE_U32(address, result, raw) "u", result, raw
-#define _PF_SPEC_LE_U32 "u"
-#define _PF_VAL_LE_U32(address) *(u32*)(address)
-#define PF_LE_U32(address) _PF_LE_U32(READ_LE_U32((address)))
-// #define PF_LE_U32(address) "u", READ_LE_U32((address)), *(u32*)(address) */
-/* #define _PF_LE_S8(result, address) "hhi", result, *(s8*)(address)
-#define PF_LE_S8(address) _PF_LE_S8(READ_LE_S8((address)), address)
-#define _PF_LE_S16(result, address) "hi", result, *(s16*)(address)
-#define PF_LE_S16(address) _PF_LE_S16(READ_LE_S16((address)), address)
-#define _PF_LE_S32(result, address) "i", result, *(s32*)(address)
-#define PF_LE_S32(address) _PF_LE_S32(READ_LE_S32((address)), address)
-#define _PF_LE_U8(result, address) "hhu", result, *(u8*)(address)
-#define PF_LE_U8(address) _PF_LE_U8(READ_LE_U8((address)), address)
-#define _PF_LE_U16(result, address) "hu", result, *(u16*)(address)
-#define PF_LE_U16(address) _PF_LE_U16(READ_LE_U16((address)), address)
-#define _PF_LE_U32(result, address) "u", result, *(u32*)(address)
-#define PF_LE_U32(address) _PF_LE_U32(READ_LE_U32((address)), address) */
 
 #define PF_LE_S8(address) "%hhi", READ_LE_S8((address)), (*((s8*)(address)))
 #define PF_LE_S16(address) "%hi", READ_LE_S16((address)), (*((s16*)(address)))
@@ -186,8 +145,9 @@ void DebugBPrintf(debugLevelEnum level, const char* format, ...);
 void DebugBFlushLn();
 void DebugSPrintZVStruct(char* destination, ZVStruct& zv);
 // void DebugSPrintZVStruct(const char* destination, ZVStruct* zv);
+// #endregion Formatted Standard Out
 
-#if 1 // Life Script logging
+// #region Life Script logging
 /// @brief A list of descriptions for what each var is used for
 /// @details Currently only supported for AITD1.
 extern const char* varsNameTable[];
@@ -199,11 +159,11 @@ extern int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
 
 /// @brief The total number of life scripts to log.
 extern int numLoggedLifeScripts;
-#endif
+// #endregion Life Script logging
 
-// #if 1 // Replay
+// #region Replay
 // extern bool enableReplayRecording;
 // extern char* replayEvent[];
-// #endif
+// #endregion Replay
 
 #endif

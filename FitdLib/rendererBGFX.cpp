@@ -39,7 +39,7 @@ char backBuffer[512 * 256 * 3];
 
 unsigned int ditherTexture = 0;
 
-unsigned int    debugFontTexture = 0;
+unsigned int debugFontTexture = 0;
 
 struct maskStruct
 {
@@ -116,8 +116,7 @@ unsigned int    backTexture;
 int g_screenWidth = 0;
 int g_screenHeight = 0;
 
-void osystem_preinigGL()
-{}
+void osystem_preinigGL() {}
 
 void osystem_initGL(int screenWidth, int screenHeight)
 {
@@ -205,10 +204,7 @@ void osystem_setPalette(u8* palette)
 	bgfx::updateTexture2D(g_paletteTexture, 0, 0, 0, 0, 3, 256, bgfx::copy(RGB_Pal, 256 * 3));
 }
 
-void osystem_getPalette(unsigned char* palette)
-{
-	memcpy(palette, RGB_Pal, 256 * 3);
-}
+void osystem_getPalette(unsigned char* palette) { memcpy(palette, RGB_Pal, 256 * 3); }
 
 struct s_vertexData
 {
@@ -407,10 +403,11 @@ void initBgfxMainResources()
 	g_paletteTexture = bgfx::createTexture2D(3, 256, false, 1, bgfx::TextureFormat::R8U);
 }
 
-/// @brief 
+/// @brief The current output resolution of the game window; changes with window resizing & debug menu visibility
 /// @details Game is running in dos resolution mode 13h, ie 320x200x256, but is displayed in 4:3 (320x240), so pixel are not square (1.6:1)
 ImVec2 gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
 
+/// @brief Renders the game sub-window in the debug menu.
 void renderGameWindow()
 {
 	if (ImGui::Begin("Game")) {
@@ -582,23 +579,13 @@ void osystem_setClip(float left, float top, float right, float bottom)
 	bgfx::setScissor(currentScissor[0], currentScissor[1], currentScissor[2], currentScissor[3]);
 }
 
-void osystem_clearClip()
-{
-	bgfx::setScissor(0, 0, gameResolution[0], gameResolution[1]);
-}
+void osystem_clearClip() { bgfx::setScissor(0, 0, gameResolution[0], gameResolution[1]); }
 
-void osystem_stopFrame()
-{}
+void osystem_stopFrame() {}
 
-void osystem_startModelRender()
-{
+void osystem_startModelRender() {}
 
-}
-
-void osystem_stopModelRender()
-{
-	osystem_flushPendingPrimitives();
-}
+void osystem_stopModelRender() { osystem_flushPendingPrimitives(); }
 
 void osystem_flushPendingPrimitives()
 {
@@ -752,7 +739,7 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 
 	assert(numPoint < MAX_POINTS_PER_POLY);
 
-	// compute the polygon bounding box
+	// #region compute the polygon bounding box
 	float polyMinX = _SCREEN_INTERNAL_WIDTH_FLOAT;
 	float polyMaxX = 0.f;
 	float polyMinY = _SCREEN_INTERNAL_HEIGHT_FLOAT;
@@ -772,6 +759,7 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 		if (Y < polyMinY)
 			polyMinY = Y;
 	}
+	// #endregion compute the polygon bounding box
 
 	float polyWidth = polyMaxX - polyMinX;
 	float polyHeight = polyMaxY - polyMinY;
@@ -988,6 +976,7 @@ void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float 
 	lineVertices[4] = y2;
 	lineVertices[5] = z2;
 
+	// #region Setup the shader to use
 	static GLuint shaderprogram = 0;
 	static GLuint vertexp = 0;
 	static GLuint colorp = 0;
@@ -998,6 +987,7 @@ void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float 
 	}
 
 	glUseProgram(shaderprogram);
+	// #endregion Setup the shader to use
 
 	static GLuint vbo = 0;
 	if (vbo == 0) {

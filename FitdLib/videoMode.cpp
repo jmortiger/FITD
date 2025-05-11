@@ -2,7 +2,4 @@
 
 #include "common.h"
 
-void setupVideoMode(void)
-{
-	videoMode = 1;
-}
+void setupVideoMode(void) { videoMode = 1; }

@@ -245,7 +245,7 @@ int loadSave(int saveNumber)
 	fseek(fHandle, offsetToVars, SEEK_SET);
 
 	fread(&tempVarSize, 2, 1, fHandle);
-	varSize = tempVarSize;
+	varSize = tempVarSize; // TODO: Why not assign directly?
 
 	fread(vars, varSize, 1, fHandle);
 

@@ -66,8 +66,7 @@ extern "C" {
 	void Sound_Quit(void);
 }
 
-void Sound_Quit(void)
-{}
+void Sound_Quit(void) {}
 
 extern "C" {
 	char homePath[256] = "";
@@ -143,7 +142,7 @@ int FitdInit(int argc, char* argv[])
 
 		int delta = 0;
 
-		//if(t_sinceStart + 10 > t_lastUpdate)
+		// if (t_sinceStart + 10 > t_lastUpdate)
 		{
 			delta = (t_sinceStart - t_lastUpdate);
 			t_lastUpdate = t_sinceStart;
@@ -231,7 +230,6 @@ void osystem_endOfFrame()
 
 	SDL_SignalSemaphore(endOfRender);
 	//SDL_SemPost(emptyCount);
-
 }
 
 int fileExists(const char* name)
@@ -247,12 +245,11 @@ int fileExists(const char* name)
 	return 0;
 }
 
-void osystem_init()  // that's the constructor of the system dependent
-// object used for the SDL port
+void osystem_init()  // that's the constructor of the system dependent object used for the SDL port
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		FITD_throwFatal(); // assert(0);
+		FITD_throwFatal();
 	}
 
 	// SDL_ShowCursor (SDL_DISABLE);
@@ -280,6 +277,3 @@ void osystem_init()  // that's the constructor of the system dependent
 
 int posInStream = 0;
 volatile bool deviceStatus = false;
-
-
-

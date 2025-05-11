@@ -63,13 +63,11 @@ int make3dTatou(void)
 				break;
 			}
 		} else { // eclair (lightning)
-			/*  LastSample = -1;
-			LastPriority = -1; */
+			/* LastSample = LastPriority = -1; */
 
 			playSound(CVars[getCVarsIdx(SAMPLE_TONNERRE)]);
 
-			/*     LastSample = -1;
-			LastPriority = -1;*/
+			/* LastSample = LastPriority = -1; */
 
 			paletteFill(currentGamePalette, 63, 63, 63);
 			setPalette(currentGamePalette);

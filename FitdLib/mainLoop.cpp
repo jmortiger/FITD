@@ -162,9 +162,8 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 				break;
 		}
 
-		if (changeFloor) {
+		if (changeFloor)
 			loadFloor(newFloor);
-		}
 
 		if (needChangeRoom) {
 			loadRoom(newRoom);
@@ -229,19 +228,19 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 			//      setupCameraSub4();
 		}
 
-		//    mainLoopSub1();
+		// mainLoopSub1();
 
-		//osystem_delay(100);
+		// osystem_delay(100);
 
 		mainDraw(flagRedraw);
 
 		updatePendingEvents();
 	}
 
-	//  mainLoopVar1 = 0;
-	//  shakingState = 0;
+	// mainLoopVar1 = 0;
+	// shakingState = 0;
 
-	//  stopShaking();
-	//  stopSounds();
+	// stopShaking();
+	// stopSounds();
 }
 

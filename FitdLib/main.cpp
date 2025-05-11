@@ -34,23 +34,15 @@ int* currentCVarTable = NULL;
 int getCVarsIdx(enumCVars searchedType) // TODO: optimize by reversing the table....
 {
 	for (int i = 0; i < CVars.size(); i++) {
-		if (currentCVarTable[i] == -1) {
-			ASSERT(0);
-		}
-
-
-		if (currentCVarTable[i] == searchedType)
-			return i;
+		if (currentCVarTable[i] == -1) ASSERT(0);
+		if (currentCVarTable[i] == searchedType) return i;
 	}
 
 	ASSERT(0);
 	return 0;
 }
 
-int getCVarsIdx(int searchedType)
-{
-	return getCVarsIdx((enumCVars)searchedType);
-}
+int getCVarsIdx(int searchedType) { return getCVarsIdx((enumCVars)searchedType); }
 
 const unsigned char defaultPalette[0x30] =
 {
@@ -1450,7 +1442,6 @@ void createAITD1Mask()
 	polyBackBuffer = NULL;
 }
 
-
 void SetAngleCamera(int x, int y, int z)
 {
 	transformX = x & 0x3FF;
@@ -1569,7 +1560,7 @@ void DeleteObjet(int index) // remove actor
 			objectPtr->animType = actorPtr->animType;
 			objectPtr->animInfo = actorPtr->animInfo;
 			objectPtr->flags = actorPtr->_flags & ~AF_BOXIFY;
-			objectPtr->flags |= AF_SPECIAL * actorPtr->dynFlags; // ugly hack, need rewrite
+			objectPtr->flags |= AF_SPECIAL * actorPtr->dynFlags; // TODO: ugly hack, need rewrite
 			objectPtr->life = actorPtr->life;
 			objectPtr->lifeMode = actorPtr->lifeMode;
 			objectPtr->trackMode = actorPtr->trackMode;
@@ -2414,6 +2405,7 @@ void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int
 #endif
 }
 
+/// @brief Draws the given object's bounding box.
 void drawZv(tObject* actorPtr)
 {
 	ZVStruct localZv;
@@ -2423,7 +2415,6 @@ void drawZv(tObject* actorPtr)
 	} else {
 		copyZv(&actorPtr->zv, &localZv);
 	}
-
 
 	// bottom
 	drawProjectedLine(localZv.ZVX1,
@@ -2448,8 +2439,6 @@ void drawZv(tObject* actorPtr)
 	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, 10);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, 10);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, 10);
-
-
 }
 
 void drawConverZone(cameraZoneEntryStruct* zonePtr)
@@ -2590,7 +2579,7 @@ void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color,
 
 void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
 {
-	ZVStruct cameraZv = { -100,100,-100,100,-100,100 };
+	ZVStruct cameraZv = { -100, 100, -100, 100, -100, 100 };
 
 	cameraZv.ZVX1 += translateX;
 	cameraZv.ZVX2 += translateX;
@@ -2601,9 +2590,7 @@ void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
 	cameraZv.ZVZ1 += translateZ;
 	cameraZv.ZVZ2 += translateZ;
 
-	if (checkZvCollision(&cameraZv, zoneData)) {
-		return;
-	}
+	if (checkZvCollision(&cameraZv, zoneData)) { return; }
 
 	drawProjectedBox(zoneData->ZVX1, zoneData->ZVX2, zoneData->ZVY1, zoneData->ZVY2, zoneData->ZVZ1, zoneData->ZVZ2, color, transparency);
 }
@@ -2621,9 +2608,7 @@ void drawRoomZvLine(ZVStruct* zoneData, int color)
 	cameraZv.ZVZ1 += translateZ;
 	cameraZv.ZVZ2 += translateZ;
 
-	if (checkZvCollision(&cameraZv, zoneData)) {
-		return;
-	}
+	if (checkZvCollision(&cameraZv, zoneData)) { return; }
 
 	drawProjectedLine(zoneData->ZVX1, zoneData->ZVY1, zoneData->ZVZ1, zoneData->ZVX1, zoneData->ZVY1, zoneData->ZVZ2, color);
 	drawProjectedLine(zoneData->ZVX1, zoneData->ZVY1, zoneData->ZVZ2, zoneData->ZVX2, zoneData->ZVY1, zoneData->ZVZ2, color);
@@ -2776,7 +2761,6 @@ void drawHardCol(int roomNumber)
 }
 #endif
 
-
 int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 {
 	int i;
@@ -2812,8 +2796,7 @@ void drawBgOverlay(tObject* actorPtr)
 	actorPtr->screenXMax = BBox3D3;
 	actorPtr->screenYMax = BBox3D4;
 
-	//if(actorPtr->trackMode != 1)
-	//	return;
+	// if(actorPtr->trackMode != 1) return;
 
 	SetClip(BBox3D1, BBox3D2, BBox3D3, BBox3D4);
 
@@ -2869,7 +2852,7 @@ void drawBgOverlay(tObject* actorPtr)
 				}
 				*/
 
-				//      blitOverlay(src);
+				// blitOverlay(src);
 			}
 
 			numOverlay = *(s16*)(data);
@@ -2901,7 +2884,10 @@ void drawBgOverlay(tObject* actorPtr)
 	SetClip(0, 0, 319, 199);
 }
 
-void mainDrawSub2(int actorIdx) // draw flow
+/// @brief Draws flow actors. UNIMPLEMENTED.
+/// @todo Implement.
+/// @param actorIdx 
+void mainDrawSub2(int actorIdx)
 {
 	//actorStruct* actorPtr = &actorTable[actorIdx];
 
@@ -3000,8 +2986,6 @@ void mainDraw(int flagFlip)
 		//drawMaskZones();
 	}
 #endif
-
-
 
 	osystem_startModelRender();
 
@@ -3103,9 +3087,9 @@ void mainDraw(int flagFlip)
 	} else {
 	}
 
-	//    osystem_stopFrame();
+	// osystem_stopFrame();
 
-	//	osystem_flip(NULL);
+	// osystem_flip(NULL);
 
 	flagRedraw = 0;
 }
@@ -4062,7 +4046,7 @@ void throwStoppedAt(int x, int z)
 
 		if (foundPosition) {
 			if (y2 < -500) {
-				zvCopy.ZVY1 += 100; // is the object reachable ? (100 is Carnby height. If hard col at Y + 100, carnby can't reach that spot)
+				zvCopy.ZVY1 += 100; // is the object reachable ? (100 is Carnby height. If hard col at Y + 100, Carnby can't reach that spot)
 				zvCopy.ZVY2 += 100;
 
 				if (!AsmCheckListCol(&zvCopy, &roomDataTable[currentProcessedActorPtr->room])) {
@@ -4249,12 +4233,16 @@ int FitdMain(int argc, char* argv[])
 	return(0);
 }
 
+/// @brief Handles dispatching text render requests and updating `messageTable`.
+/// @return `0` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `1` otherwise; The current value of `var_14`.
 int drawTextOverlay(void)
 {
 	int var_14 = 0;
+	/// The Y position the messages will be drawn to the screen at. Shifted up for every line of messages.
 	int var_10 = 183;
 	messageStruct* currentMessage;
 
+	// Should be updated in loop.
 	BBox3D4 = 199;
 	BBox3D1 = 319;
 	BBox3D3 = 0;

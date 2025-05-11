@@ -68,6 +68,8 @@ struct textEntryStruct
 struct messageStruct
 {
 	textEntryStruct* string;
+	/// @brief How many frames has the message been displayed?
+	/// @details Only used in `drawTextOverlay` & `makeMessage`
 	s16 time;
 }; typedef struct messageStruct messageStruct;
 

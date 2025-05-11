@@ -359,7 +359,8 @@ void loadFloor(int floorNumber)
 							pZoneData += 2;
 						}
 
-						pCurrentCameraViewedRoom->coverZones[j].pointTable[numPoints].x = pCurrentCameraViewedRoom->coverZones[j].pointTable[0].x; // copy first point to last position
+						// copy first point to last position
+						pCurrentCameraViewedRoom->coverZones[j].pointTable[numPoints].x = pCurrentCameraViewedRoom->coverZones[j].pointTable[0].x;
 						pCurrentCameraViewedRoom->coverZones[j].pointTable[numPoints].y = pCurrentCameraViewedRoom->coverZones[j].pointTable[0].y;
 					}
 				}
@@ -383,7 +384,6 @@ void loadFloor(int floorNumber)
 	// globalCameraDataTable = (cameraDataStruct*)realloc(globalCameraDataTable,sizeof(cameraDataStruct)*numGlobalCamera);
 
 	/*    roomCameraData+=0x14;
-
 	}*/
 	DebugEndSection();
 }

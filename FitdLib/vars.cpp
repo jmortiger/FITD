@@ -130,11 +130,19 @@ s16 maxObjects;
 
 std::vector<tWorldObject> ListWorldObjets; // may be less
 
+// #region VARS
+/// @brief Used to persist game state across multiple life scripts.
 s16* vars;
 
-/// @brief The amount of memory taken up by `vars` in bytes (each var is 2 bytes).
+/// @brief The amount of memory taken up by `vars` in bytes (each var is 2 bytes, so `varSize / 2` should be the number of `vars`).
+/// @details * Derived from the filesize (in bytes) of `VARS.ITD`.
+/// * This largely goes unused
+/// 	* It's included in save data, and is assigned & used when loading save data to correctly load `vars`, but this could break things if a save file w/ a different number of vars was loaded, & could be determined at the time of saving.
+/// 	* Other mechanisms are used for bounding `vars`.
 int varSize;
+// #endregion VARS
 
+/// @brief The message queue; these are rendered across the bottom of the screen.
 messageStruct messageTable[NUM_MAX_MESSAGE];
 
 s16 currentMusic;

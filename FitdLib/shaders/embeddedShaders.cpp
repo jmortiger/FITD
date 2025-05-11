@@ -74,8 +74,8 @@ static const bgfx::EmbeddedShader s_embeddedShaders[] =
 	BGFX_EMBEDDED_SHADER(noise_ps),
 	BGFX_EMBEDDED_SHADER(ramp_vs),
 	BGFX_EMBEDDED_SHADER(ramp_ps),
-    BGFX_EMBEDDED_SHADER(sphere_vs),
-    BGFX_EMBEDDED_SHADER(sphere_ps),
+	BGFX_EMBEDDED_SHADER(sphere_vs),
+	BGFX_EMBEDDED_SHADER(sphere_ps),
 
 	BGFX_EMBEDDED_SHADER_END()
 };
@@ -85,9 +85,9 @@ bgfx::ProgramHandle loadBgfxProgram(const std::string& VSFile, const std::string
 	bgfx::RendererType::Enum type = bgfx::getRendererType();
 
 	bgfx::ProgramHandle ProgramHandle = bgfx::createProgram(
-		bgfx::createEmbeddedShader(s_embeddedShaders, type, VSFile.c_str())
-		, bgfx::createEmbeddedShader(s_embeddedShaders, type, PSFile.c_str())
-		, true
+		bgfx::createEmbeddedShader(s_embeddedShaders, type, VSFile.c_str()),
+		bgfx::createEmbeddedShader(s_embeddedShaders, type, PSFile.c_str()),
+		true
 	);
 	assert(bgfx::isValid(ProgramHandle));
 	return ProgramHandle;

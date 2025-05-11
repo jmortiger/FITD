@@ -2099,6 +2099,7 @@ void processLife(int lifeNum, bool callFoundLife)
 				{
 					appendFormatted("LM_IF_EGAL: if ");
 					lifeTempVar1 = evalVar();
+					appendFormatted("== ");
 					lifeTempVar2 = evalVar();
 
 					if (lifeTempVar1 == lifeTempVar2) {

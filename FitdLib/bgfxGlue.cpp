@@ -48,6 +48,13 @@ extern "C" {
 
 int outputResolution[2] = { -1, -1 };
 
+/// @brief Handles the rendering setup for this frame
+/// @details * updates window dimensions
+/// * Starts imgui frame
+/// * bgfx 
+/// 	* bgfx::setViewRect
+/// 	* bgfx::setViewClear
+/// 	* bgfx::touch(0) to clear the view
 void StartFrame()
 {
 	int oldResolution[2];
@@ -80,6 +87,11 @@ void StartFrame()
 }
 
 extern bool debuggerVar_debugMenuDisplayed;
+/// @brief Handles the rendering cleanup for this frame
+/// @details * Toggles debug menu w/ imgui input detection
+/// * Ends/renders imgui frame
+/// * `bgfx::frame();` to render frame
+/// * SDL performance timing
 void EndFrame()
 {
 	if (ImGui::IsKeyPressed(ImGuiKey_GraveAccent, false)) {
@@ -127,6 +139,7 @@ void createBgfxInitParams()
 #elif BX_PLATFORM_WINDOWS
 	initparam.platformData.ndt = NULL;
 	initparam.platformData.nwh = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(gWindowBGFX), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+	// #else // TODO: Error message & exit
 #endif // BX_PLATFORM_
 }
 
@@ -153,7 +166,4 @@ int initBgfxGlue(int argc, char* argv[])
 	return true;
 }
 
-void deleteBgfxGlue()
-{
-	imguiDestroy();
-}
+void deleteBgfxGlue() { imguiDestroy(); }

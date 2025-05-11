@@ -108,8 +108,8 @@ void renderText(int x, int y, char* surface, u8* string)
 
 		data >>= 12;
 
-		if (data & 0xF) // real character (width != 0)
-		{
+		// If it's a real character (width != 0)...
+		if (data & 0xF) {
 			char* characterPtr;
 			int bp;
 			int ch;
@@ -160,8 +160,7 @@ void renderText(int x, int y, char* surface, u8* string)
 			}
 
 			fontVar6 += data & 0xF;
-		} else // space character
-		{
+		} else { // Otherwise, it's a space character.
 			fontVar6 += g_fontInterWordSpace;
 		}
 

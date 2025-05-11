@@ -56,7 +56,6 @@ void getZvCube(char* bodyPtr, ZVStruct* zvPtr);
 void PutAtObjet(int objIdx, int objIdxToPutAt);
 void SetClip(int left, int top, int right, int bottom);
 
-///
 void readBook(int index, int type);
 int Lire(int index, int left, int top, int right, int bottom, int mode, int color, int shadow);
 
@@ -79,6 +78,5 @@ void handleCollision(ZVStruct* startZv, ZVStruct* zvPtr2, ZVStruct* zvPtr3);
 void getZvRot(char* bodyPtr, ZVStruct* zvPtr, int alpha, int beta, int gamma);
 
 void addActorToBgInscrust(int actorIdx);
-
 #endif
 
