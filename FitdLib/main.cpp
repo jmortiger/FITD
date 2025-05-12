@@ -572,6 +572,7 @@ void readBook(int index, int type)
 		case AITD2:
 			AITD2_ReadBook(index, type);
 			break;
+		// TODO: Can you read things in TimeGate & AITD3?
 		default:
 			FITD_throwFatal(); // assert(0);
 
