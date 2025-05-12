@@ -2350,6 +2350,9 @@ void line(int x1, int y1, int x2, int y2, char c);
 
 void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int c)
 {
+	if (x1s == x2s || y1s == y2s || z1s == z2s) {
+		DebugPrintfLnCategory(debugLevelEnum::DBO_L_WARN, (debugCategoryEnum)DBO_ALL, "Matching coords, line might not be drawn: { x1: %i, x2: %i, y1: %i, y2: %i, z1: %i, z2: %i }", x1s, x2s, y1s, y2s, z1s, z2s);
+	}
 	float x1 = (float)x1s;
 	float x2 = (float)x2s;
 	float y1 = (float)y1s;

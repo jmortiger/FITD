@@ -84,18 +84,21 @@ struct sphereVertex
 	float material;
 };
 
+// #define NUM_MAX_LINE_VERTICES 5000*3 // J
 #define NUM_MAX_FLAT_VERTICES 5000*3
 #define NUM_MAX_NOISE_VERTICES 2000*3
 #define NUM_MAX_TRANSPARENT_VERTICES 1000*2
 #define NUM_MAX_RAMP_VERTICES 3000*3
 #define NUM_MAX_SPHERES_VERTICES 3000
 
+// std::array<polyVertex, NUM_MAX_LINE_VERTICES> lineVertices; // J
 std::array<polyVertex, NUM_MAX_FLAT_VERTICES> flatVertices;
 std::array<polyVertex, NUM_MAX_NOISE_VERTICES> noiseVertices;
 std::array<polyVertex, NUM_MAX_TRANSPARENT_VERTICES> transparentVertices;
 std::array<polyVertex, NUM_MAX_RAMP_VERTICES> rampVertices;
 std::array<sphereVertex, NUM_MAX_SPHERES_VERTICES> sphereVertices;
 
+// int numUsedLineVertices = 0; // J
 int numUsedFlatVertices = 0;
 int numUsedNoiseVertices = 0;
 int numUsedTransparentVertices = 0;
@@ -956,7 +959,90 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 		}
 	}
 }
-
+#include <bx/math.h>
+void getEndCapCircleForLineSegment(float x0, float y0, float z0, float x1, float y1, float z1, float* destination, float radius = 1.5, uint outputPoints = 3)
+{
+#define _PI_TIMES_2(v) ((float)v * 2.f)
+#define PI_TIMES_2 _PI_TIMES_2(M_PI)
+#define __EquationOfACircle(t, u, v, radius) bx::add(bx::mul((u), (radius) * cos((float)(t))), bx::mul((v), (radius) * sin((float)(t))))
+#define _EquationOfACircle(t, u, v, radius) __EquationOfACircle(t, u, v, radius)
+	// 1. get the vector
+	float xV = x1 - x0;
+	float yV = y1 - y0;
+	float zV = z1 - z0;
+	bx::Vec3 vD = bx::Vec3(xV, yV, zV);
+	// 2. Get a perpendicular vector (dot prod. = 0, 0=xV*xP + yV*yP + zV*zP, zP = -(xV * xP + yV * yP) / zV for any xP & yP)
+	bx::Vec3 vV = bx::normalize(vD); // Keep values small
+	float t = NAN;
+	// If 2 values are the same, just switch components
+	if (abs(xV) == 0) {
+		if (abs(yV) == 0) {
+			if (abs(zV) == 0) {
+				printf("same point given twice.");
+				return;
+			} else {
+				float t = vV.z;
+				vV.z = vV.x;
+				vV.x = t;
+			}
+		} else if (abs(zV) == 0) {
+			float t = vV.y;
+			vV.y = vV.z;
+			vV.z = t;
+		}
+	} else {
+		if (abs(yV) == 0 && abs(zV) == 0) {
+			float t = vV.z;
+			vV.z = vV.x;
+			vV.x = t;
+		}
+	}
+	if (t == NAN) {
+		// if (zV != 0) {
+		vV.z = -(xV * vD.x + yV * vD.y) / zV;
+		// } else if (yV != 0) {
+		// 	vV.y = -(xV * vD.x + zV * vD.z) / yV;
+		// } else /* if (xV != 0) */ {
+		// 	vV.x = -(yV * vD.y + zV * vD.z) / xV;
+		// }
+	}
+	// 3. Get a vector perpendicular to both
+	bx::Vec3 vU = bx::cross(vD, vV);
+#define __IS_CROSS_PROD_INVALID abs(vU.x) == INFINITY || abs(vU.x) == NAN || abs(vU.y) == INFINITY || abs(vU.y) == NAN || abs(vU.z) == INFINITY || abs(vU.z) == NAN || ((vU.x == 0.f || vU.x == -0.f) && (vU.y == 0.f || vU.y == -0.f) && (vU.z == 0.f || vU.z == -0.f))
+	if (__IS_CROSS_PROD_INVALID) {
+		vV = bx::normalize(vD);
+		vV.y = -(xV * vD.x + zV * vD.z) / yV;
+		vU = bx::cross(vD, vV);
+		if (__IS_CROSS_PROD_INVALID) {
+			vV = bx::normalize(vD);
+			vV.x = -(yV * vD.y + zV * vD.z) / xV;
+			vU = bx::cross(vD, vV);
+			if (__IS_CROSS_PROD_INVALID) {
+#undef __IS_CROSS_PROD_INVALID
+				printf("getEndCapCircleForLineSegment: couldn't get it right");
+			}
+		}
+	}
+	// C(t) = 2u*cos(t)+2v*sin(t)
+	float slice = PI_TIMES_2 / outputPoints;
+	for (uint i = 0; i < outputPoints; i++) {
+		bx::Vec3 tmp = _EquationOfACircle(slice * i, vU, vV, radius);
+		destination[i * 3 + 0] = tmp.x;
+		destination[i * 3 + 1] = tmp.y;
+		destination[i * 3 + 2] = tmp.z;
+		printf("output[%u].x: %f\n", i * 3, tmp.x);
+		printf("output[%u].y: %f\n", i * 3, tmp.y);
+		printf("output[%u].z: %f\n", i * 3, tmp.z);
+	}
+#undef _PI_TIMES_2
+#undef PI_TIMES_2
+#undef __EquationOfACircle
+#undef _EquationOfACircle
+}
+void getEndCapCircleForLineSegment(int x0, int y0, int z0, int x1, int y1, int z1, float* destination, int radius = 1, uint outputPoints = 3)
+{
+	getEndCapCircleForLineSegment(x0, y0, z0, x1, y1, z1, destination, radius, outputPoints);
+}
 void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float z2, unsigned char color)
 {
 #if 0
@@ -1018,6 +1104,37 @@ void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float 
 	glDrawArrays(GL_LINE_LOOP, 0, 2); checkGL();
 
 	checkGL();
+#else
+	// float cap1[3 * 3];
+	// getEndCapCircleForLineSegment(x1, y1, z1, x2, y2, z2, cap1);
+	// float cap2[3 * 3];
+	// getEndCapCircleForLineSegment(x2, y2, z2, x1, y1, z1, cap2);
+	// float caps[3 * 3 * 2];
+	// for (uint i = 0; i < 3; i++) {
+	// 	caps[i * 3 + 0] = cap1[i * 3 + 0];
+	// 	caps[i * 3 + 1] = cap1[i * 3 + 1];
+	// 	caps[i * 3 + 2] = cap1[i * 3 + 2];
+	// 	caps[i * 3 * 2 + 0] = cap2[i * 3 + 0];
+	// 	caps[i * 3 * 2 + 1] = cap2[i * 3 + 1];
+	// 	caps[i * 3 * 2 + 2] = cap2[i * 3 + 2];
+	// 	/* osystem_drawPoint(
+	// 		caps[i * 3 + 0],
+	// 		caps[i * 3 + 1],
+	// 		caps[i * 3 + 2],
+	// 		color,
+	// 		0,
+	// 		1
+	// 		);
+	// 	osystem_drawPoint(
+	// 		caps[i * 3 * 2 + 0],
+	// 		caps[i * 3 * 2 + 1],
+	// 		caps[i * 3 * 2 + 2],
+	// 		color,
+	// 		0,
+	// 		1
+	// 		); */
+	// }
+	// // osystem_fillPoly(caps, 3 * 2, color, 0);
 #endif
 }
 
@@ -1113,7 +1230,8 @@ void osystem_drawPoint(float X, float Y, float Z, u8 color, u8 material, float s
 	for (int i = 0; i < mapping.size(); i++) {
 		sphereVertex* pVertex = &sphereVertices[numUsedSpheres];
 		numUsedSpheres++;
-		assert(numUsedSpheres < NUM_MAX_SPHERES_VERTICES);
+		// assert(numUsedSpheres < NUM_MAX_SPHERES_VERTICES);
+		if (numUsedSpheres >= NUM_MAX_SPHERES_VERTICES) return;
 
 		pVertex->X = corners[mapping[i]].X;
 		pVertex->Y = corners[mapping[i]].Y;
