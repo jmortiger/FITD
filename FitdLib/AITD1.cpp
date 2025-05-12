@@ -118,6 +118,9 @@ enumLifeMacro AITD1LifeMacroTable[] =
 	LM_WAIT_GAME_OVER,
 };
 
+/// @brief Play the page turning sequence (after the spinning armadillo).
+/// @param  
+/// @return 
 int makeIntroScreens(void)
 {
 	char* data;
@@ -308,20 +311,17 @@ void startAITD1()
 		int startupMenuResult = 0;
 #endif
 		switch (startupMenuResult) {
-			case -1: // timeout
+			case StartupMenuOptionsAITD1::SMO1_TIMEOUT:
 			{
 				CVars[getCVarsIdx(CHOOSE_PERSO)] = rand() & 1;
 				startGame(7, 1, 0);
 
-				if (!make3dTatou()) {
-					if (!makeIntroScreens()) {
-						//makeSlideshow();
-					}
-				}
+				// TODO: `makeSlideshow()` is a dead end; what was that?
+				if (!make3dTatou() && !makeIntroScreens()); // makeSlideshow();
 
 				break;
 			}
-			case 0: // new game
+			case StartupMenuOptionsAITD1::SMO1_NEW:
 			{
 				// here, original would ask for protection
 
@@ -329,10 +329,9 @@ void startAITD1()
 				if (ChoosePerso() != -1)
 #endif
 				{
-					process_events();
-					while (key) {
+					do { 
 						process_events();
-					}
+					} while (key);
 
 #if !TARGET_OS_IOS
 					startGame(7, 1, 0);
@@ -345,14 +344,14 @@ void startAITD1()
 
 				break;
 			}
-			case 1: // continue
+			case StartupMenuOptionsAITD1::SMO1_LOAD:
 			{
-				// here, original would ask for protection
+				// original would ask for protection here
 
 				/// @todo: make save slot selection menu
 				/// @todo: make variable for persisting a selected save slot in-between frames
 				if (restoreSave(12, 0)) {
-					// here, original would quit if protection flag was false
+					// original would quit here if protection flag was false
 
 					// updateShaking();
 
@@ -369,7 +368,7 @@ void startAITD1()
 
 				break;
 			}
-			case 2: // exit
+			case StartupMenuOptionsAITD1::SMO1_EXIT:
 			{
 				freeAll();
 				exit(-1);
@@ -383,21 +382,21 @@ void startAITD1()
 void AITD1_ReadBook(int index, int type)
 {
 	switch (type) {
-		case 0: // READ_MESSAGE
+		case DocumentTypeAITD1::DT1_LETTER: // READ_MESSAGE
 		{
 			loadPakTo("ITD_RESS", AITD1_LETTRE, aux);
 			turnPageFlag = 0;
 			Lire(index, 60, 10, 245, 190, 0, 26, 0);
 			break;
 		}
-		case 1: // READ_BOOK
+		case DocumentTypeAITD1::DT1_BOOK: // READ_BOOK
 		{
 			loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
 			turnPageFlag = 1;
 			Lire(index, 48, 2, 260, 197, 0, 26, 0);
 			break;
 		}
-		case 2: // READ_CARNET
+		case DocumentTypeAITD1::DT1_NOTEBOOK: // READ_CARNET
 		{
 			loadPakTo("ITD_RESS", AITD1_CARNET, aux);
 			turnPageFlag = 0;
@@ -405,7 +404,7 @@ void AITD1_ReadBook(int index, int type)
 			break;
 		}
 		default:
-			FITD_throwFatal(); // assert(0);
+			FITD_throwFatal("Failed to read document; Expected 0, 1, or 2; got %i", type);
 	}
 }
 
