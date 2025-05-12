@@ -239,8 +239,17 @@ FORCEINLINE s32 READ_BE_S32(void* ptr)
 /* #endregion */
 
 /// @brief Add a breakpoint here to catch all fatal exits.
-FORCEINLINE void FITD_throwFatal()
-{
+FORCEINLINE void FITD_throwFatal(const char* format = NULL, ...) {
+	if (format != NULL && *format != '\000') {
+		va_list argList;
+		va_start(argList, format);
+
+		char buff[256];
+		vsprintf(buff, format, argList);
+
+		va_end(argList);
+		DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, buff) || printf("%s", buff);
+	}
 	assert(0);
 }
 

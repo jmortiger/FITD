@@ -132,7 +132,7 @@ debugCategoryEnum DebugAddCategory(debugCategoryEnum category);
 void DebugRemoveCategory(debugCategoryEnum category);
 bool DebugBeginSection(debugCategoryEnum category); // bool DebugBeginSection(debugCategoryEnum category, debugLevelEnum level = DBO_L_NONE, const char* format = NULL, ...);
 bool DebugEndSection();
-void DebugPrintfLn(debugLevelEnum level, const char* format, ...);
+bool DebugPrintfLn(debugLevelEnum level, const char* format, ...);
 void DebugPrintfLnCategory(debugLevelEnum level, debugCategoryEnum category, const char* format, ...);
 /// @brief For usage w/ `PF_LE_S8` & such
 /// @tparam T 

@@ -792,7 +792,7 @@ bool DebugEndSection()
 	return false;
 }
 
-void DebugPrintfLn(debugLevelEnum level, const char* format, ...)
+bool DebugPrintfLn(debugLevelEnum level, const char* format, ...)
 {
 	if (_shouldPrint(resultantCategory, level)) {
 		va_list argList;
@@ -804,7 +804,9 @@ void DebugPrintfLn(debugLevelEnum level, const char* format, ...)
 		va_end(argList);
 
 		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
+		return true;
 	}
+	return false;
 }
 /// @brief Makes sure the initial line of a function is printed with the proper indent.
 /// @param level 
