@@ -201,6 +201,7 @@ int transformYSin;
 int transformZCos;
 int transformZSin;
 bool transformUseX;
+/// @brief Should the point be transformed __between coordinate spaces (?)__ using `transformYCos` & `transformYSin`? Changed for each camera.
 bool transformUseY;
 bool transformUseZ;
 
