@@ -572,7 +572,7 @@ void readBook(int index, int type)
 		case AITD2:
 			AITD2_ReadBook(index, type);
 			break;
-		// TODO: Can you read things in TimeGate & AITD3?
+			// TODO: Can you read things in TimeGate & AITD3?
 		default:
 			FITD_throwFatal(); // assert(0);
 
@@ -2395,6 +2395,7 @@ void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int
 }
 
 /// @brief Draws the given object's bounding box.
+/// @param actorPtr 
 void drawZv(tObject* actorPtr)
 {
 	ZVStruct localZv;
@@ -2406,14 +2407,7 @@ void drawZv(tObject* actorPtr)
 	}
 
 	// bottom
-	drawProjectedLine(localZv.ZVX1,
-		localZv.ZVY2,
-		localZv.ZVZ1,
-		localZv.ZVX1,
-		localZv.ZVY2,
-		localZv.ZVZ2,
-		10);
-
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, 10);
 	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, 10);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, 10);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, 10);
@@ -2482,11 +2476,9 @@ void drawMaskZones()
 		cameraDataStruct* pCamera = cameraDataTable[currentCamera];
 
 		for (int j = 0; j < pCamera->numViewedRooms; j++) {
-			int k;
-
 			//if(cameraDataTable[i]->viewedRoomTable[j].viewedRoomIdx == currentDisplayedRoom)
 			{
-				for (k = 0; k < pCamera->viewedRoomTable[j].numMask; k++) {
+				for (int k = 0; k < pCamera->viewedRoomTable[j].numMask; k++) {
 					drawMaskZone(&pCamera->viewedRoomTable[j].masks[k]);
 				}
 			}
@@ -2546,20 +2538,25 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 	//osystem_draw3dQuad(x1,y1,z1, x2,y2,z2, x3,y3,z3, x4,y4,z4, color);
 }
 
-void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency)
+void drawProjectedBox(float x1, float x2, float y1, float y2, float z1, float z2, int color, int transparency)
 {
 	//bottom
-	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y1, (float)y1, (float)y1, (float)y1, (float)z1, (float)z2, (float)z2, (float)z1, color, transparency);
+	drawProjectedQuad(x1, x1, x2, x2, y1, y1, y1, y1, z1, z2, z2, z1, color, transparency);
 	//top
-	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y2, (float)y2, (float)y2, (float)y2, (float)z1, (float)z2, (float)z2, (float)z1, color, transparency);
+	drawProjectedQuad(x1, x1, x2, x2, y2, y2, y2, y2, z1, z2, z2, z1, color, transparency);
 	//left
-	drawProjectedQuad((float)x1, (float)x1, (float)x1, (float)x1, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transparency);
+	drawProjectedQuad(x1, x1, x1, x1, y1, y2, y2, y1, z1, z1, z2, z2, color, transparency);
 	//right
-	drawProjectedQuad((float)x2, (float)x2, (float)x2, (float)x2, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transparency);
+	drawProjectedQuad(x2, x2, x2, x2, y1, y2, y2, y1, z1, z1, z2, z2, color, transparency);
 	//front
-	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z1, (float)z1, (float)z1, (float)z1, color, transparency);
+	drawProjectedQuad(x1, x2, x2, x1, y1, y1, y2, y2, z1, z1, z1, z1, color, transparency);
 	//back
-	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z2, (float)z2, (float)z2, (float)z2, color, transparency);
+	drawProjectedQuad(x1, x2, x2, x1, y1, y1, y2, y2, z2, z2, z2, z2, color, transparency);
+}
+
+void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency)
+{
+	drawProjectedBox((float)x1, (float)x2, (float)y1, (float)y2, (float)z1, (float)z2, color, transparency);
 }
 
 void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
@@ -2582,7 +2579,7 @@ void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
 
 void drawRoomZvLine(ZVStruct* zoneData, int color)
 {
-	ZVStruct cameraZv = { -100,100,-100,100,-100,100 };
+	ZVStruct cameraZv = { -100, 100, -100, 100, -100, 100 };
 
 	cameraZv.ZVX1 += translateX;
 	cameraZv.ZVX2 += translateX;
@@ -2613,29 +2610,18 @@ void drawRoomZvLine(ZVStruct* zoneData, int color)
 
 void drawZone(char* zoneData, int color)
 {
-	int x1;
-	int x2;
-
-	int y1;
-	int y2;
-
-	int z1;
-	int z2;
-
-	int type;
-
 	ZVStruct tempZv;
-
+	
 	ZVStruct cameraZv = { -100,100,-100,100,-100,100 };
+	
+	int type = *(s16*)(zoneData + 0xE);
 
-	type = *(s16*)(zoneData + 0xE);
-
-	x1 = *(s16*)(zoneData + 0x0);
-	x2 = *(s16*)(zoneData + 0x2);
-	y1 = *(s16*)(zoneData + 0x4);
-	y2 = *(s16*)(zoneData + 0x6);
-	z1 = *(s16*)(zoneData + 0x8);
-	z2 = *(s16*)(zoneData + 0xA);
+	int x1 = *(s16*)(zoneData + 0x0);
+	int x2 = *(s16*)(zoneData + 0x2);
+	int y1 = *(s16*)(zoneData + 0x4);
+	int y2 = *(s16*)(zoneData + 0x6);
+	int z1 = *(s16*)(zoneData + 0x8);
+	int z2 = *(s16*)(zoneData + 0xA);
 
 	cameraZv.ZVX1 += translateX;
 	cameraZv.ZVX2 += translateX;
@@ -2653,51 +2639,38 @@ void drawZone(char* zoneData, int color)
 	tempZv.ZVZ1 = READ_LE_S16(zoneData + 0x08);
 	tempZv.ZVZ2 = READ_LE_S16(zoneData + 0x0A);
 
-	if (checkZvCollision(&cameraZv, &tempZv)) {
+	if (checkZvCollision(&cameraZv, &tempZv))
 		return;
-	}
 
 	drawProjectedBox(x1, x2, y1, y2, z1, z2, type, 255);
 }
 
 void drawOverlayZone(char* zoneData, int color)
 {
-	int x1;
-	int x2;
+	int x1 = *(s16*)(zoneData + 0x0) * 10;
+	int z1 = *(s16*)(zoneData + 0x2) * 10;
+	int x2 = *(s16*)(zoneData + 0x4) * 10;
+	int z2 = *(s16*)(zoneData + 0x6) * 10;
 
-	int y1;
-	int y2;
-
-	int z1;
-	int z2;
-
-	x1 = *(s16*)(zoneData + 0x0) * 10;
-	z1 = *(s16*)(zoneData + 0x2) * 10;
-	x2 = *(s16*)(zoneData + 0x4) * 10;
-	z2 = *(s16*)(zoneData + 0x6) * 10;
-
-	y1 = 0;
-	y2 = 0;
+	int y1 = 0;
+	int y2 = 0;
 
 	drawProjectedBox(x1, x2, y1, y2, z1, z2, color, 255);
 }
 
 void drawSceZone(int roomNumber)
 {
-	u32 i;
 	ZVStruct dataLocal;
 
-	for (i = 0; i < roomDataTable[roomNumber].numSceZone; i++) {
+	for (u32 i = 0; i < roomDataTable[roomNumber].numSceZone; i++) {
 		memcpy(&dataLocal, &roomDataTable[roomNumber].sceZoneTable[i].zv, sizeof(ZVStruct));
 		if (roomNumber != currentRoom) {
 			getZvRelativePosition(&dataLocal, roomNumber, currentRoom);
 		}
 
-		//		if(roomDataTable[roomNumber].sceZoneTable[i].parameter == 4)
-		//			if(roomDataTable[roomNumber].sceZoneTable[i].type)
-		{
-			drawRoomZv(&dataLocal, 20, 40);
-		}
+		// if(roomDataTable[roomNumber].sceZoneTable[i].parameter == 4 && roomDataTable[roomNumber].sceZoneTable[i].type) {
+		drawRoomZv(&dataLocal, 20, 40);
+		// }
 	}
 }
 
@@ -2706,7 +2679,7 @@ void drawHardCol(int roomNumber)
 	ZVStruct dataLocal;
 
 	for (u32 i = 0; i < roomDataTable[roomNumber].numHardCol; i++) {
-		/*if(roomDataTable[roomNumber].hardColTable[i].type != 9)
+		/* if (roomDataTable[roomNumber].hardColTable[i].type != 9)
 			continue;*/
 
 		copyZv(&roomDataTable[roomNumber].hardColTable[i].zv, &dataLocal);
@@ -2748,8 +2721,7 @@ void drawHardCol(int roomNumber)
 
 int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 {
-	int i;
-	for (i = 0; i < param; i++) {
+	for (int i = 0; i < param; i++) {
 		////////////////////////////////////// DEBUG
 		//  drawOverlayZone(data, 80);
 		/////////////////////////////////////
@@ -2759,9 +2731,8 @@ int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 		int zoneX2 = *(s16*)(data + 4);
 		int zoneZ2 = *(s16*)(data + 6);
 
-		if (X1 >= zoneX1 && Z1 >= zoneZ1 && X2 <= zoneX2 && Z2 <= zoneZ2) {
+		if (X1 >= zoneX1 && Z1 >= zoneZ1 && X2 <= zoneX2 && Z2 <= zoneZ2)
 			return(1);
-		}
 
 		data += 0x8;
 	}
@@ -2771,17 +2742,12 @@ int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 
 void drawBgOverlay(tObject* actorPtr)
 {
-	char* data;
-	char* data2;
-
-	int numOverlayZone;
-
 	actorPtr->screenXMin = BBox3D1;
 	actorPtr->screenYMin = BBox3D2;
 	actorPtr->screenXMax = BBox3D3;
 	actorPtr->screenYMax = BBox3D4;
 
-	// if(actorPtr->trackMode != 1) return;
+	// if (actorPtr->trackMode != 1) return;
 
 	SetClip(BBox3D1, BBox3D2, BBox3D3, BBox3D4);
 
@@ -2801,37 +2767,38 @@ void drawBgOverlay(tObject* actorPtr)
 		return;
 
 	if (g_gameId == AITD1) {
-		data2 = room_PtrCamera[currentCamera] + pcameraViewedRoomData->offsetToMask;
-		data = data2;
+		char* data2 = room_PtrCamera[currentCamera] + pcameraViewedRoomData->offsetToMask;
+		char* data = data2;
 		data += 2;
-
-		numOverlayZone = *(s16*)(data2);
+		
+		int numOverlayZone = *(s16*)(data2);
 
 		for (int i = 0; i < numOverlayZone; i++) {
 			int numOverlay;
 			char* src = data2 + *(u16*)(data + 2);
 
-			if (isBgOverlayRequired(actorPtr->zv.ZVX1 / 10, actorPtr->zv.ZVX2 / 10,
+			if (isBgOverlayRequired(
+				actorPtr->zv.ZVX1 / 10, actorPtr->zv.ZVX2 / 10,
 				actorPtr->zv.ZVZ1 / 10, actorPtr->zv.ZVZ2 / 10,
 				data + 4,
-				*(s16*)(data))) {
+				*(s16*)(data)
+			)) {
 				osystem_setClip(clipLeft, clipTop, clipRight, clipBottom);
 				osystem_drawMask(relativeCameraIndex, i);
 				osystem_clearClip();
 
 				/*
-				int j;
 				numOverlay = *(s16*)src;
 				src += 2;
 
-				for(j=0;j<numOverlay;j++)
+				for(int j = 0; j < numOverlay; j++)
 				{
 				int param = *(s16*)(src);
-				src+=2;
+				src += 2;
 
-				memcpy(cameraBuffer, src, param*4);
+				memcpy(cameraBuffer, src, param * 4);
 
-				src+=param*4;
+				src += param * 4;
 
 				drawBgOverlaySub2(param);
 				}
@@ -2883,16 +2850,13 @@ void mainDrawSub2(int actorIdx)
 
 void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 {
-	s16 flag;
-
-	flag = *(s16*)bodyPtr;
+	s16 flag = *(s16*)bodyPtr;
 	bodyPtr += 2;
 
 	if (flag & 2) {
-		s16 offset;
 		bodyPtr += 12;
 
-		offset = *(s16*)bodyPtr;
+		s16 offset = *(s16*)bodyPtr;
 		bodyPtr += 2;
 		bodyPtr += offset;
 
@@ -3077,41 +3041,32 @@ void addActorToBgInscrust(int actorIdx)
 	//FlagRefreshAux2 = 1;
 }
 
-int checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2)
+bool checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2)
 {
-	if (zvPtr1->ZVX1 >= zvPtr2->ZVX2)
-		return 0;
-
-	if (zvPtr2->ZVX1 >= zvPtr1->ZVX2)
-		return 0;
-
-	if (zvPtr1->ZVY1 >= zvPtr2->ZVY2)
-		return 0;
-
-	if (zvPtr2->ZVY1 >= zvPtr1->ZVY2)
-		return 0;
-
-	if (zvPtr1->ZVZ1 >= zvPtr2->ZVZ2)
-		return 0;
-
-	if (zvPtr2->ZVZ1 >= zvPtr1->ZVZ2)
-		return 0;
-
-	return 1;
+	return !(zvPtr1->ZVX1 >= zvPtr2->ZVX2 ||
+		zvPtr2->ZVX1 >= zvPtr1->ZVX2 ||
+		zvPtr1->ZVY1 >= zvPtr2->ZVY2 ||
+		zvPtr2->ZVY1 >= zvPtr1->ZVY2 ||
+		zvPtr1->ZVZ1 >= zvPtr2->ZVZ2 ||
+		zvPtr2->ZVZ1 >= zvPtr1->ZVZ2);
 }
 
+/// @brief 
+/// @param zvPtr 
+/// @param startRoom 
+/// @param destRoom 
 void getZvRelativePosition(ZVStruct* zvPtr, int startRoom, int destRoom)
 {
-	unsigned int Xdif = 10 * (roomDataTable[destRoom].worldX - roomDataTable[startRoom].worldX);
-	unsigned int Ydif = 10 * (roomDataTable[destRoom].worldY - roomDataTable[startRoom].worldY);
-	unsigned int Zdif = 10 * (roomDataTable[destRoom].worldZ - roomDataTable[startRoom].worldZ);
+	unsigned int xDif = 10 * (roomDataTable[destRoom].worldX - roomDataTable[startRoom].worldX);
+	unsigned int yDif = 10 * (roomDataTable[destRoom].worldY - roomDataTable[startRoom].worldY);
+	unsigned int zDif = 10 * (roomDataTable[destRoom].worldZ - roomDataTable[startRoom].worldZ);
 
-	zvPtr->ZVX1 -= Xdif;
-	zvPtr->ZVX2 -= Xdif;
-	zvPtr->ZVY1 += Ydif;
-	zvPtr->ZVY2 += Ydif;
-	zvPtr->ZVZ1 += Zdif;
-	zvPtr->ZVZ2 += Zdif;
+	zvPtr->ZVX1 -= xDif;
+	zvPtr->ZVX2 -= xDif;
+	zvPtr->ZVY1 += yDif;
+	zvPtr->ZVY2 += yDif;
+	zvPtr->ZVZ1 += zDif;
+	zvPtr->ZVZ2 += zDif;
 }
 
 int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr)
