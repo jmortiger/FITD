@@ -161,6 +161,17 @@ typedef signed int S32;
 /* #region Endianess */
 //typedef unsigned char byte;
 
+// TODO: The commented section is taken from "endianess.h", check if better than pre-existing.
+/* #ifdef __GCC__
+#define FORCEINLINE static inline
+#else
+#ifdef WIN32
+#define FORCEINLINE __forceinline
+#else
+#define FORCEINLINE static inline
+#endif
+#endif */
+
 #ifdef UNIX
 #define FORCEINLINE static inline
 #else
@@ -171,15 +182,9 @@ typedef signed int S32;
 #endif
 #endif
 
-FORCEINLINE u8 READ_LE_U8(void* ptr)
-{
-	return *(u8*)ptr;
-}
+FORCEINLINE u8 READ_LE_U8(void* ptr) { return *(u8*)ptr; }
 
-FORCEINLINE s8 READ_LE_S8(void* ptr)
-{
-	return *(s8*)ptr;
-}
+FORCEINLINE s8 READ_LE_S8(void* ptr) { return *(s8*)ptr; }
 
 FORCEINLINE u16 READ_LE_U16(void* ptr)
 {
@@ -190,10 +195,7 @@ FORCEINLINE u16 READ_LE_U16(void* ptr)
 #endif
 }
 
-FORCEINLINE s16 READ_LE_S16(void* ptr)
-{
-	return (s16)READ_LE_U16(ptr);
-}
+FORCEINLINE s16 READ_LE_S16(void* ptr) { return (s16)READ_LE_U16(ptr); }
 
 FORCEINLINE u16 READ_BE_U16(void* ptr)
 {
@@ -204,10 +206,7 @@ FORCEINLINE u16 READ_BE_U16(void* ptr)
 #endif
 }
 
-FORCEINLINE s16 READ_BE_S16(void* ptr)
-{
-	return (s16)READ_BE_U16(ptr);
-}
+FORCEINLINE s16 READ_BE_S16(void* ptr) { return (s16)READ_BE_U16(ptr); }
 
 FORCEINLINE u32 READ_LE_U32(void* ptr)
 {
@@ -218,10 +217,7 @@ FORCEINLINE u32 READ_LE_U32(void* ptr)
 #endif
 }
 
-FORCEINLINE s32 READ_LE_S32(void* ptr)
-{
-	return (s32)READ_LE_U32(ptr);
-}
+FORCEINLINE s32 READ_LE_S32(void* ptr) { return (s32)READ_LE_U32(ptr); }
 
 FORCEINLINE u32 READ_BE_U32(void* ptr)
 {
@@ -232,10 +228,7 @@ FORCEINLINE u32 READ_BE_U32(void* ptr)
 #endif
 }
 
-FORCEINLINE s32 READ_BE_S32(void* ptr)
-{
-	return (s32)READ_LE_U32(ptr);
-}
+FORCEINLINE s32 READ_BE_S32(void* ptr) { return (s32)READ_BE_U32(ptr); }
 /* #endregion */
 
 /// @brief Add a breakpoint here to catch all fatal exits.
