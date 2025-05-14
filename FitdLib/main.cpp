@@ -635,6 +635,13 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 		lastPageReached = false;
 
 		while (currentTextY <= bottom - 16) {
+#define _LIRE_type_mask 0xFFFE
+			// TODO: Change ad-hoc `line_type` flag magic numbers to enum/macro.
+			/// Flag that changes rendering settings.
+			/// 1: stretch words on line
+			/// 2: bigger font size
+			/// 4: ???
+			/// 8: center text
 			int line_type = 1;
 			int var_1BA = 0;
 			int currentStringWidth;
@@ -669,7 +676,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 						}
 						case 'C': // center
 						{
-							line_type &= 0xFFFE;
+							line_type &= _LIRE_type_mask;
 							line_type |= 8;
 							break;
 						}
@@ -683,7 +690,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 							}
 
 							if (loadPakTo("ITD_RESS", 9, aux2)) {
-								FITD_throwFatal(); // assert(0); // when is this used?
+								FITD_throwFatal(); // when is this used?
 								/*  var_C = printTextSub3(currentTextIdx,aux2);
 								var_A = printTextSub4(currentTextIdx,aux2);
 
@@ -733,8 +740,8 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 
 				// eval the character that caused the 'end of word' state
 				if (var_1C3 == 26) {
-					line_type &= 0xFFFE;
-					line_type |= 4;
+					line_type &= _LIRE_type_mask;
+					line_type |= 4; // TODO: Flag 4 seems unused
 					lastPageReached = true;
 					break;
 				}
@@ -743,12 +750,12 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 					++ptrt;
 					if (*ptrt == 0xD) {
 						ptrt += 2;
-						line_type &= 0xFFFE;
+						line_type &= _LIRE_type_mask;
 						line_type |= 2;
 						break;
 					}
 					if (*ptrt == '#') {
-						line_type &= 0xFFFE;
+						line_type &= _LIRE_type_mask;
 						break;
 					}
 				}
@@ -778,10 +785,10 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 
 			if (line_type & 2) // font size
 			{
-				currentTextY += 8;
+				currentTextY += 8; // TODO: Is this related to `fontHeight`/`MESSAGE_HEIGHT`?
 			}
 
-			currentTextY += 16;
+			currentTextY += 16; // TODO: Shouldn't this be `fontHeight`/`MESSAGE_HEIGHT`?
 
 			if (lastPageReached)
 				break;
@@ -927,6 +934,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 	HQ_Free_Malloc(HQ_Memory, textIndexMalloc);
 
 	return(demoMode);
+#undef _LIRE_type_mask
 }
 
 extern "C" {

@@ -27,7 +27,7 @@ enum gameInputs {
 
 /// @brief Used to allow any input to trigger specific actions
 /// @todo Implement
-/// @todo Finish
+/// @todo Finish Enum options
 enum gameInputsGeneric {
 	INPUT_G_NONE,
 	INPUT_G_ACTION,
@@ -59,11 +59,11 @@ enum gameInputsGeneric {
 	INPUT_G_HOP = INPUT_G_JUMP,
 	INPUT_G_LEAP = INPUT_G_JUMP,
 
-	INPUT_G_ACTION_SEARCH = INPUT_G_NONE, // Switch action to SEARCH w/o opening the menu; would require a lot of work
-	INPUT_G_ACTION_FIGHT = INPUT_G_NONE, // Switch action to FIGHT w/o opening the menu; would require a lot of work
-	INPUT_G_ACTION_PUSH = INPUT_G_NONE, // Switch action to PUSH w/o opening the menu; would require a lot of work
-	INPUT_G_ACTION_JUMP = INPUT_G_NONE, // Switch action to JUMP w/o opening the menu; would require a lot of work
-	INPUT_G_ACTION_RELOAD = INPUT_G_NONE // Switch action to RELOAD w/o opening the menu; would require a lot of work
+	INPUT_G_ACTION_SEARCH = INPUT_G_NONE, // Switch action to SEARCH w/o opening the menu; would require a lot of work to implement; currently unused
+	INPUT_G_ACTION_FIGHT = INPUT_G_NONE, // Switch action to FIGHT w/o opening the menu; would require a lot of work to implement; currently unused
+	INPUT_G_ACTION_PUSH = INPUT_G_NONE, // Switch action to PUSH w/o opening the menu; would require a lot of work to implement; currently unused
+	INPUT_G_ACTION_JUMP = INPUT_G_NONE, // Switch action to JUMP w/o opening the menu; would require a lot of work to implement; currently unused
+	INPUT_G_ACTION_RELOAD = INPUT_G_NONE // Switch action to RELOAD w/o opening the menu; would require a lot of work to implement; currently unused
 }; typedef enum gameInputsGeneric gameInputsGeneric;
 
 #endif
