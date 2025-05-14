@@ -24,10 +24,6 @@ void drawStartupMenu(int selectedEntry)
 
 int processStartupMenu(void)
 {
-	int currentSelectedEntry = 0;
-	unsigned int chrono;
-	int selectedEntry = -1;
-
 	flushScreen();
 
 	drawStartupMenu(0);
@@ -38,16 +34,19 @@ int processStartupMenu(void)
 
 	osystem_flip(NULL);
 	FadeInPhys(16, 0);
+	unsigned int chrono;
 	startChrono(&chrono);
+
+	int currentSelectedEntry = 0;
+	int selectedEntry = -1;
 
 	// exit loop only if time out or if choice made
 	while (evalChrono(&chrono) <= 0x10000) {
 		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 		osystem_startFrame();
 
-		if (selectedEntry != -1 || evalChrono(&chrono) > 0x10000) {
+		if (selectedEntry != -1 || evalChrono(&chrono) > 0x10000)
 			break;
-		}
 
 		process_events();
 		osystem_drawBackground();
@@ -56,19 +55,17 @@ int processStartupMenu(void)
 		if (JoyD & 1) {
 			currentSelectedEntry--;
 
-			if (currentSelectedEntry < 0) {
+			if (currentSelectedEntry < 0)
 				currentSelectedEntry = 2;
-			}
 
 			drawStartupMenu(currentSelectedEntry);
 			osystem_flip(NULL);
-			//      menuWaitVSync();
+			// menuWaitVSync();
 
 			startChrono(&chrono);
 
-			while (JoyD) {
+			while (JoyD)
 				process_events();
-			}
 		}
 
 
@@ -76,37 +73,32 @@ int processStartupMenu(void)
 		if (JoyD & 2) {
 			currentSelectedEntry++;
 
-			if (currentSelectedEntry > 2) {
+			if (currentSelectedEntry > 2)
 				currentSelectedEntry = 0;
-			}
 
 			drawStartupMenu(currentSelectedEntry);
-			//menuWaitVSync();
+			// menuWaitVSync();
 			osystem_flip(NULL);
 
 			startChrono(&chrono);
 
-			while (JoyD) {
+			while (JoyD)
 				process_events();
-			}
 		}
 
 		// select current entry
-		if (key == 28 || (key != 28 && Click != 0)) {
+		if (key == 28 || (key != 28 && Click != 0))
 			selectedEntry = currentSelectedEntry;
-		}
 		osystem_stopFrame();
 		osystem_flip(NULL);
 	}
 
 	// if exit game, do not fade
-	if (selectedEntry == 2) {
+	if (selectedEntry == 2)
 		FadeOutPhys(16, 0);
-	}
 
-	while (JoyD) {
+	while (JoyD)
 		process_events();
-	}
 
 	return(selectedEntry);
 }

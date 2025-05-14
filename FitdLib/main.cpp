@@ -235,13 +235,6 @@ void InitCopyBox(char* var0, char* var1)
 
 void allocTextes(void)
 {
-	int currentIndex;
-	u8* currentPosInTextes;
-	int textCounter;
-	int stringIndex;
-	u8* stringPtr;
-	int textLength;
-
 	tabTextes = (textEntryStruct*)malloc(NUM_MAX_TEXT_ENTRY * sizeof(textEntryStruct)); // 2000 = 250 * 8
 
 	ASSERT_PTR(tabTextes);
@@ -273,30 +266,32 @@ void allocTextes(void)
 	}
 
 	systemTextes = (u8*)CheckLoadMallocPak(languageNameString, 0); // todo: use real language name
-	textLength = getPakSize(languageNameString, 0);
+	int textLength = getPakSize(languageNameString, 0);
 
+	int currentIndex;
 	for (currentIndex = 0; currentIndex < NUM_MAX_TEXT_ENTRY; currentIndex++) {
 		tabTextes[currentIndex].index = -1;
 		tabTextes[currentIndex].textPtr = NULL;
 		tabTextes[currentIndex].width = 0;
 	}
 
-	currentPosInTextes = systemTextes;
+	u8* currentPosInTextes = systemTextes;
 
-	textCounter = 0;
+	int textCounter = 0;
 
+	int stringIndex;
+	u8* stringPtr;
 	while (currentPosInTextes < systemTextes + textLength) {
 		currentIndex = *(currentPosInTextes++);
 
-		if (currentIndex == 26)
-			break;
+		if (currentIndex == 26) break;
 
-		if (currentIndex == '@') // start of string marker
-		{
+		// start of string marker
+		if (currentIndex == '@') {
 			stringIndex = 0;
 
-			while ((currentIndex = *(currentPosInTextes++)) >= '0' && currentIndex <= '9') // parse string number
-			{
+			// parse string number
+			while ((currentIndex = *(currentPosInTextes++)) >= '0' && currentIndex <= '9') {
 				stringIndex = stringIndex * 10 + currentIndex - 48;
 			}
 
@@ -317,28 +312,26 @@ void allocTextes(void)
 				textCounter++;
 			}
 
-			if (currentIndex == 26) {
-				return;
-			}
+			if (currentIndex == 26) return;
 		}
 	}
 }
 
 void OpenProgram(void)
 {
-	//time_t ltime;
+	// time_t ltime;
 	FILE* fHandle;
 
 	setupScreen();
-	//setupInterrupt();
-	//setupInterrupt2();
-	//setupInterrupt3();
+	// setupInterrupt();
+	// setupInterrupt2();
+	// setupInterrupt3();
 
-	//setupVideoMode();
+	// setupVideoMode();
 
-//	time( &ltime );
+	// time( &ltime );
 
-//	srand(ltime);
+	// srand(ltime);
 
 	if (!initMusicDriver()) {
 		musicConfigured = musicEnabled = false;
@@ -358,7 +351,7 @@ void OpenProgram(void)
 	}
 
 	InitCopyBox(aux2, logicalScreen);
-	/*  InitCopyPlot(aux2);
+	/* InitCopyPlot(aux2);
 	InitSpecialCopyPoly(aux2); */
 
 	BufferAnim.resize(NB_BUFFER_ANIM);
@@ -446,10 +439,8 @@ void OpenProgram(void)
 
 	allocTextes();
 
-	//  if(musicConfigured)
-	{
-		listMus = HQR_InitRessource("LISTMUS", 110000, 40);
-	}
+	// if(musicConfigured)
+	listMus = HQR_InitRessource("LISTMUS", 110000, 40);
 
 	char sampleFileName[256] = "";
 	if (g_gameId == TIMEGATE) {
@@ -463,9 +454,11 @@ void OpenProgram(void)
 	HQ_Memory = HQR_Init(10000, 50);
 }
 
+/// @brief UNIMPLEMENTED
+/// @todo IMPLEMENT
 void freeAll(void)
 {
-	/*  HQR_Free(hqrUnk);
+	/* HQR_Free(hqrUnk);
 
 	HQR_Free(listSamp);
 
@@ -483,24 +476,18 @@ void freeAll(void)
 
 	free(bufferAnim);
 
-	if(aux != aux3)
-	{
-	free(aux);
-	}
+	if(aux != aux3) free(aux);
 
-	free(aux2);*/
+	free(aux2); */
 
-	//TODO: implement all the code that restore the interrupts & all
+	// TODO: implement all the code that restore the interrupts & all
 }
 
 textEntryStruct* getTextFromIdx(int index)
 {
-	int currentIndex;
-
-	for (currentIndex = 0; currentIndex < NUM_MAX_TEXT_ENTRY; currentIndex++) {
-		if (tabTextes[currentIndex].index == index) {
+	for (int currentIndex = 0; currentIndex < NUM_MAX_TEXT_ENTRY; currentIndex++) {
+		if (tabTextes[currentIndex].index == index)
 			return(&tabTextes[currentIndex]);
-		}
 	}
 
 	return(NULL);
@@ -520,13 +507,9 @@ void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 
 	char* dest = logicalScreen + y1 * _SCREEN_INTERNAL_WIDTH + x1;
 
-	int i;
 	int j;
-
-	for (i = 0; i < height; i++) {
-		for (j = 0; j < width; j++) {
-			*(dest++) = color;
-		}
+	for (int i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) { *(dest++) = color; }
 
 		dest += _SCREEN_INTERNAL_WIDTH - width;
 	}
@@ -536,11 +519,9 @@ void loadPalette(void)
 {
 	unsigned char localPalette[768];
 
-	if (g_gameId == AITD2) {
-		// loadPakToPtr("ITD_RESS", 59, aux);
-	} else {
+	if (g_gameId != AITD2) {
 		loadPakTo("ITD_RESS", 3, aux);
-	}
+	} /* else loadPakToPtr("ITD_RESS", 59, aux); */
 	copyPalette((unsigned char*)aux, currentGamePalette);
 
 	copyPalette(currentGamePalette, localPalette);
@@ -558,7 +539,8 @@ void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 /// @todo FULLY IMPLEMENT.
 // NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
 // HACK: Just renders the page w/o the animation.
-void turnPageForward() {
+void turnPageForward()
+{
 	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 }
 
@@ -566,28 +548,28 @@ void turnPageForward() {
 /// @todo FULLY IMPLEMENT.
 // NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
 // HACK: Just renders the page w/o the animation.
-void turnPageBackward() {
+void turnPageBackward()
+{
 	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 }
 
+void Default_ReadBook(int index, int type)
+{
+	FITD_throwFatal("Reading books in TimeGate & AITD3 is not supported");
+}
 void readBook(int index, int type)
 {
+	// TODO: Can you read things in TimeGate & AITD3?
+	static void(*readBookTable[])(int, int) = {
+		AITD1_ReadBook,
+		JACK_ReadBook,
+		AITD2_ReadBook,
+		Default_ReadBook,
+		Default_ReadBook,
+	};
 	freezeTime();
 
-	switch (g_gameId) {
-		case AITD1:
-			AITD1_ReadBook(index, type);
-			break;
-		case JACK:
-			JACK_ReadBook(index, type);
-			break;
-		case AITD2:
-			AITD2_ReadBook(index, type);
-			break;
-			// TODO: Can you read things in TimeGate & AITD3?
-		default:
-			FITD_throwFatal("Reading books in TimeGate & AITD3 is not supported");
-	}
+	readBookTable[g_gameId](index, type);
 
 	unfreezeTime();
 }
@@ -605,7 +587,8 @@ void readBook(int index, int type)
 int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int color, int shadow)
 {
 	bool lastPageReached = false;
-	u8 tabString[] = "    ";
+	/// The string representing a tab character. Tabs are 4 spaces.
+	static u8 tabString[] = "    ";
 	int firstpage = 1;
 	int page = 0;
 	int quit = 0;
@@ -630,19 +613,17 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 	ptrpage.fill(nullptr);
 	ptrpage[0] = textPtr;
 
-	//  LastSample = -1;
-	//  LastPriority = -1;
+	// LastSample = -1;
+	// LastPriority = -1;
 
 	while (!quit) {
-		u8* ptrt;
-		int currentTextY;
 		FastCopyScreen(aux, logicalScreen);
 		process_events();
 		SetClip(startX, top, endX, bottom);
 
-		ptrt = ptrpage[page];
+		u8* ptrt = ptrpage[page];
 
-		currentTextY = top;
+		int currentTextY = top;
 		lastPageReached = false;
 
 		while (currentTextY <= bottom - 16) {
@@ -1265,7 +1246,8 @@ void loadMask(int cameraIdx)
 	char name[16];
 	sprintf(name, "MASK%02d", g_currentFloor);
 
-	if (g_MaskPtr) free(g_MaskPtr);
+	if (g_MaskPtr)
+		free(g_MaskPtr);
 
 	g_MaskPtr = (unsigned char*)loadPak(name, cameraIdx);
 
@@ -1512,19 +1494,15 @@ int isInViewList(int value)
 	return(0);
 }
 
-// setup visibility list
+/// @brief setup visibility list
 void setupCameraSub1()
 {
-	u32 i;
-	int j;
-	int var_10;
-
 	char* dataTabPos = currentCameraVisibilityList;
-
 	*dataTabPos = -1;
 
+	int var_10;
 	// visibility list: add linked rooms
-	for (i = 0; i < roomDataTable[currentRoom].numSceZone; i++) {
+	for (u32 i = 0; i < roomDataTable[currentRoom].numSceZone; i++) {
 		if (roomDataTable[currentRoom].sceZoneTable[i].type == 0) {
 			var_10 = roomDataTable[currentRoom].sceZoneTable[i].parameter;
 			if (!isInViewList(var_10)) {
@@ -1535,7 +1513,7 @@ void setupCameraSub1()
 	}
 
 	// visibility list: add room seen by the current camera
-	for (j = 0; j < cameraDataTable[currentCamera]->numViewedRooms; j++) {
+	for (int j = 0; j < cameraDataTable[currentCamera]->numViewedRooms; j++) {
 		if (!isInViewList(cameraDataTable[currentCamera]->viewedRoomTable[j].viewedRoomIdx)) {
 			*(dataTabPos++) = (char)cameraDataTable[currentCamera]->viewedRoomTable[j].viewedRoomIdx;
 			*(dataTabPos) = -1;
@@ -1543,17 +1521,17 @@ void setupCameraSub1()
 	}
 }
 
-void DeleteObjet(int index) // remove actor
+/// @brief remove actor
+void DeleteObjet(int index)
 {
 	tObject* actorPtr = &objectTable[index];
 
-	if (actorPtr->indexInWorld == -2) // flow
-	{
+	// flow
+	if (actorPtr->indexInWorld == -2) {
 		actorPtr->indexInWorld = -1;
 
-		if (actorPtr->ANIM == 4) {
+		if (actorPtr->ANIM == 4)
 			CVars[getCVarsIdx(FOG_FLAG)] = 0;
-		}
 
 		HQ_Free_Malloc(HQ_Memory, actorPtr->FRAME);
 	} else {
@@ -1577,9 +1555,8 @@ void DeleteObjet(int index) // remove actor
 			if (objectPtr->trackMode) {
 				objectPtr->trackNumber = actorPtr->trackNumber;
 				objectPtr->positionInTrack = actorPtr->positionInTrack;
-				if (g_gameId != AITD1) {
+				if (g_gameId != AITD1)
 					objectPtr->mark = actorPtr->MARK;
-				}
 			}
 
 			objectPtr->x = actorPtr->roomX + actorPtr->stepX;
@@ -1598,6 +1575,7 @@ void DeleteObjet(int index) // remove actor
 	}
 }
 
+// #region Point Rotation
 bool pointRotateEnable = true;
 
 int pointRotateCosX;
@@ -1621,36 +1599,176 @@ void setupPointRotate(int alpha, int beta, int gamma)
 	pointRotateSinZ = cosTable[((gamma & 0x3FF) + 0x100) & 0x3FF];
 }
 
+/// @brief 
+/// @param x 
+/// @param y 
+/// @param z 
+/// @param destX 
+/// @param destY 
+/// @param destZ 
+/// @details * Rotates around z, then y, then x (I believe)
 void pointRotate(int x, int y, int z, int* destX, int* destY, int* destZ)
 {
-	if (pointRotateEnable) {
-		{
-			int tempX = x;
-			int tempY = y;
-			x = ((((tempX * pointRotateSinZ) - (tempY * pointRotateCosZ))) >> 16) << 1;
-			y = ((((tempX * pointRotateCosZ) + (tempY * pointRotateSinZ))) >> 16) << 1;
-		}
+	if (!pointRotateEnable)
+		return;
 
-		{
-			int tempX = x;
-			int tempZ = z;
+	int tempX = x;
+	int tempY = y;
+	int tempZ = z;
 
-			x = ((((tempX * pointRotateSinY) - (tempZ * pointRotateCosY))) >> 16) << 1;
-			z = ((((tempX * pointRotateCosY) + (tempZ * pointRotateSinY))) >> 16) << 1;
-		}
+	tempX = x, tempY = y;
+	x = ((((tempX * pointRotateSinZ) - (tempY * pointRotateCosZ))) >> 16) << 1;
+	y = ((((tempX * pointRotateCosZ) + (tempY * pointRotateSinZ))) >> 16) << 1;
 
-		{
-			int tempY = y;
-			int tempZ = z;
-			y = ((((tempY * pointRotateSinX) - (tempZ * pointRotateCosX))) >> 16) << 1;
-			z = ((((tempY * pointRotateCosX) + (tempZ * pointRotateSinX))) >> 16) << 1;
-		}
+	tempX = x, tempZ = z;
+	x = ((((tempX * pointRotateSinY) - (tempZ * pointRotateCosY))) >> 16) << 1;
+	z = ((((tempX * pointRotateCosY) + (tempZ * pointRotateSinY))) >> 16) << 1;
+
+	tempY = y, tempZ = z;
+	y = ((((tempY * pointRotateSinX) - (tempZ * pointRotateCosX))) >> 16) << 1;
+	z = ((((tempY * pointRotateCosX) + (tempZ * pointRotateSinX))) >> 16) << 1;
+
+	*destX = x;
+	*destY = y;
+	*destZ = z;
+}
+
+#ifdef FITD_DEBUGGER // De-globalized
+struct PointRotationData
+{
+	bool enabled = true;
+
+	int cosX;
+	int sinX;
+	int cosY;
+	int sinY;
+	int cosZ;
+	int sinZ;
+
+	/// @brief Equivalent to `setupPointRotate`.
+	/// @param alpha 
+	/// @param beta 
+	/// @param gamma 
+	void init(int alpha, int beta, int gamma)
+	{
+		enabled = true;
+
+		cosX = cosTable[alpha & 0x3FF];
+		sinX = cosTable[((alpha & 0x3FF) + 0x100) & 0x3FF];
+
+		cosY = cosTable[beta & 0x3FF];
+		sinY = cosTable[((beta & 0x3FF) + 0x100) & 0x3FF];
+
+		cosZ = cosTable[gamma & 0x3FF];
+		sinZ = cosTable[((gamma & 0x3FF) + 0x100) & 0x3FF];
+	}
+
+	/// @brief Equivalent to `pointRotate`.
+	/// @param x 
+	/// @param y 
+	/// @param z 
+	/// @param destX 
+	/// @param destY 
+	/// @param destZ 
+	/// @details * Rotates around z, then y, then x (I believe)
+	void applyPointRotate(int x, int y, int z, int* destX, int* destY, int* destZ)
+	{
+		if (!enabled)
+			return;
+
+		int tempX = x;
+		int tempY = y;
+		int tempZ = z;
+
+		tempX = x, tempY = y;
+		x = ((((tempX * sinZ) - (tempY * cosZ))) >> 16) << 1;
+		y = ((((tempX * cosZ) + (tempY * sinZ))) >> 16) << 1;
+
+		tempX = x, tempZ = z;
+		x = ((((tempX * sinY) - (tempZ * cosY))) >> 16) << 1;
+		z = ((((tempX * cosY) + (tempZ * sinY))) >> 16) << 1;
+
+		tempY = y, tempZ = z;
+		y = ((((tempY * sinX) - (tempZ * cosX))) >> 16) << 1;
+		z = ((((tempY * cosX) + (tempZ * sinX))) >> 16) << 1;
 
 		*destX = x;
 		*destY = y;
 		*destZ = z;
 	}
+};
+
+/// @brief Equivalent to `pointRotate`.
+/// @param rotData 
+/// @param x 
+/// @param y 
+/// @param z 
+/// @param destX 
+/// @param destY 
+/// @param destZ 
+/// @details * Rotates around z, then y, then x (I believe)
+void applyPointRotate(PointRotationData rotData, int x, int y, int z, int* destX, int* destY, int* destZ)
+{
+	if (!rotData.enabled)
+		return;
+
+	int tempX = x;
+	int tempY = y;
+	int tempZ = z;
+
+	tempX = x, tempY = y;
+	x = ((((tempX * rotData.sinZ) - (tempY * rotData.cosZ))) >> 16) << 1;
+	y = ((((tempX * rotData.cosZ) + (tempY * rotData.sinZ))) >> 16) << 1;
+
+	tempX = x, tempZ = z;
+	x = ((((tempX * rotData.sinY) - (tempZ * rotData.cosY))) >> 16) << 1;
+	z = ((((tempX * rotData.cosY) + (tempZ * rotData.sinY))) >> 16) << 1;
+
+	tempY = y, tempZ = z;
+	y = ((((tempY * rotData.sinX) - (tempZ * rotData.cosX))) >> 16) << 1;
+	z = ((((tempY * rotData.cosX) + (tempZ * rotData.sinX))) >> 16) << 1;
+
+	*destX = x;
+	*destY = y;
+	*destZ = z;
 }
+
+/// @brief Equivalent to `pointRotate`.
+/// @param rotData 
+/// @param x 
+/// @param y 
+/// @param z 
+/// @param destX 
+/// @param destY 
+/// @param destZ 
+/// @details * Rotates around z, then y, then x (I believe)
+void applyPointRotate(PointRotationData* rotData, int x, int y, int z, int* destX, int* destY, int* destZ)
+{
+	if (!rotData->enabled)
+		return;
+
+	int tempX = x;
+	int tempY = y;
+	int tempZ = z;
+
+	tempX = x, tempY = y;
+	x = ((((tempX * rotData->sinZ) - (tempY * rotData->cosZ))) >> 16) << 1;
+	y = ((((tempX * rotData->cosZ) + (tempY * rotData->sinZ))) >> 16) << 1;
+
+	tempX = x, tempZ = z;
+	x = ((((tempX * rotData->sinY) - (tempZ * rotData->cosY))) >> 16) << 1;
+	z = ((((tempX * rotData->cosY) + (tempZ * rotData->sinY))) >> 16) << 1;
+
+	tempY = y, tempZ = z;
+	y = ((((tempY * rotData->sinX) - (tempZ * rotData->cosX))) >> 16) << 1;
+	z = ((((tempY * rotData->cosX) + (tempZ * rotData->sinX))) >> 16) << 1;
+
+	*destX = x;
+	*destY = y;
+	*destZ = z;
+}
+#endif
+// #endregion Point Rotation
 
 void zvRotSub(int X, int Y, int Z, int alpha, int beta, int gamma)
 {
@@ -1746,7 +1864,6 @@ void getZvRot(char* bodyPtr, ZVStruct* zvPtr, int alpha, int beta, int gamma)
 
 		if (animMoveZ > Z2)
 			Z2 = animMoveZ;
-
 	}
 
 	zvPtr->ZVX1 = X1;
@@ -1757,16 +1874,13 @@ void getZvRot(char* bodyPtr, ZVStruct* zvPtr, int alpha, int beta, int gamma)
 	zvPtr->ZVZ2 = Z2;
 }
 
-void copyZv(ZVStruct* source, ZVStruct* dest)
-{
-	memcpy(dest, source, sizeof(ZVStruct));
-}
+void copyZv(ZVStruct* source, ZVStruct* dest) { memcpy(dest, source, sizeof(ZVStruct)); }
 
 void setupCameraSub4(void)
 {
 	FastCopyScreen(aux, aux2);
 
-	//TODO: implementer la suite
+	// TODO: Implement the rest (implementer la suite)
 }
 
 void setMoveMode(int trackMode, int trackNumber)
@@ -1991,7 +2105,6 @@ void updateAllActorAndObjectsAITD2()
 
 void updateAllActorAndObjects()
 {
-	int i;
 	tObject* currentActor = objectTable;
 	tWorldObject* currentObject;
 
@@ -2000,27 +2113,23 @@ void updateAllActorAndObjects()
 		return;
 	}
 
+	int i;
 	for (i = 0; i < NUM_MAX_OBJECT; i++) {
 		if (currentActor->indexInWorld != -1) {
 			if (currentActor->stage == g_currentFloor) {
 				if (currentActor->life != -1) {
 					switch (currentActor->lifeMode) {
-						case 0:
-						{
-							break;
-						}
+						case 0: break;
 						case 1:
 						{
-							if (currentActor->room != currentRoom) {
+							if (currentActor->room != currentRoom)
 								DeleteObjet(i);
-							}
 							break;
 						}
 						case 2:
 						{
-							if (!isInViewList(currentActor->room)) {
+							if (!isInViewList(currentActor->room))
 								DeleteObjet(i);
-							}
 							break;
 						}
 						default:
@@ -2029,14 +2138,10 @@ void updateAllActorAndObjects()
 							break;
 						}
 					}
-				} else {
-					if (!isInViewList(currentActor->room)) {
-						DeleteObjet(i);
-					}
+				} else if (!isInViewList(currentActor->room)) {
+					DeleteObjet(i);
 				}
-			} else {
-				DeleteObjet(i);
-			}
+			} else { DeleteObjet(i); }
 		}
 
 		currentActor++;
@@ -2119,40 +2224,33 @@ void updateAllActorAndObjects()
 		currentObject++;
 	}
 
-	//  FlagGenereActiveList = 0;
+	// FlagGenereActiveList = 0;
 
-	//TODO: object update
+	// TODO: object update
 }
 
-int checkActorInRoom(int room)
+bool checkActorInRoom(int room)
 {
-	int i;
-
-	for (i = 0; i < cameraDataTable[currentCamera]->numViewedRooms; i++) {
-		if (cameraDataTable[currentCamera]->viewedRoomTable[i].viewedRoomIdx == room) {
-			return(1);
-		}
+	for (int i = 0; i < cameraDataTable[currentCamera]->numViewedRooms; i++) {
+		if (cameraDataTable[currentCamera]->viewedRoomTable[i].viewedRoomIdx == room)
+			return(true);
 	}
 
-	return(0);
+	return(false);
 }
 
 void createActorList()
 {
-	int i;
-	tObject* actorPtr;
+	tObject* actorPtr = objectTable;
 
 	numActorInList = 0;
-
-	actorPtr = objectTable;
-
-	for (i = 0; i < NUM_MAX_OBJECT; i++) {
+	for (int i = 0; i < NUM_MAX_OBJECT; i++) {
 		if (actorPtr->indexInWorld != -1 && actorPtr->bodyNum != -1) {
 			if (checkActorInRoom(actorPtr->room)) {
 				sortedActorTable[numActorInList] = i;
 				if (!(actorPtr->_flags & (AF_SPECIAL & AF_ANIMATED))) {
 					actorPtr->_flags |= AF_BOXIFY;
-					//  FlagRefreshAux2 = 1;
+					// FlagRefreshAux2 = 1;
 				}
 				numActorInList++;
 			}
@@ -2162,13 +2260,10 @@ void createActorList()
 	}
 }
 
+/// @brief 
+/// @todo CONTAINS TOP-DOWN CAM TRANSFORM
 void setupCamera()
 {
-	int x;
-	int y;
-	int z;
-	cameraDataStruct* pCamera;
-
 	freezeTime();
 
 	currentCamera = startGameVar1;
@@ -2183,7 +2278,7 @@ void setupCamera()
 	}
 	cameraBackgroundChanged = true;
 
-	pCamera = cameraDataTable[currentCamera];
+	cameraDataStruct* pCamera = cameraDataTable[currentCamera];
 
 	SetAngleCamera(pCamera->alpha, pCamera->beta, pCamera->gamma);
 
@@ -2192,9 +2287,9 @@ void setupCamera()
 		SetAngleCamera(0x100, 0, 0);
 #endif
 
-	x = (pCamera->x - roomDataTable[currentRoom].worldX) * 10;
-	y = (roomDataTable[currentRoom].worldY - pCamera->y) * 10;
-	z = (roomDataTable[currentRoom].worldZ - pCamera->z) * 10;
+	int x = (pCamera->x - roomDataTable[currentRoom].worldX) * 10;
+	int y = (roomDataTable[currentRoom].worldY - pCamera->y) * 10;
+	int z = (roomDataTable[currentRoom].worldZ - pCamera->z) * 10;
 
 #ifdef FITD_DEBUGGER
 	if (debuggerVar_topCamera) {
@@ -2217,16 +2312,13 @@ void setupCamera()
 	setupCameraSub1();
 	updateAllActorAndObjects();
 	createActorList();
-	//  setupCameraSub3();
+	// setupCameraSub3();
 	setupCameraSub4();
-	/*  setupCameraSub5();
-	*/
+	// setupCameraSub5();
 	if (flagInitView == 2) {
 		flagRedraw = 2;
-	} else {
-		if (flagRedraw != 2) {
-			flagRedraw = 1;
-		}
+	} else if (flagRedraw != 2) {
+		flagRedraw = 1;
 	}
 
 	flagInitView = 0;
@@ -2235,16 +2327,12 @@ void setupCamera()
 
 s16 computeDistanceToPoint(int x1, int z1, int x2, int z2)
 {
-	//int axBackup = x1;
+	// int axBackup = x1;
 	x1 -= x2;
-	if ((s16)x1 < 0) {
-		x1 = -(s16)x1;
-	}
+	if ((s16)x1 < 0) x1 = -(s16)x1;
 
 	z1 -= z2;
-	if ((s16)z1 < 0) {
-		z1 = -(s16)z1;
-	}
+	if ((s16)z1 < 0) z1 = -(s16)z1;
 
 	if ((x1 + z1) > 0xFFFF) {
 		return(0x7D00);
@@ -2263,20 +2351,17 @@ void InitRealValue(s16 beta, s16 newBeta, s16 param, interpolatedValue* rotatePt
 
 s16 updateActorRotation(interpolatedValue* rotatePtr)
 {
-	int timeDif;
-	int angleDif;
-
 	if (!rotatePtr->param)
 		return(rotatePtr->newAngle);
 
-	timeDif = timer - rotatePtr->timeOfRotate;
+	int timeDif = timer - rotatePtr->timeOfRotate;
 
 	if (timeDif > rotatePtr->param) {
 		rotatePtr->param = 0;
 		return(rotatePtr->newAngle);
 	}
 
-	angleDif = (rotatePtr->newAngle & 0x3FF) - (rotatePtr->oldAngle & 0x3FF);
+	int angleDif = (rotatePtr->newAngle & 0x3FF) - (rotatePtr->oldAngle & 0x3FF);
 
 	if (angleDif <= 0x200) {
 		if (angleDif >= -0x200) {
@@ -2298,7 +2383,7 @@ void removeFromBGIncrust(int actorIdx)
 
 	actorPtr->_flags &= ~AF_BOXIFY;
 
-	//  FlagRefreshAux2 = 1;
+	// FlagRefreshAux2 = 1;
 
 	BBox3D1 = actorPtr->screenXMin;
 
@@ -2307,16 +2392,15 @@ void removeFromBGIncrust(int actorIdx)
 		BBox3D3 = actorPtr->screenXMax;
 		BBox3D4 = actorPtr->screenYMax;
 
-		//deleteSubSub();
+		// deleteSubSub();
 	}
 }
 
 int findObjectInInventory(int objIdx)
 {
 	for (int i = 0; i < numObjInInventoryTable[currentInventory]; i++) {
-		if (inventoryTable[currentInventory][i] == objIdx) {
+		if (inventoryTable[currentInventory][i] == objIdx)
 			return(i);
-		}
 	}
 
 	return(-1);
@@ -2324,9 +2408,7 @@ int findObjectInInventory(int objIdx)
 
 void DeleteInventoryObjet(int objIdx)
 {
-	int inventoryIdx;
-
-	inventoryIdx = findObjectInInventory(objIdx);
+	int inventoryIdx = findObjectInInventory(objIdx);
 
 	if (inventoryIdx != -1) {
 		memmove(&inventoryTable[currentInventory][inventoryIdx], &inventoryTable[currentInventory][inventoryIdx + 1], (30 - inventoryIdx - 1) * 2);
@@ -2352,11 +2434,10 @@ void deleteObject(int objIdx)
 		actorPtr->room = -1;
 		actorPtr->stage = -1;
 
-		//    FlagGenereActiveList = 1;
+		// FlagGenereActiveList = 1;
 
-		if (actorPtr->_flags & AF_BOXIFY) {
+		if (actorPtr->_flags & AF_BOXIFY)
 			removeFromBGIncrust(actorIdx);
-		}
 	}
 
 	objPtr->room = -1;
@@ -2464,12 +2545,8 @@ void drawConverZone(cameraZoneEntryStruct* zonePtr)
 
 void drawConverZones()
 {
-	int i;
-	for (i = 0; i < numCameraInRoom; i++) {
-		int j;
+	for (int i = 0, j, k; i < numCameraInRoom; i++) {
 		for (j = 0; j < cameraDataTable[i]->numViewedRooms; j++) {
-			int k;
-
 			if (cameraDataTable[i]->viewedRoomTable[j].viewedRoomIdx == currentRoom) {
 				for (k = 0; k < cameraDataTable[i]->viewedRoomTable[j].numCoverZones; k++) {
 					drawConverZone(&cameraDataTable[i]->viewedRoomTable[j].coverZones[k]);
@@ -2479,33 +2556,36 @@ void drawConverZones()
 	}
 }
 
-void drawAAQuad(s32 X1, s32 X2, s32 Z1, s32 Z2)
+void drawAAQuad(s32 X1, s32 X2, s32 Z1, s32 Z2, int color)
 {
-	drawProjectedLine(X1, 0, Z1, X1, 0, Z2, 20);
-	drawProjectedLine(X1, 0, Z2, X2, 0, Z2, 20);
-	drawProjectedLine(X2, 0, Z2, X2, 0, Z1, 20);
-	drawProjectedLine(X2, 0, Z1, X1, 0, Z1, 20);
+	drawProjectedLine(X1, 0, Z1, X1, 0, Z2, color);
+	drawProjectedLine(X1, 0, Z2, X2, 0, Z2, color);
+	drawProjectedLine(X2, 0, Z2, X2, 0, Z1, color);
+	drawProjectedLine(X2, 0, Z1, X1, 0, Z1, color);
 }
 
 void drawMaskZone(cameraMaskStruct* maskZonePtr)
 {
+#ifndef _DBG_drawMaskZone_Color
+	return;
+#endif
 	for (int i = 0; i < maskZonePtr->numTestRect; i++) {
-		drawAAQuad(maskZonePtr->rectTests->zoneX1 * 10, maskZonePtr->rectTests->zoneX2 * 10, maskZonePtr->rectTests->zoneZ1 * 10, maskZonePtr->rectTests->zoneZ2 * 10);
+		drawAAQuad(
+			maskZonePtr->rectTests->zoneX1 * 10,
+			maskZonePtr->rectTests->zoneX2 * 10,
+			maskZonePtr->rectTests->zoneZ1 * 10,
+			maskZonePtr->rectTests->zoneZ2 * 10,
+			_DBG_drawMaskZone_Color);
 	}
 }
 
 void drawMaskZones()
 {
-	{
-		cameraDataStruct* pCamera = cameraDataTable[currentCamera];
-
-		for (int j = 0; j < pCamera->numViewedRooms; j++) {
-			//if(cameraDataTable[i]->viewedRoomTable[j].viewedRoomIdx == currentDisplayedRoom)
-			{
-				for (int k = 0; k < pCamera->viewedRoomTable[j].numMask; k++) {
-					drawMaskZone(&pCamera->viewedRoomTable[j].masks[k]);
-				}
-			}
+	cameraDataStruct* pCamera = cameraDataTable[currentCamera];
+	for (int j = 0; j < pCamera->numViewedRooms; j++) {
+		// if (cameraDataTable[i]->viewedRoomTable[j].viewedRoomIdx == currentDisplayedRoom)
+		for (int k = 0; k < pCamera->viewedRoomTable[j].numMask; k++) {
+			drawMaskZone(&pCamera->viewedRoomTable[j].masks[k]);
 		}
 	}
 }
@@ -2845,7 +2925,7 @@ void drawBgOverlay(tObject* actorPtr)
 		char* data2 = room_PtrCamera[currentCamera] + pcameraViewedRoomData->offsetToMask;
 		char* data = data2;
 		data += 2;
-		
+
 		int numOverlayZone = *(s16*)(data2);
 
 		for (int i = 0; i < numOverlayZone; i++) {
@@ -2916,9 +2996,9 @@ void drawBgOverlay(tObject* actorPtr)
 /// @param actorIdx 
 void drawFlowActor(int actorIdx)
 {
-	//actorStruct* actorPtr = &actorTable[actorIdx];
+	// actorStruct* actorPtr = &actorTable[actorIdx];
 
-	//char* data = printTextSub2(hqrUnk, actorPtr->FRAME);
+	// char* data = printTextSub2(hqrUnk, actorPtr->FRAME);
 
 	// TODO: finish
 }
@@ -3036,7 +3116,7 @@ void mainDraw(int flagFlip)
 
 #ifdef FITD_DEBUGGER
 				if (/* debuggerVar_drawModelZv && */ backgroundMode == backgroundModeEnum_3D) {
-					// drawZv(actorPtr); // J
+					drawZv(actorPtr); // J
 				}
 #endif
 			}
@@ -3187,6 +3267,8 @@ int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr)
 	return(currentCollisionSlot);
 }
 
+// #region cleanClip
+/// @brief Clears `logicalScreen` in the rectangle defined by clipTop, Bottom, Left, & Right.
 void cleanClip()
 {
 	for (int x = clipLeft; x < clipRight; x++) {
@@ -3195,6 +3277,22 @@ void cleanClip()
 		}
 	}
 }
+
+/// @brief Clears `logicalScreen` in the specified rectangle.
+/// @param minX `clipLeft`
+/// @param maxX `clipRight`
+/// @param minY `clipTop`
+/// @param maxY `clipBottom`
+/// @param fillColor the color to fill the area with
+void cleanClip(int minX, int maxX, int minY, int maxY, char fillColor = 0)
+{
+	for (int x = minX; x < maxX; x++) {
+		for (int y = minY; y < maxY; y++) {
+			logicalScreen[y * _SCREEN_INTERNAL_WIDTH + x] = fillColor;
+		}
+	}
+}
+// #endregion cleanClip
 
 void drawFoundObect(int menuState, int objectName, int zoomFactor)
 {
@@ -3372,7 +3470,7 @@ void foundObject(int objIdx, int param)
 
 		drawFoundObect(var_6, objPtr->foundName, var_A);
 
-		//    menuWaitVSync();
+		// menuWaitVSync();
 	}
 
 	unfreezeTime();
@@ -3547,8 +3645,8 @@ int AsmCheckListCol(ZVStruct* zvPtr, roomDataStruct* pRoomData)
 	return hardColVar;
 }
 
-void menuWaitVSync()
-{}
+/// @brief UNIMPLEMENTED
+void menuWaitVSync() {}
 
 int testCrossProduct(int x1, int z1, int x2, int z2, int x3, int z3, int x4, int z4)
 {
@@ -3703,25 +3801,17 @@ bool isPointInZV(int x, int y, int z, ZVStruct* pZV)
 
 sceZoneStruct* processActor2Sub(int x, int y, int z, roomDataStruct* pRoomData)
 {
-	u32 i;
-	sceZoneStruct* pCurrentZone;
+	sceZoneStruct* pCurrentZone = pRoomData->sceZoneTable;
 
-	pCurrentZone = pRoomData->sceZoneTable;
-
-	for (i = 0; i < pRoomData->numSceZone; i++) {
-		if (pCurrentZone->zv.ZVX1 <= x && pCurrentZone->zv.ZVX2 >= x) {
-			if (pCurrentZone->zv.ZVY1 <= y && pCurrentZone->zv.ZVY2 >= y) {
-				if (pCurrentZone->zv.ZVZ1 <= z && pCurrentZone->zv.ZVZ2 >= z) {
-					return(pCurrentZone);
-				}
-			}
+	for (u32 i = 0; i < pRoomData->numSceZone; i++, pCurrentZone++) {
+		if (pCurrentZone->zv.ZVX1 <= x && pCurrentZone->zv.ZVX2 >= x &&
+			pCurrentZone->zv.ZVY1 <= y && pCurrentZone->zv.ZVY2 >= y &&
+			pCurrentZone->zv.ZVZ1 <= z && pCurrentZone->zv.ZVZ2 >= z) {
+			return(pCurrentZone);
 		}
-
-		pCurrentZone++;
 	}
 
 	return(NULL);
-
 }
 
 void processActor2()
@@ -4097,10 +4187,7 @@ void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 /// @todo Make real implementation.
 /// @todo Move to `save.cpp`.
 /// @details Only called in `save.cpp`'s `restoreSave`.
-int parseAllSaves(int arg)
-{
-	return(0);
-}
+int parseAllSaves(int arg) { return(0); }
 
 void configureHqrHero(hqrEntryStruct* hqrPtr, const char* name)
 {
@@ -4183,7 +4270,7 @@ int FitdMain(int argc, char* argv[])
 
 	osystem_startOfFrame();
 
-	//  int protectionToBeDone = 1;
+	// int protectionToBeDone = 1;
 
 	OpenProgram();
 
@@ -4287,14 +4374,14 @@ void makeMessage(int messageIdx)
 
 void hit(int animNumber, int arg_2, int arg_4, int arg_6, int hitForce, int arg_A)
 {
-	if (InitAnim(animNumber, 0, arg_A)) {
-		currentProcessedActorPtr->animActionANIM = animNumber;
-		currentProcessedActorPtr->animActionFRAME = arg_2;
-		currentProcessedActorPtr->animActionType = 1;
-		currentProcessedActorPtr->animActionParam = arg_6;
-		currentProcessedActorPtr->hotPointID = arg_4;
-		currentProcessedActorPtr->hitForce = hitForce;
-	}
+	if (!InitAnim(animNumber, 0, arg_A)) return;
+
+	currentProcessedActorPtr->animActionANIM = animNumber;
+	currentProcessedActorPtr->animActionFRAME = arg_2;
+	currentProcessedActorPtr->animActionType = 1;
+	currentProcessedActorPtr->animActionParam = arg_6;
+	currentProcessedActorPtr->hotPointID = arg_4;
+	currentProcessedActorPtr->hitForce = hitForce;
 }
 
 void SetClip(int left, int top, int right, int bottom)

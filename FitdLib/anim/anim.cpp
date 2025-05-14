@@ -118,6 +118,12 @@ int SetAnimObjet(int frame, char* anim, char* body)
 
 }
 
+/// @brief 
+/// @param animNum 
+/// @param animType 
+/// @param animInfo 
+/// @return 
+/// @todo Convert to bool
 int InitAnim(int animNum, int animType, int animInfo)
 {
 	if (animNum == currentProcessedActorPtr->ANIM) {
