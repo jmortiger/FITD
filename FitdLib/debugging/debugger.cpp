@@ -476,7 +476,7 @@ void parseDebugParam(int argc, char* argv[])
 #endif
 }
 
-#if 1 // LABELS
+// #region LABELS
 char noneLabel[] = "NONE";												// 0b0000'0000
 char pakLabel[] = "PAK";												// 0b0000'0001
 char floorLabel[] = "FLOOR";												// 0b0000'0010
@@ -711,7 +711,7 @@ char* debugLevelLabels[] = {
 	errorLabel,	// 0b0001'1110
 	errorLabel,	// 0b0001'1111
 };
-#endif
+// #endregion LABELS
 
 /// @brief 
 /// @param category 

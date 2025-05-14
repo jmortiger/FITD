@@ -167,16 +167,17 @@ extern int numLoggedLifeScripts;
 // #endregion Replay
 
 // #region drawRoomZv // NOTE: These refer to AITD1's palette https://kb.speeddemosarchive.com/images/a/a5/AITD_palette.png
-#define _DBG_drawRoomZv_Color_hardCol_objects 9
-#define _DBG_drawRoomZv_Color_hardCol_walls 100
-#define _DBG_drawRoomZv_Color_hardCol_dummy 180
-#define _DBG_drawRoomZv_Color_hardCol_ground_climb 70
-#define _DBG_drawRoomZv_Color_hardCol_overDoorZones 50
-#define _DBG_drawRoomZv_Color_hardCol_scenario 60
-#define _DBG_drawRoomZv_Color_hardCol_monsters 80
-#define _DBG_drawRoomZv_Color_hardCol_other 40
-#define _DBG_drawRoomZv_Color_sceZone 20
+// #define _DBG_drawRoomZv_Color_hardCol_objects 9
+// #define _DBG_drawRoomZv_Color_hardCol_walls 100
+// #define _DBG_drawRoomZv_Color_hardCol_dummy 180
+// #define _DBG_drawRoomZv_Color_hardCol_ground_climb 70
+// #define _DBG_drawRoomZv_Color_hardCol_overDoorZones 50
+// #define _DBG_drawRoomZv_Color_hardCol_scenario 60
+// #define _DBG_drawRoomZv_Color_hardCol_monsters 80
+// #define _DBG_drawRoomZv_Color_hardCol_other 40
+// #define _DBG_drawRoomZv_Color_sceZone 20
 #define _DBG_drawZv_Color 10
+#define _DBG_drawMaskZone_Color 20
 // #endregion drawRoomZv
 
 // #region Emulation mode
