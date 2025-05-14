@@ -551,13 +551,21 @@ void loadPalette(void)
 
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
-/// @brief Handles the animated page turn (I think). UNIMPLEMENTED.
-/// @todo IMPLEMENT.
-void turnPageForward() {}
+/// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
+/// @todo FULLY IMPLEMENT.
+// NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
+// HACK: Just renders the page w/o the animation.
+void turnPageForward() {
+	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+}
 
-/// @brief Handles the animated page turn (I think). UNIMPLEMENTED.
-/// @todo IMPLEMENT.
-void turnPageBackward() {}
+/// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
+/// @todo FULLY IMPLEMENT.
+// NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
+// HACK: Just renders the page w/o the animation.
+void turnPageBackward() {
+	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+}
 
 void readBook(int index, int type)
 {
