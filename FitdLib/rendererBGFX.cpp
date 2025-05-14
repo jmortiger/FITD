@@ -735,6 +735,11 @@ void osystem_flushPendingPrimitives()
 	numUsedTransparentVertices = 0;
 }
 
+/// @brief 
+/// @param buffer 
+/// @param numPoint 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param polyType 
 void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyType)
 {
 #define MAX_POINTS_PER_POLY 50
@@ -960,8 +965,9 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 	}
 }
 #include <bx/math.h>
-void getEndCapCircleForLineSegment(float x0, float y0, float z0, float x1, float y1, float z1, float* destination, float radius = 1.5, uint outputPoints = 3)
+void getEndCapCircleForLineSegment(float x0, float y0, float z0, float x1, float y1, float z1, float* destination, float radius = 1, uint outputPoints = 3)
 {
+#define __LOCAL__NORMALIZE_getEnCapCircleForLineSegment 0
 #define _PI_TIMES_2(v) ((float)v * 2.f)
 #define PI_TIMES_2 _PI_TIMES_2(M_PI)
 #define __EquationOfACircle(t, u, v, radius) bx::add(bx::mul((u), (radius) * cos((float)(t))), bx::mul((v), (radius) * sin((float)(t))))
@@ -971,10 +977,40 @@ void getEndCapCircleForLineSegment(float x0, float y0, float z0, float x1, float
 	float yV = y1 - y0;
 	float zV = z1 - z0;
 	bx::Vec3 vD = bx::Vec3(xV, yV, zV);
-	// 2. Get a perpendicular vector (dot prod. = 0, 0=xV*xP + yV*yP + zV*zP, zP = -(xV * xP + yV * yP) / zV for any xP & yP)
+	// 2. Get a perpendicular vector
+#if __LOCAL_NORMALIZE_getEndCapCircleForLineSegment
 	bx::Vec3 vV = bx::normalize(vD); // Keep values small
-	float t = NAN;
+#else
+	bx::Vec3 vV = bx::Vec3(xV, yV, zV);
+#endif
+	// If 1 component is the same, just switch the other components. (e.g. p0 = (1,2,3), p1 = (1,3,6), vD = (0,1,3), vV = (0,3,1).normalize())
+	if (abs(xV) == 0) {
+		if (abs(yV) == 0 && abs(zV) == 0) {
+			printf("same point given twice.");
+			return;
+		}
+		float t = vV.z;
+		vV.z = vV.y;
+		vV.y = t;
+	} else if (abs(yV) == 0) {
+		float t = vV.z;
+		vV.z = vV.x;
+		vV.x = t;
+	} else if (abs(zV) == 0) {
+		float t = vV.y;
+		vV.y = vV.x;
+		vV.x = t;
+	} else { // Otherwise, keep 2 components the same and solve for the third.
+		// (dot prod. = 0, 0=dx2*dx1 + dy2*dy1 + dz2*dz1, dz2 = -(dx2 * dx1 + dy2 * dy1) / dz1 for any non-zero dx1 & dy1)
+#if __LOCAL_NORMALIZE_getEndCapCircleForLineSegment
+		vV.z = -(xV * vV.x + yV * vV.y) / zV;
+#else
+		vV.z = -(xV * vD.x + yV * vD.y) / zV;
+#endif
+	}
+	/*
 	// If 2 values are the same, just switch components
+	float t = NAN;
 	if (abs(xV) == 0) {
 		if (abs(yV) == 0) {
 			if (abs(zV) == 0) {
@@ -1002,10 +1038,12 @@ void getEndCapCircleForLineSegment(float x0, float y0, float z0, float x1, float
 		vV.z = -(xV * vD.x + yV * vD.y) / zV;
 		// } else if (yV != 0) {
 		// 	vV.y = -(xV * vD.x + zV * vD.z) / yV;
-		// } else /* if (xV != 0) */ {
+		// } else { // } else if (xV != 0) {
 		// 	vV.x = -(yV * vD.y + zV * vD.z) / xV;
 		// }
 	}
+	*/
+	ASSERT(abs(bx::dot(vV, vD)) < FLT_EPSILON * 2);
 	// 3. Get a vector perpendicular to both
 	bx::Vec3 vU = bx::cross(vD, vV);
 #define __IS_CROSS_PROD_INVALID abs(vU.x) == INFINITY || abs(vU.x) == NAN || abs(vU.y) == INFINITY || abs(vU.y) == NAN || abs(vU.z) == INFINITY || abs(vU.z) == NAN || ((vU.x == 0.f || vU.x == -0.f) && (vU.y == 0.f || vU.y == -0.f) && (vU.z == 0.f || vU.z == -0.f))
@@ -1027,13 +1065,14 @@ void getEndCapCircleForLineSegment(float x0, float y0, float z0, float x1, float
 	float slice = PI_TIMES_2 / outputPoints;
 	for (uint i = 0; i < outputPoints; i++) {
 		bx::Vec3 tmp = _EquationOfACircle(slice * i, vU, vV, radius);
-		destination[i * 3 + 0] = tmp.x;
-		destination[i * 3 + 1] = tmp.y;
-		destination[i * 3 + 2] = tmp.z;
-		printf("output[%u].x: %f\n", i * 3, tmp.x);
-		printf("output[%u].y: %f\n", i * 3, tmp.y);
-		printf("output[%u].z: %f\n", i * 3, tmp.z);
+		destination[i * 3 + 0] = tmp.x + x0;
+		destination[i * 3 + 1] = tmp.y + y0;
+		destination[i * 3 + 2] = tmp.z + z0;
+		// printf("output[%u].x: %f\n", i * 3, tmp.x + x0);
+		// printf("output[%u].y: %f\n", i * 3, tmp.y + y0);
+		// printf("output[%u].z: %f\n", i * 3, tmp.z + z0);
 	}
+#undef __LOCAL_NORMALIZE_getEndCapCircleForLineSegment
 #undef _PI_TIMES_2
 #undef PI_TIMES_2
 #undef __EquationOfACircle
@@ -1043,6 +1082,15 @@ void getEndCapCircleForLineSegment(int x0, int y0, int z0, int x1, int y1, int z
 {
 	getEndCapCircleForLineSegment(x0, y0, z0, x1, y1, z1, destination, radius, outputPoints);
 }
+
+/// @brief 
+/// @param x1 
+/// @param y1 
+/// @param z1 
+/// @param x2 
+/// @param y2 
+/// @param z2 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
 void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float z2, unsigned char color)
 {
 #if 0
@@ -1105,39 +1153,64 @@ void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float 
 
 	checkGL();
 #else
-	// float cap1[3 * 3];
-	// getEndCapCircleForLineSegment(x1, y1, z1, x2, y2, z2, cap1);
-	// float cap2[3 * 3];
-	// getEndCapCircleForLineSegment(x2, y2, z2, x1, y1, z1, cap2);
-	// float caps[3 * 3 * 2];
-	// for (uint i = 0; i < 3; i++) {
-	// 	caps[i * 3 + 0] = cap1[i * 3 + 0];
-	// 	caps[i * 3 + 1] = cap1[i * 3 + 1];
-	// 	caps[i * 3 + 2] = cap1[i * 3 + 2];
-	// 	caps[i * 3 * 2 + 0] = cap2[i * 3 + 0];
-	// 	caps[i * 3 * 2 + 1] = cap2[i * 3 + 1];
-	// 	caps[i * 3 * 2 + 2] = cap2[i * 3 + 2];
-	// 	/* osystem_drawPoint(
-	// 		caps[i * 3 + 0],
-	// 		caps[i * 3 + 1],
-	// 		caps[i * 3 + 2],
-	// 		color,
-	// 		0,
-	// 		1
-	// 		);
-	// 	osystem_drawPoint(
-	// 		caps[i * 3 * 2 + 0],
-	// 		caps[i * 3 * 2 + 1],
-	// 		caps[i * 3 * 2 + 2],
-	// 		color,
-	// 		0,
-	// 		1
-	// 		); */
-	// }
-	// // osystem_fillPoly(caps, 3 * 2, color, 0);
+	float cap1[3 * 3];
+	getEndCapCircleForLineSegment(x1, y1, z1, x2, y2, z2, cap1);
+	float cap2[3 * 3];
+	getEndCapCircleForLineSegment(x2, y2, z2, x1, y1, z1, cap2);
+	float caps[3 * 3 * 2];
+	for (uint i = 0; i < 3; i++) {
+		caps[i * 3 + 0] = cap1[i * 3 + 0];
+		caps[i * 3 + 1] = cap1[i * 3 + 1];
+		caps[i * 3 + 2] = cap1[i * 3 + 2];
+		caps[i * 3 * 2 + 0] = cap2[i * 3 + 0];
+		caps[i * 3 * 2 + 1] = cap2[i * 3 + 1];
+		caps[i * 3 * 2 + 2] = cap2[i * 3 + 2];
+		/* osystem_drawPoint(
+			caps[i * 3 + 0],
+			caps[i * 3 + 1],
+			caps[i * 3 + 2],
+			color,
+			0,
+			1
+			);
+		osystem_drawPoint(
+			caps[i * 3 * 2 + 0],
+			caps[i * 3 * 2 + 1],
+			caps[i * 3 * 2 + 2],
+			color,
+			0,
+			1
+			); */
+			// transformPoint(
+			// 	caps + (i * 3 + 0),
+			// 	caps + (i * 3 + 1),
+			// 	caps + (i * 3 + 2)
+			// );
+			// transformPoint(
+			// 	caps + (i * 3 * 2 + 0),
+			// 	caps + (i * 3 * 2 + 1),
+			// 	caps + (i * 3 * 2 + 2)
+			// );
+	}
+	osystem_fillPoly(caps, 3 * 2, color, 0);
 #endif
 }
 
+/// @brief 
+/// @param x1 
+/// @param y1 
+/// @param z1 
+/// @param x2 
+/// @param y2 
+/// @param z2 
+/// @param x3 
+/// @param y3 
+/// @param z3 
+/// @param x4 
+/// @param y4 
+/// @param z4 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param transparency 
 void osystem_draw3dQuad(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, unsigned char color, int transparency)
 {
 	float lineVertices[4 * 3];
@@ -1245,10 +1318,7 @@ void osystem_drawPoint(float X, float Y, float Z, u8 color, u8 material, float s
 	}
 }
 
-void osystem_flip(unsigned char* videoBuffer)
-{
-	osystem_flushPendingPrimitives();
-}
+void osystem_flip(unsigned char* videoBuffer) { osystem_flushPendingPrimitives(); }
 
 void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2)
 {
@@ -1326,13 +1396,9 @@ void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_IN
 
 void osystem_drawMask(int roomId, int maskId)
 {
-	if (g_gameId == TIMEGATE)
-		return;
-
-	if (!bgfx::isValid(maskTextures[roomId][maskId].maskTexture))
-		return;
-
-	if (!bgfx::isValid(maskTextures[roomId][maskId].vertexBuffer))
+	if (g_gameId == TIMEGATE ||
+		!bgfx::isValid(maskTextures[roomId][maskId].maskTexture) ||
+		!bgfx::isValid(maskTextures[roomId][maskId].vertexBuffer))
 		return;
 
 #ifdef FITD_DEBUGGER
@@ -1353,9 +1419,10 @@ void osystem_drawMask(int roomId, int maskId)
 		maskTextureUniform = bgfx::createUniform("s_maskTexture", bgfx::UniformType::Sampler);
 	}
 
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-		| BGFX_STATE_MSAA
-		| BGFX_STATE_PT_TRISTRIP
+	bgfx::setState(
+		BGFX_STATE_WRITE_RGB |
+		BGFX_STATE_MSAA |
+		BGFX_STATE_PT_TRISTRIP
 	);
 
 	bgfx::setVertexBuffer(0, maskTextures[roomId][maskId].vertexBuffer);

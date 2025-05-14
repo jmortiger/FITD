@@ -106,11 +106,17 @@ struct hqrEntryStruct
 /// @brief Axis-Aligned Bounding Box; 32 bit signed integers.
 struct ZVStruct
 {
+	/// @brief X min
 	s32 ZVX1;
+	/// @brief X max
 	s32 ZVX2;
+	/// @brief Y min
 	s32 ZVY1;
+	/// @brief Y max
 	s32 ZVY2;
+	/// @brief Z min
 	s32 ZVZ1;
+	/// @brief Z max
 	s32 ZVZ2;
 }; typedef struct ZVStruct ZVStruct;
 

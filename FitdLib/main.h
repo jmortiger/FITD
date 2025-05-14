@@ -51,7 +51,7 @@ void getZvRelativePosition(ZVStruct* zvPtr, int startRoom, int destRoom);
 void take(int objIdx);
 void foundObject(int objIdx, int param);
 void hit(int animNumber, int arg_2, int arg_4, int arg_6, int hitForce, int arg_A);
-int checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2);
+bool checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2);
 void getZvCube(char* bodyPtr, ZVStruct* zvPtr);
 void PutAtObjet(int objIdx, int objIdxToPutAt);
 void SetClip(int left, int top, int right, int bottom);
@@ -71,7 +71,7 @@ int SetAnimObjet(int frame, char* anim, char* body);
 void deleteObject(int objIdx);
 void removeFromBGIncrust(int actorIdx);
 void makeMessage(int messageIdx);
-int drawTextOverlay(void);
+bool drawTextOverlay(void);
 s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr);
 void handleCollision(ZVStruct* startZv, ZVStruct* zvPtr2, ZVStruct* zvPtr3);
 
