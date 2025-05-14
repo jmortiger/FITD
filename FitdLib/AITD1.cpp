@@ -172,6 +172,7 @@ void CopyBox_Aux_Log(int x1, int y1, int x2, int y2)
 
 /// @brief AITD1 Character Selector
 /// @return 0 for Emily, 1 for Edward.
+/// @todo Add ability to undo choice.
 int ChoosePerso(void)
 {
 	int choice = 0;

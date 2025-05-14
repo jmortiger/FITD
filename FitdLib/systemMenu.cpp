@@ -1,19 +1,26 @@
 #include "common.h"
 
-#define	NB_OPTIONS	7
-#define SELECT_COUL 0xF
-#define MENU_COUL 4
-#define	SIZE_FONT 16
-
 void AffOption(int n, int num, int selected)
 {
+// #region Defines
+#define	NB_OPTIONS	7
+#define SELECT_COLOR 0xF
+#define MENU_COLOR 4
+#define	SIZE_FONT 16
+// #endregion Defines
 	int y = WindowY1 + ((WindowY2 - WindowY1) / 2) - (NB_OPTIONS * SIZE_FONT) / 2 + (n * SIZE_FONT);
 
 	if (n == selected) {
-		SelectedMessage((_SCREEN_INTERNAL_WIDTH / 2), y, num, SELECT_COUL, MENU_COUL);
+		SelectedMessage((_SCREEN_INTERNAL_WIDTH / 2), y, num, SELECT_COLOR, MENU_COLOR);
 	} else {
-		SimpleMessage((_SCREEN_INTERNAL_WIDTH / 2), y, num, MENU_COUL);
+		SimpleMessage((_SCREEN_INTERNAL_WIDTH / 2), y, num, MENU_COLOR);
 	}
+// #region Undefines
+#undef NB_OPTIONS
+#undef SIZE_FONT
+#undef SELECT_COLOR
+#undef MENU_COLOR
+// #endregion Undefines
 }
 
 void AffOptionList(int selectedStringNumber)

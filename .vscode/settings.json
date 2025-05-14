@@ -131,5 +131,8 @@
 			// "foldStartRegex": "//[\\s]*#region|/*[\\s]*#region([^*/]+|(\\*+)(?!/)|(?<!\\*)/+)*\\*/" ////Regex used to find fold start text.
 			"foldStartRegex": "^[\\s]*/(/[\\s]*#region|\\*[\\s]*#region([^*/]+|(\\*+)(?!/)|(?<!\\*)/+)*\\*/)" ////Regex used to find fold start text.
 		}
+	},
+	"cmake.debugConfig": {
+		"cwd": "${workspaceFolder}/data"
 	}
 }

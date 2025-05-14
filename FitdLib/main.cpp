@@ -549,15 +549,26 @@ void loadPalette(void)
 	// TODO: to finish
 }
 
+/// @brief UNIMPLEMENTED
+/// @todo IMPLEMENT
+/// @todo Document
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
-/// @brief Handles the animated page turn (I think). UNIMPLEMENTED.
-/// @todo IMPLEMENT.
-void turnPageForward() {}
+/// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
+/// @todo FULLY IMPLEMENT.
+// NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
+// HACK: Just renders the page w/o the animation.
+void turnPageForward() {
+	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+}
 
-/// @brief Handles the animated page turn (I think). UNIMPLEMENTED.
-/// @todo IMPLEMENT.
-void turnPageBackward() {}
+/// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
+/// @todo FULLY IMPLEMENT.
+// NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
+// HACK: Just renders the page w/o the animation.
+void turnPageBackward() {
+	osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+}
 
 void readBook(int index, int type)
 {
@@ -575,7 +586,7 @@ void readBook(int index, int type)
 			break;
 			// TODO: Can you read things in TimeGate & AITD3?
 		default:
-			FITD_throwFatal();
+			FITD_throwFatal("Reading books in TimeGate & AITD3 is not supported");
 	}
 
 	unfreezeTime();
@@ -635,6 +646,13 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 		lastPageReached = false;
 
 		while (currentTextY <= bottom - 16) {
+#define _LIRE_type_mask 0xFFFE
+			// TODO: Change ad-hoc `line_type` flag magic numbers to enum/macro.
+			/// Flag that changes rendering settings.
+			/// 1: stretch words on line
+			/// 2: bigger font size
+			/// 4: ???
+			/// 8: center text
 			int line_type = 1;
 			int var_1BA = 0;
 			int currentStringWidth;
@@ -669,7 +687,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 						}
 						case 'C': // center
 						{
-							line_type &= 0xFFFE;
+							line_type &= _LIRE_type_mask;
 							line_type |= 8;
 							break;
 						}
@@ -683,7 +701,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 							}
 
 							if (loadPakTo("ITD_RESS", 9, aux2)) {
-								FITD_throwFatal(); // assert(0); // when is this used?
+								FITD_throwFatal(); // when is this used?
 								/*  var_C = printTextSub3(currentTextIdx,aux2);
 								var_A = printTextSub4(currentTextIdx,aux2);
 
@@ -733,8 +751,8 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 
 				// eval the character that caused the 'end of word' state
 				if (var_1C3 == 26) {
-					line_type &= 0xFFFE;
-					line_type |= 4;
+					line_type &= _LIRE_type_mask;
+					line_type |= 4; // TODO: Flag 4 seems unused
 					lastPageReached = true;
 					break;
 				}
@@ -743,12 +761,12 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 					++ptrt;
 					if (*ptrt == 0xD) {
 						ptrt += 2;
-						line_type &= 0xFFFE;
+						line_type &= _LIRE_type_mask;
 						line_type |= 2;
 						break;
 					}
 					if (*ptrt == '#') {
-						line_type &= 0xFFFE;
+						line_type &= _LIRE_type_mask;
 						break;
 					}
 				}
@@ -778,10 +796,10 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 
 			if (line_type & 2) // font size
 			{
-				currentTextY += 8;
+				currentTextY += 8; // TODO: Is this related to `fontHeight`/`MESSAGE_HEIGHT`?
 			}
 
-			currentTextY += 16;
+			currentTextY += 16; // TODO: Shouldn't this be `fontHeight`/`MESSAGE_HEIGHT`?
 
 			if (lastPageReached)
 				break;
@@ -927,6 +945,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 	HQ_Free_Malloc(HQ_Memory, textIndexMalloc);
 
 	return(demoMode);
+#undef _LIRE_type_mask
 }
 
 extern "C" {
@@ -1122,12 +1141,13 @@ void initVars()
 {
 	fIsGameOver = 0;
 
+	// #region Inventory
 	currentInventory = 0;
-
 	for (int i = 0; i < NUM_MAX_INVENTORY; i++) {
 		numObjInInventoryTable[i] = 0;
 		inHandTable[i] = -1;
 	}
+	// #endregion Inventory
 
 	action = 0;
 
@@ -1137,14 +1157,18 @@ void initVars()
 	genVar5 = 0;
 	genVar6 = 0;
 
+	// #region Sound & Music
 	LastSample = -1;
 	nextSample = -1;
 	LastPriority = -1;
 	currentMusic = -1;
 	nextMusic = -1;
+	// #endregion Sound & Music
 
+	// #region Light level
 	lightOff = 0;
 	lightVar2 = 0;
+	// #endregion Light level
 
 	currentCameraTargetActor = -1;
 	currentWorldTarget = -1;
@@ -4043,6 +4067,10 @@ void throwStoppedAt(int x, int z)
 	addActorToBgInscrust(currentProcessedActorIdx);
 }
 
+/// @brief 
+/// @param startupFloor 
+/// @param startupRoom 
+/// @param allowSystemMenu 
 void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 {
 	initEngine();
