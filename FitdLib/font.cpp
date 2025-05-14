@@ -1,7 +1,7 @@
 #include "common.h"
 
 /// @brief The height of on-screen messages & menu text I think. 16 for all but AITD2.
-/// @todo Check conflict w/ `MESSAGE_HEIGHT`.
+/// @todo Check conflict w/ `common.cpp`'s `MESSAGE_HEIGHT` & `systemMenu.cpp`'s `SIZE_FONT`.
 int fontHeight = 16;
 
 char* fontVar1 = NULL;

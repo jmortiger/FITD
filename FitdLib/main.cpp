@@ -549,6 +549,9 @@ void loadPalette(void)
 	// TODO: to finish
 }
 
+/// @brief UNIMPLEMENTED
+/// @todo IMPLEMENT
+/// @todo Document
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
 /// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
@@ -583,7 +586,7 @@ void readBook(int index, int type)
 			break;
 			// TODO: Can you read things in TimeGate & AITD3?
 		default:
-			FITD_throwFatal();
+			FITD_throwFatal("Reading books in TimeGate & AITD3 is not supported");
 	}
 
 	unfreezeTime();
@@ -1138,12 +1141,13 @@ void initVars()
 {
 	fIsGameOver = 0;
 
+	// #region Inventory
 	currentInventory = 0;
-
 	for (int i = 0; i < NUM_MAX_INVENTORY; i++) {
 		numObjInInventoryTable[i] = 0;
 		inHandTable[i] = -1;
 	}
+	// #endregion Inventory
 
 	action = 0;
 
@@ -1153,14 +1157,18 @@ void initVars()
 	genVar5 = 0;
 	genVar6 = 0;
 
+	// #region Sound & Music
 	LastSample = -1;
 	nextSample = -1;
 	LastPriority = -1;
 	currentMusic = -1;
 	nextMusic = -1;
+	// #endregion Sound & Music
 
+	// #region Light level
 	lightOff = 0;
 	lightVar2 = 0;
+	// #endregion Light level
 
 	currentCameraTargetActor = -1;
 	currentWorldTarget = -1;
@@ -4056,6 +4064,10 @@ void throwStoppedAt(int x, int z)
 	addActorToBgInscrust(currentProcessedActorIdx);
 }
 
+/// @brief 
+/// @param startupFloor 
+/// @param startupRoom 
+/// @param allowSystemMenu 
 void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 {
 	initEngine();

@@ -305,16 +305,22 @@ void debugger_draw(void)
 }
 #endif
 
-#if 1 // Life Script logging
+// #region Life Script logging
 /// @brief Life script numbers to enable output for.
 int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
 int numLoggedLifeScripts = 0;
-#endif
+// #endregion Life Script logging
 
-// #if 1 // Replay
+// #region Replay
 // bool enableReplayRecording;
 // char* replayEvent[];
-// #endif
+// #endregion Replay
+
+// #region Emulation mode
+/// @brief Should the engine strictly adhere to how the OG game worked, or apply enhancements like better key bindings, backing out of character selection in AITD1, etc?
+/// @todo add cli arg for this
+bool strictEmulation = false;
+// #endregion Emulation mode
 
 /// @brief Finds the index of the most-significant bit flag.
 /// @param flag The flag to find the index of.
