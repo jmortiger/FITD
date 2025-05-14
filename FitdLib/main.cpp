@@ -537,26 +537,27 @@ void loadPalette(void)
 	unsigned char localPalette[768];
 
 	if (g_gameId == AITD2) {
-		//loadPakToPtr("ITD_RESS",59,aux);
+		// loadPakToPtr("ITD_RESS", 59, aux);
 	} else {
 		loadPakTo("ITD_RESS", 3, aux);
 	}
 	copyPalette((unsigned char*)aux, currentGamePalette);
 
 	copyPalette(currentGamePalette, localPalette);
-	//  fadeInSub1(localPalette);
+	// fadeInSub1(localPalette);
 
-	// to finish
+	// TODO: to finish
 }
 
-void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index)
-{}
+void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
-void turnPageForward()
-{}
+/// @brief Handles the animated page turn (I think). UNIMPLEMENTED.
+/// @todo IMPLEMENT.
+void turnPageForward() {}
 
-void turnPageBackward()
-{}
+/// @brief Handles the animated page turn (I think). UNIMPLEMENTED.
+/// @todo IMPLEMENT.
+void turnPageBackward() {}
 
 void readBook(int index, int type)
 {
@@ -574,8 +575,7 @@ void readBook(int index, int type)
 			break;
 			// TODO: Can you read things in TimeGate & AITD3?
 		default:
-			FITD_throwFatal(); // assert(0);
-
+			FITD_throwFatal();
 	}
 
 	unfreezeTime();
