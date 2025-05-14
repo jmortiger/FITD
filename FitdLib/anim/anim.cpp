@@ -212,10 +212,9 @@ int evaluateReal(interpolatedValue* data)
 int manageFall(int actorIdx, ZVStruct* zvPtr)
 {
 	int fallResult = 0;
-	int i;
 	int room = objectTable[actorIdx].room;
 
-	for (i = 0; i < NUM_MAX_OBJECT; i++) {
+	for (int i = 0; i < NUM_MAX_OBJECT; i++) {
 		tObject* currentTestedActorPtr = &objectTable[i];
 
 		if (currentTestedActorPtr->indexInWorld != -1 && i != actorIdx) {
@@ -660,7 +659,6 @@ void updateAnimation(void)
 	}
 }
 
-
 void initBufferAnim(std::vector<s16>& buffer, char* bodyPtr)
 {
 	std::vector<s16>::iterator bufferIt = buffer.begin();
@@ -668,9 +666,6 @@ void initBufferAnim(std::vector<s16>& buffer, char* bodyPtr)
 	int flag = *(s16*)bodyPtr;
 	if (flag & 2) {
 		char* source = bodyPtr + 0x10;
-		s16 ax;
-		int cx;
-		int i;
 
 		*(u16*)(source + 4) = (u16)timer;
 
@@ -678,20 +673,20 @@ void initBufferAnim(std::vector<s16>& buffer, char* bodyPtr)
 
 		source += *(s16*)(source - 2);
 
-		ax = *(s16*)(source);
+		s16 ax = *(s16*)(source);
 
 		ax = (((ax * 2) + ax) * 2) + 2;
 
 		source += ax;
 
-		cx = *(s16*)source;
+		int cx = *(s16*)source;
 
 		source += cx * 2;
 
 		bufferIt += 4;
 		source += 10;
 
-		for (i = 0; i < cx; i++) {
+		for (int i = 0; i < cx; i++) {
 			bufferIt[0] = *(s16*)(source);
 			bufferIt[1] = *(s16*)(source + 2);
 			bufferIt[2] = *(s16*)(source + 4);
@@ -716,10 +711,7 @@ void initBufferAnim(std::vector<s16>& buffer, char* bodyPtr)
 	}
 }
 
-s16 GetNbFramesAnim(char* animPtr)
-{
-	return(*(s16*)animPtr);
-}
+s16 GetNbFramesAnim(char* animPtr) { return(*(s16*)animPtr); }
 
 s16 PatchType(char** bodyPtr) // local
 {

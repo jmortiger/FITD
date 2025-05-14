@@ -2394,6 +2394,7 @@ void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int
 }
 
 /// @brief Draws the given object's bounding box.
+/// @param actorPtr 
 void drawZv(tObject* actorPtr)
 {
 #ifndef _DBG_drawZv_Color
@@ -2408,14 +2409,7 @@ void drawZv(tObject* actorPtr)
 	}
 
 	// bottom
-	drawProjectedLine(localZv.ZVX1,
-		localZv.ZVY2,
-		localZv.ZVZ1,
-		localZv.ZVX1,
-		localZv.ZVY2,
-		localZv.ZVZ2,
-		_DBG_drawZv_Color);
-
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, _DBG_drawZv_Color);
 	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, _DBG_drawZv_Color);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, _DBG_drawZv_Color);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, _DBG_drawZv_Color);
@@ -2485,11 +2479,9 @@ void drawMaskZones()
 		cameraDataStruct* pCamera = cameraDataTable[currentCamera];
 
 		for (int j = 0; j < pCamera->numViewedRooms; j++) {
-			int k;
-
 			//if(cameraDataTable[i]->viewedRoomTable[j].viewedRoomIdx == currentDisplayedRoom)
 			{
-				for (k = 0; k < pCamera->viewedRoomTable[j].numMask; k++) {
+				for (int k = 0; k < pCamera->viewedRoomTable[j].numMask; k++) {
 					drawMaskZone(&pCamera->viewedRoomTable[j].masks[k]);
 				}
 			}
@@ -2575,20 +2567,25 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 /// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
 /// @param transparency 
 /// @todo change color to u8
-void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency)
+void drawProjectedBox(float x1, float x2, float y1, float y2, float z1, float z2, int color, int transparency)
 {
 	//bottom
-	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y1, (float)y1, (float)y1, (float)y1, (float)z1, (float)z2, (float)z2, (float)z1, color, transparency);
+	drawProjectedQuad(x1, x1, x2, x2, y1, y1, y1, y1, z1, z2, z2, z1, color, transparency);
 	//top
-	drawProjectedQuad((float)x1, (float)x1, (float)x2, (float)x2, (float)y2, (float)y2, (float)y2, (float)y2, (float)z1, (float)z2, (float)z2, (float)z1, color, transparency);
+	drawProjectedQuad(x1, x1, x2, x2, y2, y2, y2, y2, z1, z2, z2, z1, color, transparency);
 	//left
-	drawProjectedQuad((float)x1, (float)x1, (float)x1, (float)x1, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transparency);
+	drawProjectedQuad(x1, x1, x1, x1, y1, y2, y2, y1, z1, z1, z2, z2, color, transparency);
 	//right
-	drawProjectedQuad((float)x2, (float)x2, (float)x2, (float)x2, (float)y1, (float)y2, (float)y2, (float)y1, (float)z1, (float)z1, (float)z2, (float)z2, color, transparency);
+	drawProjectedQuad(x2, x2, x2, x2, y1, y2, y2, y1, z1, z1, z2, z2, color, transparency);
 	//front
-	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z1, (float)z1, (float)z1, (float)z1, color, transparency);
+	drawProjectedQuad(x1, x2, x2, x1, y1, y1, y2, y2, z1, z1, z1, z1, color, transparency);
 	//back
-	drawProjectedQuad((float)x1, (float)x2, (float)x2, (float)x1, (float)y1, (float)y1, (float)y2, (float)y2, (float)z2, (float)z2, (float)z2, (float)z2, color, transparency);
+	drawProjectedQuad(x1, x2, x2, x1, y1, y1, y2, y2, z2, z2, z2, z2, color, transparency);
+}
+
+void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency)
+{
+	drawProjectedBox((float)x1, (float)x2, (float)y1, (float)y2, (float)z1, (float)z2, color, transparency);
 }
 
 /// @brief 
@@ -2615,7 +2612,7 @@ void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
 
 void drawRoomZvLine(ZVStruct* zoneData, int color)
 {
-	ZVStruct cameraZv = { -100,100,-100,100,-100,100 };
+	ZVStruct cameraZv = { -100, 100, -100, 100, -100, 100 };
 
 	cameraZv.ZVX1 += translateX;
 	cameraZv.ZVX2 += translateX;
@@ -2778,8 +2775,7 @@ void drawHardCol(int roomNumber)
 
 int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 {
-	int i;
-	for (i = 0; i < param; i++) {
+	for (int i = 0; i < param; i++) {
 		////////////////////////////////////// DEBUG
 		//  drawOverlayZone(data, 80);
 		/////////////////////////////////////
@@ -2789,9 +2785,8 @@ int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 		int zoneX2 = *(s16*)(data + 4);
 		int zoneZ2 = *(s16*)(data + 6);
 
-		if (X1 >= zoneX1 && Z1 >= zoneZ1 && X2 <= zoneX2 && Z2 <= zoneZ2) {
+		if (X1 >= zoneX1 && Z1 >= zoneZ1 && X2 <= zoneX2 && Z2 <= zoneZ2)
 			return(1);
-		}
 
 		data += 0x8;
 	}
@@ -2801,17 +2796,12 @@ int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 
 void drawBgOverlay(tObject* actorPtr)
 {
-	char* data;
-	char* data2;
-
-	int numOverlayZone;
-
 	actorPtr->screenXMin = BBox3D1;
 	actorPtr->screenYMin = BBox3D2;
 	actorPtr->screenXMax = BBox3D3;
 	actorPtr->screenYMax = BBox3D4;
 
-	// if(actorPtr->trackMode != 1) return;
+	// if (actorPtr->trackMode != 1) return;
 
 	SetClip(BBox3D1, BBox3D2, BBox3D3, BBox3D4);
 
@@ -2831,37 +2821,38 @@ void drawBgOverlay(tObject* actorPtr)
 		return;
 
 	if (g_gameId == AITD1) {
-		data2 = room_PtrCamera[currentCamera] + pcameraViewedRoomData->offsetToMask;
-		data = data2;
+		char* data2 = room_PtrCamera[currentCamera] + pcameraViewedRoomData->offsetToMask;
+		char* data = data2;
 		data += 2;
-
-		numOverlayZone = *(s16*)(data2);
+		
+		int numOverlayZone = *(s16*)(data2);
 
 		for (int i = 0; i < numOverlayZone; i++) {
 			int numOverlay;
 			char* src = data2 + *(u16*)(data + 2);
 
-			if (isBgOverlayRequired(actorPtr->zv.ZVX1 / 10, actorPtr->zv.ZVX2 / 10,
+			if (isBgOverlayRequired(
+				actorPtr->zv.ZVX1 / 10, actorPtr->zv.ZVX2 / 10,
 				actorPtr->zv.ZVZ1 / 10, actorPtr->zv.ZVZ2 / 10,
 				data + 4,
-				*(s16*)(data))) {
+				*(s16*)(data)
+			)) {
 				osystem_setClip(clipLeft, clipTop, clipRight, clipBottom);
 				osystem_drawMask(relativeCameraIndex, i);
 				osystem_clearClip();
 
 				/*
-				int j;
 				numOverlay = *(s16*)src;
 				src += 2;
 
-				for(j=0;j<numOverlay;j++)
+				for(int j = 0; j < numOverlay; j++)
 				{
 				int param = *(s16*)(src);
-				src+=2;
+				src += 2;
 
-				memcpy(cameraBuffer, src, param*4);
+				memcpy(cameraBuffer, src, param * 4);
 
-				src+=param*4;
+				src += param * 4;
 
 				drawBgOverlaySub2(param);
 				}
@@ -2913,16 +2904,13 @@ void drawFlowActor(int actorIdx)
 
 void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 {
-	s16 flag;
-
-	flag = *(s16*)bodyPtr;
+	s16 flag = *(s16*)bodyPtr;
 	bodyPtr += 2;
 
 	if (flag & 2) {
-		s16 offset;
 		bodyPtr += 12;
 
-		offset = *(s16*)bodyPtr;
+		s16 offset = *(s16*)bodyPtr;
 		bodyPtr += 2;
 		bodyPtr += offset;
 
