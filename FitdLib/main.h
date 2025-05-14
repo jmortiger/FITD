@@ -71,7 +71,7 @@ int SetAnimObjet(int frame, char* anim, char* body);
 void deleteObject(int objIdx);
 void removeFromBGIncrust(int actorIdx);
 void makeMessage(int messageIdx);
-int drawTextOverlay(void);
+bool drawTextOverlay(void);
 s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr);
 void handleCollision(ZVStruct* startZv, ZVStruct* zvPtr2, ZVStruct* zvPtr3);
 

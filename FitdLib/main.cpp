@@ -583,15 +583,15 @@ void readBook(int index, int type)
 
 /// @brief Read a document.
 /// @param index 
-/// @param startx 
+/// @param startX 
 /// @param top 
-/// @param endx 
+/// @param endX 
 /// @param bottom 
 /// @param demoMode 
 /// @param color 
 /// @param shadow 
 /// @return 
-int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int color, int shadow)
+int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int color, int shadow)
 {
 	bool lastPageReached = false;
 	u8 tabString[] = "    ";
@@ -607,7 +607,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 
 	ExtSetFont(PtrFont, color);
 
-	maxStringWidth = endx - startx + 4;
+	maxStringWidth = endX - startX + 4;
 
 	int textIndexMalloc = HQ_Malloc(HQ_Memory, getPakSize(languageNameString, index) + 300);
 	textPtr = (u8*)HQ_PtrMalloc(HQ_Memory, textIndexMalloc);
@@ -627,7 +627,7 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 		int currentTextY;
 		FastCopyScreen(aux, logicalScreen);
 		process_events();
-		SetClip(startx, top, endx, bottom);
+		SetClip(startX, top, endX, bottom);
 
 		ptrt = ptrpage[page];
 
@@ -763,9 +763,9 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 
 			if (line_type & 8) // center
 			{
-				currentTextX = startx + ((maxStringWidth - var_1BA) / 2);
+				currentTextX = startX + ((maxStringWidth - var_1BA) / 2);
 			} else {
-				currentTextX = startx;
+				currentTextX = startX;
 			}
 
 			for (int i = 0; i < numWordInLine; i++) {
@@ -796,21 +796,21 @@ int Lire(int index, int startx, int top, int endx, int bottom, int demoMode, int
 
 		if (demoMode == 0) {
 			if (page > 0) {
-				AffSpfI(startx - 19, 185, 12, PtrCadre);
+				AffSpfI(startX - 19, 185, 12, PtrCadre);
 			}
 
 			if (!lastPageReached) {
-				AffSpfI(endx + 4, 185, 11, PtrCadre);
+				AffSpfI(endX + 4, 185, 11, PtrCadre);
 			}
 		}
 
 		if (demoMode == 2) {
 			if (page > 0) {
-				AffSpfI(startx - 3, 191, 13, PtrCadre);
+				AffSpfI(startX - 3, 191, 13, PtrCadre);
 			}
 
 			if (!lastPageReached) {
-				AffSpfI(endx - 10, 191, 14, PtrCadre);
+				AffSpfI(endX - 10, 191, 14, PtrCadre);
 			}
 		}
 
@@ -1110,11 +1110,10 @@ void initEngine(void)
 	}
 }
 
-void initVarsSub1(void)
+/// @brief Clears all messages.
+void clearMessageTable(void)
 {
-	int i;
-
-	for (i = 0; i < 5; i++) {
+	for (int i = 0; i < NUM_MAX_MESSAGE; i++) {
 		messageTable[i].string = NULL;
 	}
 }
@@ -1152,7 +1151,7 @@ void initVars()
 
 	statusScreenAllowed = 1;
 
-	initVarsSub1();
+	clearMessageTable();
 }
 
 void loadCamera(int cameraIdx)
@@ -1240,12 +1239,9 @@ void loadMask(int cameraIdx)
 		return;
 
 	char name[16];
-
 	sprintf(name, "MASK%02d", g_currentFloor);
 
-	if (g_MaskPtr) {
-		free(g_MaskPtr);
-	}
+	if (g_MaskPtr) free(g_MaskPtr);
 
 	g_MaskPtr = (unsigned char*)loadPak(name, cameraIdx);
 
@@ -2398,6 +2394,9 @@ void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int
 /// @param actorPtr 
 void drawZv(tObject* actorPtr)
 {
+#ifndef _DBG_drawZv_Color
+	return;
+#else 
 	ZVStruct localZv;
 
 	if (actorPtr->room != objectTable[currentCameraTargetActor].room) {
@@ -2407,21 +2406,22 @@ void drawZv(tObject* actorPtr)
 	}
 
 	// bottom
-	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, 10);
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, _DBG_drawZv_Color);
 	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, 10);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, 10);
 	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, 10);
 
 	// top
-	drawProjectedLine(localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, 10);
-	drawProjectedLine(localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, 10);
-	drawProjectedLine(localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, 10);
-	drawProjectedLine(localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, 10);
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, _DBG_drawZv_Color);
 
-	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, 10);
-	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, 10);
-	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, 10);
-	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, 10);
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ2, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX2, localZv.ZVY1, localZv.ZVZ1, _DBG_drawZv_Color);
+#endif
 }
 
 void drawConverZone(cameraZoneEntryStruct* zonePtr)
@@ -2488,6 +2488,22 @@ void drawMaskZones()
 
 #define DEPTH_THRESHOLD 1000
 
+/// @brief 
+/// @param x1 
+/// @param x2 
+/// @param x3 
+/// @param x4 
+/// @param y1 
+/// @param y2 
+/// @param y3 
+/// @param y4 
+/// @param z1 
+/// @param z2 
+/// @param z3 
+/// @param z4 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param transparency 
+/// @todo change color to u8
 void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float z1, float z2, float z3, float z4, int color, int transparency)
 {
 	x1 -= translateX;
@@ -2538,6 +2554,16 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 	//osystem_draw3dQuad(x1,y1,z1, x2,y2,z2, x3,y3,z3, x4,y4,z4, color);
 }
 
+/// @brief 
+/// @param x1 
+/// @param x2 
+/// @param y1 
+/// @param y2 
+/// @param z1 
+/// @param z2 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param transparency 
+/// @todo change color to u8
 void drawProjectedBox(float x1, float x2, float y1, float y2, float z1, float z2, int color, int transparency)
 {
 	//bottom
@@ -2559,6 +2585,10 @@ void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color,
 	drawProjectedBox((float)x1, (float)x2, (float)y1, (float)y2, (float)z1, (float)z2, color, transparency);
 }
 
+/// @brief 
+/// @param zoneData 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param transparency 255 is opaque
 void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
 {
 	ZVStruct cameraZv = { -100, 100, -100, 100, -100, 100 };
@@ -2610,10 +2640,8 @@ void drawRoomZvLine(ZVStruct* zoneData, int color)
 
 void drawZone(char* zoneData, int color)
 {
-	ZVStruct tempZv;
-	
-	ZVStruct cameraZv = { -100,100,-100,100,-100,100 };
-	
+	ZVStruct cameraZv = { -100, 100, -100, 100, -100, 100 };
+
 	int type = *(s16*)(zoneData + 0xE);
 
 	int x1 = *(s16*)(zoneData + 0x0);
@@ -2632,6 +2660,8 @@ void drawZone(char* zoneData, int color)
 	cameraZv.ZVZ1 += translateZ;
 	cameraZv.ZVZ2 += translateZ;
 
+	ZVStruct tempZv;
+
 	tempZv.ZVX1 = READ_LE_S16(zoneData + 0x00);
 	tempZv.ZVX2 = READ_LE_S16(zoneData + 0x02);
 	tempZv.ZVY1 = READ_LE_S16(zoneData + 0x04);
@@ -2645,6 +2675,10 @@ void drawZone(char* zoneData, int color)
 	drawProjectedBox(x1, x2, y1, y2, z1, z2, type, 255);
 }
 
+/// @brief 
+/// @param zoneData 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @todo change color to u8
 void drawOverlayZone(char* zoneData, int color)
 {
 	int x1 = *(s16*)(zoneData + 0x0) * 10;
@@ -2664,13 +2698,16 @@ void drawSceZone(int roomNumber)
 
 	for (u32 i = 0; i < roomDataTable[roomNumber].numSceZone; i++) {
 		memcpy(&dataLocal, &roomDataTable[roomNumber].sceZoneTable[i].zv, sizeof(ZVStruct));
-		if (roomNumber != currentRoom) {
+		if (roomNumber != currentRoom)
 			getZvRelativePosition(&dataLocal, roomNumber, currentRoom);
-		}
 
-		// if(roomDataTable[roomNumber].sceZoneTable[i].parameter == 4 && roomDataTable[roomNumber].sceZoneTable[i].type) {
-		drawRoomZv(&dataLocal, 20, 40);
-		// }
+		// if (roomDataTable[roomNumber].sceZoneTable[i].parameter == 4 &&
+		// 	roomDataTable[roomNumber].sceZoneTable[i].type)
+#ifdef _DBG_drawRoomZv_Color_sceZone
+		drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_sceZone, 40);
+#else
+		;
+#endif
 	}
 }
 
@@ -2679,8 +2716,7 @@ void drawHardCol(int roomNumber)
 	ZVStruct dataLocal;
 
 	for (u32 i = 0; i < roomDataTable[roomNumber].numHardCol; i++) {
-		/* if (roomDataTable[roomNumber].hardColTable[i].type != 9)
-			continue;*/
+		/* if (roomDataTable[roomNumber].hardColTable[i].type != 9) continue;*/
 
 		copyZv(&roomDataTable[roomNumber].hardColTable[i].zv, &dataLocal);
 
@@ -2690,31 +2726,46 @@ void drawHardCol(int roomNumber)
 
 		switch (roomDataTable[roomNumber].hardColTable[i].type) {
 			case 0: // objects
-				drawRoomZv(&dataLocal, 9, 150);
+#ifdef _DBG_drawRoomZv_Color_hardCol_objects
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_objects, 150);
+#endif
 				break;
 			case 1: // walls
-				drawRoomZv(&dataLocal, 100, 255);
+#ifdef _DBG_drawRoomZv_Color_hardCol_walls
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_walls, 255);
+#endif
 				break;
 			case 2: // dummy
-				drawRoomZv(&dataLocal, 180, 255);
+#ifdef _DBG_drawRoomZv_Color_hardCol_dummy
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_dummy, 255);
+#endif
 				break;
 			case 3: // ground/climb
-				drawRoomZv(&dataLocal, 70, 255);
+#ifdef _DBG_drawRoomZv_Color_hardCol_ground_climb
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_ground_climb, 255);
+#endif
 				break;
 			case 4: // over door zones
-				drawRoomZv(&dataLocal, 50, 255);
+#ifdef _DBG_drawRoomZv_Color_hardCol_overDoorZones
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_overDoorZones, 255);
+#endif
 				break;
 			case 9: // scenario
-				drawRoomZv(&dataLocal, 60, 255);
+#ifdef _DBG_drawRoomZv_Color_hardCol_scenario
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_scenario, 255);
+#endif
 				break;
 			case 10: // monsters
-				drawRoomZv(&dataLocal, 80, 255);
+#ifdef _DBG_drawRoomZv_Color_hardCol_monsters
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_monsters, 255);
+#endif
 				break;
 			default:
-				drawRoomZv(&dataLocal, 40, 40);
+#ifdef _DBG_drawRoomZv_Color_hardCol_other
+				drawRoomZv(&dataLocal, _DBG_drawRoomZv_Color_hardCol_other, 40);
+#endif
 				break;
 		}
-
 	}
 }
 #endif
@@ -2839,7 +2890,7 @@ void drawBgOverlay(tObject* actorPtr)
 /// @brief Draws flow actors. UNIMPLEMENTED.
 /// @todo Implement.
 /// @param actorIdx 
-void mainDrawSub2(int actorIdx)
+void drawFlowActor(int actorIdx)
 {
 	//actorStruct* actorPtr = &actorTable[actorIdx];
 
@@ -2913,7 +2964,7 @@ void mainDraw(int flagFlip)
 		FastCopyScreen(aux2, logicalScreen);
 	}/*  else { restoreDirtyRects(); } */
 
-	//osystem_drawBackground();
+	// osystem_drawBackground();
 
 	SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 	genVar6 = 0;
@@ -2922,8 +2973,8 @@ void mainDraw(int flagFlip)
 #ifdef FITD_DEBUGGER
 	if (backgroundMode == backgroundModeEnum_3D) {
 		for (i = 0; i < getNumberOfRoom(); i++) {
-			drawHardCol(i);
-			drawSceZone(i);
+			// drawHardCol(i); // J
+			drawSceZone(i); // J
 		}
 
 		//drawConverZones();
@@ -2945,7 +2996,7 @@ void mainDraw(int flagFlip)
 			actorPtr->_flags &= ~AF_DRAWABLE;
 
 			if (actorPtr->_flags & AF_SPECIAL) {
-				mainDrawSub2(currentDrawActor);
+				drawFlowActor(currentDrawActor);
 			} else {
 				char* bodyPtr = HQR_Get(listBody, actorPtr->bodyNum);
 
@@ -2955,16 +3006,13 @@ void mainDraw(int flagFlip)
 
 				AffObjet(actorPtr->worldX + actorPtr->stepX, actorPtr->worldY + actorPtr->stepY, actorPtr->worldZ + actorPtr->stepZ, actorPtr->alpha, actorPtr->beta, actorPtr->gamma, bodyPtr);
 
-
-				if (actorPtr->animActionType != 0) {
-					if (actorPtr->hotPointID != -1) {
-						getHotPoint(actorPtr->hotPointID, bodyPtr, &actorPtr->hotPoint);
-					}
+				if (actorPtr->animActionType != 0 && actorPtr->hotPointID != -1) {
+					getHotPoint(actorPtr->hotPointID, bodyPtr, &actorPtr->hotPoint);
 				}
 
 #ifdef FITD_DEBUGGER
 				if (/* debuggerVar_drawModelZv && */ backgroundMode == backgroundModeEnum_3D) {
-					drawZv(actorPtr);
+					// drawZv(actorPtr); // J
 				}
 #endif
 			}
@@ -2980,18 +3028,16 @@ void mainDraw(int flagFlip)
 
 			if (BBox3D1 <= _SCREEN_INTERNAL_WIDTH - 1 && BBox3D2 <= _SCREEN_INTERNAL_HEIGHT - 1 && BBox3D3 >= 0 && BBox3D4 >= 0) // is the character on screen ?
 			{
-				if (g_gameId == AITD1) {
-					if (actorPtr->indexInWorld == CVars[getCVarsIdx(LIGHT_OBJECT)]) {
-						lightX = (BBox3D3 + BBox3D1) / 2;
-						lightY = (BBox3D4 + BBox3D2) / 2;
-					}
+				if (g_gameId == AITD1 && actorPtr->indexInWorld == CVars[getCVarsIdx(LIGHT_OBJECT)]) {
+					lightX = (BBox3D3 + BBox3D1) / 2;
+					lightY = (BBox3D4 + BBox3D2) / 2;
 				}
 
 #ifdef FITD_DEBUGGER
 				if (backgroundMode == backgroundModeEnum_2D)
 #endif
 				{
-					//if(g_gameId == AITD1)
+					// if (g_gameId == AITD1)
 					drawBgOverlay(actorPtr);
 				}
 				//addToRedrawBox();
@@ -3006,9 +3052,7 @@ void mainDraw(int flagFlip)
 
 	osystem_stopModelRender();
 
-	if (drawTextOverlay()) {
-		//addToRedrawBox();
-	}
+	if (drawTextOverlay()) { /* addToRedrawBox(); */ }
 
 	if (!lightOff) {
 		if (flagFlip) {
@@ -3041,9 +3085,15 @@ void addActorToBgInscrust(int actorIdx)
 	//FlagRefreshAux2 = 1;
 }
 
+/// @brief 
+/// @param zvPtr1 
+/// @param zvPtr2 
+/// @return 
+/// @details Will not collide if the boundaries are equal.
 bool checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2)
 {
-	return !(zvPtr1->ZVX1 >= zvPtr2->ZVX2 ||
+	return !(
+		zvPtr1->ZVX1 >= zvPtr2->ZVX2 ||
 		zvPtr2->ZVX1 >= zvPtr1->ZVX2 ||
 		zvPtr1->ZVY1 >= zvPtr2->ZVY2 ||
 		zvPtr2->ZVY1 >= zvPtr1->ZVY2 ||
@@ -3055,6 +3105,8 @@ bool checkZvCollision(ZVStruct* zvPtr1, ZVStruct* zvPtr2)
 /// @param zvPtr 
 /// @param startRoom 
 /// @param destRoom 
+/// @details * Has no side effects
+/// * Has 1 hidden dependency (`roomDataTable`).
 void getZvRelativePosition(ZVStruct* zvPtr, int startRoom, int destRoom)
 {
 	unsigned int xDif = 10 * (roomDataTable[destRoom].worldX - roomDataTable[startRoom].worldX);
@@ -3338,10 +3390,7 @@ void hardColSuB1Sub1(int flag)
 			hardColStepX = 0;
 			break;
 		}
-		default:
-		{
-			break;
-		}
+		default: break;
 	}
 }
 
@@ -3514,35 +3563,23 @@ int isInPoly(int x1, int x2, int z1, int z2, cameraViewedRoomStruct* pCameraZone
 	int xMid = (x1 + x2) / 2;
 	int zMid = (z1 + z2) / 2;
 
-	int i;
-
-	for (i = 0; i < pCameraZoneDef->numCoverZones; i++) {
-		int j;
+	for (int i = 0; i < pCameraZoneDef->numCoverZones; i++) {
 		int flag = 0;
 
-		for (j = 0; j < pCameraZoneDef->coverZones[i].numPoints; j++) {
-			int zoneX1;
-			int zoneZ1;
-			int zoneX2;
-			int zoneZ2;
+		for (int j = 0; j < pCameraZoneDef->coverZones[i].numPoints; j++) {
+			int zoneX1 = pCameraZoneDef->coverZones[i].pointTable[j].x;
+			int zoneZ1 = pCameraZoneDef->coverZones[i].pointTable[j].y;
+			int zoneX2 = pCameraZoneDef->coverZones[i].pointTable[j + 1].x;
+			int zoneZ2 = pCameraZoneDef->coverZones[i].pointTable[j + 1].y;
 
-			zoneX1 = pCameraZoneDef->coverZones[i].pointTable[j].x;
-			zoneZ1 = pCameraZoneDef->coverZones[i].pointTable[j].y;
-			zoneX2 = pCameraZoneDef->coverZones[i].pointTable[j + 1].x;
-			zoneZ2 = pCameraZoneDef->coverZones[i].pointTable[j + 1].y;
-
-			if (testCrossProduct(xMid, zMid, xMid - 10000, zMid, zoneX1, zoneZ1, zoneX2, zoneZ2)) {
+			if (testCrossProduct(xMid, zMid, xMid - 10000, zMid, zoneX1, zoneZ1, zoneX2, zoneZ2))
 				flag |= 1;
-			}
 
-			if (testCrossProduct(xMid, zMid, xMid + 10000, zMid, zoneX1, zoneZ1, zoneX2, zoneZ2)) {
+			if (testCrossProduct(xMid, zMid, xMid + 10000, zMid, zoneX1, zoneZ1, zoneX2, zoneZ2))
 				flag |= 2;
-			}
 		}
 
-		if (flag == 3) {
-			return(1);
-		}
+		if (flag == 3) return(1);
 	}
 
 	return(0);
@@ -3570,9 +3607,8 @@ int findBestCamera(void)
 				// we try to select the best camera that looks behind the player
 				int newAngle = actorPtr->beta + (((cameraDataTable[i]->beta) + 0x200) & 0x3FF);
 
-				if (newAngle < 0) {
+				if (newAngle < 0)
 					newAngle = -newAngle;
-				}
 
 				if (newAngle < foundAngle) {
 					foundAngle = newAngle;
@@ -3635,15 +3671,10 @@ void checkIfCameraChangeIsRequired(void)
 
 bool isPointInZV(int x, int y, int z, ZVStruct* pZV)
 {
-	if (pZV->ZVX1 <= x && pZV->ZVX2 >= x) {
-		if (pZV->ZVY1 <= y && pZV->ZVY2 >= y) {
-			if (pZV->ZVZ1 <= z && pZV->ZVZ2 >= z) {
-				return(true);
-			}
-		}
-	}
-
-	return false;
+	return (
+		pZV->ZVX1 <= x && pZV->ZVX2 >= x &&
+		pZV->ZVY1 <= y && pZV->ZVY2 >= y &&
+		pZV->ZVZ1 <= z && pZV->ZVZ2 >= z);
 }
 
 sceZoneStruct* processActor2Sub(int x, int y, int z, roomDataStruct* pRoomData)
@@ -3688,17 +3719,13 @@ void processActor2()
 				switch (pCurrentZone->type) {
 					case 0:
 					{
-						int x;
-						int y;
-						int z;
-
 						int oldRoom = currentProcessedActorPtr->room;
 
 						currentProcessedActorPtr->room = (short)pCurrentZone->parameter;
 
-						x = (roomDataTable[currentProcessedActorPtr->room].worldX - roomDataTable[oldRoom].worldX) * 10;
-						y = (roomDataTable[currentProcessedActorPtr->room].worldY - roomDataTable[oldRoom].worldY) * 10;
-						z = (roomDataTable[currentProcessedActorPtr->room].worldZ - roomDataTable[oldRoom].worldZ) * 10;
+						int x = (roomDataTable[currentProcessedActorPtr->room].worldX - roomDataTable[oldRoom].worldX) * 10;
+						int y = (roomDataTable[currentProcessedActorPtr->room].worldY - roomDataTable[oldRoom].worldY) * 10;
+						int z = (roomDataTable[currentProcessedActorPtr->room].worldZ - roomDataTable[oldRoom].worldZ) * 10;
 
 						currentProcessedActorPtr->roomX -= x;
 						currentProcessedActorPtr->roomY += y;
@@ -3725,7 +3752,6 @@ void processActor2()
 
 						startChrono(&currentProcessedActorPtr->ROOM_CHRONO);
 
-
 						break;
 					}
 					case 8:
@@ -3745,9 +3771,7 @@ void processActor2()
 					}
 					case 10: // stage
 					{
-						int life;
-
-						life = ListWorldObjets[currentProcessedActorPtr->indexInWorld].floorLife;
+						int life = ListWorldObjets[currentProcessedActorPtr->indexInWorld].floorLife;
 
 						if (life == -1)
 							return;
@@ -4165,7 +4189,7 @@ int FitdMain(int argc, char* argv[])
 
 /// @brief Handles dispatching text render requests and updating `messageTable`.
 /// @return `0` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `1` otherwise; The current value of `var_14`.
-int drawTextOverlay(void)
+bool drawTextOverlay(void)
 {
 	bool anyEntriesUpdated = false;
 	/// The Y position the messages will be drawn to the screen at. Shifted up for every line of messages.
@@ -4200,8 +4224,6 @@ int drawTextOverlay(void)
 				msgsY -= MESSAGE_HEIGHT;
 				anyEntriesUpdated = true;
 			}
-
-			// currMsg++;
 		}
 	} // else { }
 
@@ -4211,21 +4233,21 @@ int drawTextOverlay(void)
 
 void makeMessage(int messageIdx)
 {
-	textEntryStruct* messagePtr;
-
-	messagePtr = getTextFromIdx(messageIdx);
+	textEntryStruct* messagePtr = getTextFromIdx(messageIdx);
 
 	if (messagePtr) {
 		int i;
 
-		for (i = 0; i < 5; i++) {
+		// If the message is already displayed, reset its timer.
+		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
 			if (messageTable[i].string == messagePtr) {
 				messageTable[i].time = 0;
 				return;
 			}
 		}
 
-		for (i = 0; i < 5; i++) {
+		// Otherwise, find the first open slot and put the message into that slot.
+		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
 			if (messageTable[i].string == NULL) {
 				messageTable[i].string = messagePtr;
 				messageTable[i].time = 0;

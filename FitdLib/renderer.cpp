@@ -117,12 +117,13 @@ void fillpoly(s16* datas, int n, char c);
 /// @param bx 
 /// @param cx 
 /// @todo Document
+/// @details Doesn't preserve fractional component at any step.
 void transformPoint(float* ax, float* bx, float* cx)
 {
 	int X = (int)*ax;
 	int Y = (int)*bx;
 	int Z = (int)*cx;
-	{
+	{// Adds a scope to prevent name collisions
 		int* ax = &X;
 		int* bx = &Y;
 		int* cx = &Z;

@@ -732,6 +732,11 @@ void osystem_flushPendingPrimitives()
 	numUsedTransparentVertices = 0;
 }
 
+/// @brief 
+/// @param buffer 
+/// @param numPoint 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param polyType 
 void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyType)
 {
 #define MAX_POINTS_PER_POLY 50
@@ -957,6 +962,14 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 	}
 }
 
+/// @brief 
+/// @param x1 
+/// @param y1 
+/// @param z1 
+/// @param x2 
+/// @param y2 
+/// @param z2 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
 void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float z2, unsigned char color)
 {
 #if 0
@@ -1021,6 +1034,21 @@ void osystem_draw3dLine(float x1, float y1, float z1, float x2, float y2, float 
 #endif
 }
 
+/// @brief 
+/// @param x1 
+/// @param y1 
+/// @param z1 
+/// @param x2 
+/// @param y2 
+/// @param z2 
+/// @param x3 
+/// @param y3 
+/// @param z3 
+/// @param x4 
+/// @param y4 
+/// @param z4 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param transparency 
 void osystem_draw3dQuad(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, unsigned char color, int transparency)
 {
 	float lineVertices[4 * 3];
@@ -1127,10 +1155,7 @@ void osystem_drawPoint(float X, float Y, float Z, u8 color, u8 material, float s
 	}
 }
 
-void osystem_flip(unsigned char* videoBuffer)
-{
-	osystem_flushPendingPrimitives();
-}
+void osystem_flip(unsigned char* videoBuffer) { osystem_flushPendingPrimitives(); }
 
 void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2)
 {
@@ -1208,13 +1233,9 @@ void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_IN
 
 void osystem_drawMask(int roomId, int maskId)
 {
-	if (g_gameId == TIMEGATE)
-		return;
-
-	if (!bgfx::isValid(maskTextures[roomId][maskId].maskTexture))
-		return;
-
-	if (!bgfx::isValid(maskTextures[roomId][maskId].vertexBuffer))
+	if (g_gameId == TIMEGATE ||
+		!bgfx::isValid(maskTextures[roomId][maskId].maskTexture) ||
+		!bgfx::isValid(maskTextures[roomId][maskId].vertexBuffer))
 		return;
 
 #ifdef FITD_DEBUGGER
@@ -1235,9 +1256,10 @@ void osystem_drawMask(int roomId, int maskId)
 		maskTextureUniform = bgfx::createUniform("s_maskTexture", bgfx::UniformType::Sampler);
 	}
 
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-		| BGFX_STATE_MSAA
-		| BGFX_STATE_PT_TRISTRIP
+	bgfx::setState(
+		BGFX_STATE_WRITE_RGB |
+		BGFX_STATE_MSAA |
+		BGFX_STATE_PT_TRISTRIP
 	);
 
 	bgfx::setVertexBuffer(0, maskTextures[roomId][maskId].vertexBuffer);
