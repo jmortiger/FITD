@@ -9,6 +9,8 @@
 
 /* #region Screen */
 /// @todo Why 64800? AITD is 320*200=64000 & is rendered in 4:3 as 320*240=76800.
+/// Might be https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKBUFFER%20%28offscreen%29%3A,first%20one%20in%20memory%2E
+/// "BACKBUFFER (offscreen): The same as BACKGROUND2 but with moving actors rendered also. When animating actors have to be re-rendered (every frame), the previous polygons are erased by copying small 2D rectangles from BACKGROUND2 to BACKBUFFER. Without the BACKBUFFER you would see all rendered objects flickering all the time. The BACKBUFFER has a size of 64320 (slightly bigger than 320 x 200) and it's the first one in memory. "
 #define _SCREEN_BUFFER_SIZE 64800
 #define _SCREEN_INTERNAL_PIXELS 64000
 #define _SCREEN_INTERNAL_WIDTH 320

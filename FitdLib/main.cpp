@@ -2534,17 +2534,20 @@ void drawZv(tObject* actorPtr)
 void drawConverZone(cameraZoneEntryStruct* zonePtr)
 {
 #ifdef _DBG_drawConverZone_Color
+#ifdef _DBG_drawConverZone_Height
 	int i;
 	for (i = 0; i < zonePtr->numPoints - 1; i++) { // Connect each point to the following point
-		drawProjectedLine(zonePtr->pointTable[i].x * 10, 0, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[i + 1].x * 10, 0, zonePtr->pointTable[i + 1].y * 10, _DBG_drawConverZone_Color);
+		drawProjectedLine(zonePtr->pointTable[i].x * 10, _DBG_drawConverZone_Height, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[i + 1].x * 10, _DBG_drawConverZone_Height, zonePtr->pointTable[i + 1].y * 10, _DBG_drawConverZone_Color);
 	}
 
 	// Connect first and last points
 	assert(i == zonePtr->numPoints - 1); // i = zonePtr->numPoints - 1;
-	drawProjectedLine(zonePtr->pointTable[i].x * 10, 0, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[0].x * 10, 0, zonePtr->pointTable[0].y * 10, _DBG_drawConverZone_Color);
+	drawProjectedLine(zonePtr->pointTable[i].x * 10, _DBG_drawConverZone_Height, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[0].x * 10, _DBG_drawConverZone_Height, zonePtr->pointTable[0].y * 10, _DBG_drawConverZone_Color);
+#endif
 #endif
 }
 
+/// @brief Seems to be the active area? Covers some actors
 void drawConverZones()
 {
 	for (int i = 0, j, k; i < numCameraInRoom; i++) {
@@ -3084,7 +3087,7 @@ void mainDraw(int flagFlip)
 			drawSceZone(i); // J
 		}
 
-		//drawConverZones();
+		//drawConverZones(); // This is OK to uncomment - J
 		//drawMaskZones();
 	}
 #endif
@@ -4335,7 +4338,7 @@ bool drawTextOverlay(void)
 					// NOTE: Updating the fields & such beforehand means a message will offset subsequent messages for 1 frame after 
 					currMsg->string = NULL;
 				} else { // Otherwise, display the message at full brightness for the first 26 time units, then darken it every 2 time units
-					ExtSetFont(PtrFont, 16 + (currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2));
+					ExtSetFont(PtrFont, 16 + ((currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2)));
 					renderText(X, msgsY + 1, logicalScreen, currMsg->string->textPtr);
 				}
 
