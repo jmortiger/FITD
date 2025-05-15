@@ -16,6 +16,7 @@ extern s16 currentFontColor;
 s16 g_fontInterWordSpace = 2;
 s16 g_fontInterLetterSpace = 1;
 s16 fontSm3 = 18;
+/// @brief Seemingly the text's x position?
 s16 fontVar6 = 0;
 s16 fontSm7 = 0x1234;
 s16 fontSm8 = 0x1234;
@@ -96,6 +97,7 @@ void renderText(int x, int y, char* surface, u8* string)
 	fontVar6 = x;
 	fontSm7 = y;
 
+	// Until the null-terminator is reached...
 	while ((character = *(string++))) {
 		char* dataPtr;
 		u16 data;
@@ -161,6 +163,7 @@ void renderText(int x, int y, char* surface, u8* string)
 				characterPtr += fontSm2;
 			}
 
+			// Add the width
 			fontVar6 += data & 0xF;
 		} else { // Otherwise, it's a space character.
 			fontVar6 += g_fontInterWordSpace;
