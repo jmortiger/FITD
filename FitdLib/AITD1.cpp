@@ -193,12 +193,12 @@ int ChoosePerso(void)
 
 		if (choice == 0) {
 			// Draw a framed box taking half the width & the whole height
-			AffBigCadre(80, 100, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
-			CopyBox_Aux_Log(10, 10, 149, 190);
+			AffBigCadre(_SCREEN_INTERNAL_WIDTH / 4, _SCREEN_INTERNAL_HEIGHT / 2, _SCREEN_INTERNAL_WIDTH / 2, _SCREEN_INTERNAL_HEIGHT);
+			CopyBox_Aux_Log(10, 10, _SCREEN_INTERNAL_WIDTH / 2 - 10/*  - 1 */, _SCREEN_INTERNAL_HEIGHT - 10);
 		} else {
 			// Draw a framed box taking half the width & the whole height
-			AffBigCadre(240, 100, 160, _SCREEN_INTERNAL_HEIGHT);
-			CopyBox_Aux_Log(170, 10, 309, 190);
+			AffBigCadre(3 * _SCREEN_INTERNAL_WIDTH / 4, _SCREEN_INTERNAL_HEIGHT / 2, _SCREEN_INTERNAL_WIDTH / 2, _SCREEN_INTERNAL_HEIGHT);
+			CopyBox_Aux_Log(_SCREEN_INTERNAL_WIDTH / 2 + 10, 10, _SCREEN_INTERNAL_WIDTH - 10/*  - 1 */, _SCREEN_INTERNAL_HEIGHT - 10);
 		}
 
 		FastCopyScreen(logicalScreen, frontBuffer);
@@ -224,8 +224,8 @@ int ChoosePerso(void)
 				choice = 0;
 				FastCopyScreen(aux2, logicalScreen);
 				// Draw a framed box taking half the width & the whole height
-				AffBigCadre(80, 100, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
-				CopyBox_Aux_Log(10, 10, 149, 190);
+				AffBigCadre(_SCREEN_INTERNAL_WIDTH / 4, _SCREEN_INTERNAL_HEIGHT / 2, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
+				CopyBox_Aux_Log(10, 10, _SCREEN_INTERNAL_WIDTH / 2 - 10/*  - 1 */, _SCREEN_INTERNAL_HEIGHT - 10);
 				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 				while (JoyD != 0) {
@@ -238,8 +238,8 @@ int ChoosePerso(void)
 				choice = 1;
 				FastCopyScreen(aux2, logicalScreen);
 				// Draw a framed box taking half the width & the whole height
-				AffBigCadre(240, 100, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
-				CopyBox_Aux_Log(170, 10, 309, 190);
+				AffBigCadre(3 * _SCREEN_INTERNAL_WIDTH / 4, _SCREEN_INTERNAL_HEIGHT / 2, (_SCREEN_INTERNAL_WIDTH / 2), _SCREEN_INTERNAL_HEIGHT);
+				CopyBox_Aux_Log(_SCREEN_INTERNAL_WIDTH / 2 + 10, 10, _SCREEN_INTERNAL_WIDTH - 10/*  - 1 */, _SCREEN_INTERNAL_HEIGHT - 10);
 				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 				while (JoyD != 0) {
