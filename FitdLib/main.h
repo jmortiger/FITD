@@ -56,8 +56,12 @@ void getZvCube(char* bodyPtr, ZVStruct* zvPtr);
 void PutAtObjet(int objIdx, int objIdxToPutAt);
 void SetClip(int left, int top, int right, int bottom);
 
+// #region Text: Rendering, Reading, On-Screen Messages
 void readBook(int index, int type);
 int Lire(int index, int left, int top, int right, int bottom, int mode, int color, int shadow);
+void makeMessage(int messageIdx);
+bool drawTextOverlay(void);
+// #endregion Text: Rendering, Reading, On-Screen Messages
 
 void setupCameraProjection(int centerX, int centerY, int x, int y, int z);
 void SetAngleCamera(int x, int y, int z);
@@ -70,8 +74,6 @@ s16 GetNbFramesAnim(char* animPtr);
 int SetAnimObjet(int frame, char* anim, char* body);
 void deleteObject(int objIdx);
 void removeFromBGIncrust(int actorIdx);
-void makeMessage(int messageIdx);
-bool drawTextOverlay(void);
 s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr);
 void handleCollision(ZVStruct* startZv, ZVStruct* zvPtr2, ZVStruct* zvPtr3);
 

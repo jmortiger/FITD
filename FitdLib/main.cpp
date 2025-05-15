@@ -233,6 +233,7 @@ void InitCopyBox(char* var0, char* var1)
 	screenSm5 = var1;
 }
 
+// #region Text: Rendering, Reading, On-Screen Messages
 void allocTextes(void)
 {
 	tabTextes = (textEntryStruct*)malloc(NUM_MAX_TEXT_ENTRY * sizeof(textEntryStruct)); // 2000 = 250 * 8
@@ -317,172 +318,6 @@ void allocTextes(void)
 	}
 }
 
-void OpenProgram(void)
-{
-	// time_t ltime;
-	FILE* fHandle;
-
-	setupScreen();
-	// setupInterrupt();
-	// setupInterrupt2();
-	// setupInterrupt3();
-
-	// setupVideoMode();
-
-	// time( &ltime );
-
-	// srand(ltime);
-
-	if (!initMusicDriver()) {
-		musicConfigured = musicEnabled = false;
-	}
-
-	// TODO: reverse sound init code
-
-
-	aux = (char*)malloc(65068);
-	if (!aux) {
-		fatalError(1, "Aux"); // TODO: Improve error message
-	}
-
-	aux2 = (char*)malloc(65068);
-	if (!aux2) {
-		fatalError(1, "Aux2"); // TODO: Improve error message
-	}
-
-	InitCopyBox(aux2, logicalScreen);
-	/* InitCopyPlot(aux2);
-	InitSpecialCopyPoly(aux2); */
-
-	BufferAnim.resize(NB_BUFFER_ANIM);
-	for (int i = 0; i < NB_BUFFER_ANIM; i++) {
-		BufferAnim[i].resize(SIZE_BUFFER_ANIM);
-	}
-
-	switch (g_gameId) {
-		case AITD3:
-		{
-#ifdef TARGET_OS_IPHONE
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
-#else
-			FILE* fHandle = fopen("font.bin", "rb");
-			fseek(fHandle, 0, SEEK_END);
-			int fontSize = ftell(fHandle);
-			PtrFont = (char*)malloc(fontSize);
-			fseek(fHandle, 0, SEEK_SET);
-			fread(PtrFont, fontSize, 1, fHandle);
-			fclose(fHandle);
-#endif
-			break;
-		}
-		case JACK:
-		case AITD2:
-		{
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
-			/*
-			int fontSize = getPakSize("ITD_RESS",1);
-			FILE* fhandle = fopen("font.bin", "wb+");
-			fwrite(fontData, fontSize, 1, fhandle);
-			fclose(fhandle);*/
-			break;
-		}
-		case AITD1:
-		{
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 5);
-			break;
-		}
-		case TIMEGATE:
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
-			break;
-		default:
-			FITD_throwFatal(); // assert(0);
-	}
-
-	ExtSetFont(PtrFont, 14);
-
-	if (g_gameId == AITD1) {
-		SetFontSpace(2, 0);
-	} else {
-		SetFontSpace(2, 1);
-	}
-
-	switch (g_gameId) {
-		case JACK:
-		case AITD2:
-		case AITD3:
-		{
-			PtrCadre = CheckLoadMallocPak("ITD_RESS", 0);
-			break;
-		}
-		case AITD1:
-		{
-			PtrCadre = CheckLoadMallocPak("ITD_RESS", 4);
-			break;
-		}
-	}
-
-	PtrPrioritySample = loadFromItd("PRIORITY.ITD");
-
-	// read cvars definitions
-	{
-		fHandle = Open("DEFINES.ITD", "rb");
-		if (!fHandle) {
-			fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
-		}
-		for (int i = 0; i < CVars.size(); i++) {
-			s16 cvarValue = 0;
-			fread(&cvarValue, 2, 1, fHandle);
-			CVars[i] = READ_BE_S16(&cvarValue);
-		}
-		fclose(fHandle);
-	}
-
-	allocTextes();
-
-	// if(musicConfigured)
-	listMus = HQR_InitRessource("LISTMUS", 110000, 40);
-
-	char sampleFileName[256] = "";
-	if (g_gameId == TIMEGATE) {
-		strcpy(sampleFileName, "SAMPLES");
-	} else {
-		strcpy(sampleFileName, "LISTSAMP");
-	}
-
-	listSamp = HQR_InitRessource(sampleFileName, 64000, 30);
-
-	HQ_Memory = HQR_Init(10000, 50);
-}
-
-/// @brief UNIMPLEMENTED
-/// @todo IMPLEMENT
-void freeAll(void)
-{
-	/* HQR_Free(hqrUnk);
-
-	HQR_Free(listSamp);
-
-	HQR_Free(listMus);
-
-	free(languageData);
-
-	free(tabTextes);
-
-	free(priority);
-
-	free(aitdBoxGfx);
-
-	free(fontData);
-
-	free(bufferAnim);
-
-	if(aux != aux3) free(aux);
-
-	free(aux2); */
-
-	// TODO: implement all the code that restore the interrupts & all
-}
-
 textEntryStruct* getTextFromIdx(int index)
 {
 	for (int currentIndex = 0; currentIndex < NUM_MAX_TEXT_ENTRY; currentIndex++) {
@@ -492,48 +327,6 @@ textEntryStruct* getTextFromIdx(int index)
 
 	return(NULL);
 }
-
-/// @brief 
-/// @param x1 
-/// @param y1 
-/// @param x2 
-/// @param y2 
-/// @param color 
-/// @todo document
-void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
-{
-	int width = x2 - x1 + 1;
-	int height = y2 - y1 + 1;
-
-	char* dest = logicalScreen + y1 * _SCREEN_INTERNAL_WIDTH + x1;
-
-	int j;
-	for (int i = 0; i < height; i++) {
-		for (j = 0; j < width; j++) { *(dest++) = color; }
-
-		dest += _SCREEN_INTERNAL_WIDTH - width;
-	}
-}
-
-void loadPalette(void)
-{
-	unsigned char localPalette[768];
-
-	if (g_gameId != AITD2) {
-		loadPakTo("ITD_RESS", 3, aux);
-	} /* else loadPakToPtr("ITD_RESS", 59, aux); */
-	copyPalette((unsigned char*)aux, currentGamePalette);
-
-	copyPalette(currentGamePalette, localPalette);
-	// fadeInSub1(localPalette);
-
-	// TODO: to finish
-}
-
-/// @brief UNIMPLEMENTED
-/// @todo IMPLEMENT
-/// @todo Document
-void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
 /// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
 /// @todo FULLY IMPLEMENT.
@@ -929,6 +722,293 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 #undef _LIRE_type_mask
 }
 
+/// @brief Clears all messages.
+void clearMessageTable(void)
+{
+	for (int i = 0; i < NUM_MAX_MESSAGE; i++) {
+		messageTable[i].string = NULL;
+	}
+}
+
+/// @brief Handles dispatching text render requests and updating `messageTable`.
+/// @return `0` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `1` otherwise; The current value of `var_14`.
+bool drawTextOverlay(void)
+{
+	bool anyEntriesUpdated = false;
+	/// The Y position the messages will be drawn to the screen at. Shifted up for every line of messages.
+	int msgsY = _SCREEN_INTERNAL_HEIGHT - 1 - MESSAGE_HEIGHT;
+	messageStruct* currMsg = messageTable;
+
+	// Should be updated in loop.
+	BBox3D4 = _SCREEN_INTERNAL_HEIGHT - 1;
+	BBox3D1 = _SCREEN_INTERNAL_WIDTH - 1;
+	BBox3D3 = 0;
+
+	if (lightOff == 0) {
+		for (int i = 0; i < NUM_MAX_MESSAGE; i++, currMsg++) {
+			if (currMsg->string) {
+				int width = currMsg->string->width;
+				int X = (_SCREEN_INTERNAL_WIDTH / 2) - width / 2;
+				int Y = X + width;
+
+				if (X < BBox3D1) { BBox3D1 = X; }
+				if (Y > BBox3D3) { BBox3D3 = Y; }
+
+				// If the message has been displayed for more than 55 units of time...
+				if ((currMsg->time++) > 55) { // NOTE: will overflow after an obscene amount of time; rn idc.
+					// ...the message is expired; clear the reference & don't display the message.
+					// NOTE: Updating the fields & such beforehand means a message will offset subsequent messages for 1 frame after 
+					currMsg->string = NULL;
+				} else { // Otherwise, display the message at full brightness for the first 26 time units, then darken it every 2 time units
+					ExtSetFont(PtrFont, 16 + ((currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2)));
+					renderText(X, msgsY + 1, logicalScreen, currMsg->string->textPtr);
+				}
+
+				msgsY -= MESSAGE_HEIGHT;
+				anyEntriesUpdated = true;
+			}
+		}
+	} // else { }
+
+	BBox3D2 = msgsY;
+	return(anyEntriesUpdated);
+}
+
+void makeMessage(int messageIdx)
+{
+	textEntryStruct* messagePtr = getTextFromIdx(messageIdx);
+
+	if (messagePtr) {
+		int i;
+
+		// If the message is already displayed, reset its timer.
+		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
+			if (messageTable[i].string == messagePtr) {
+				messageTable[i].time = 0;
+				return;
+			}
+		}
+
+		// Otherwise, find the first open slot and put the message into that slot.
+		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
+			if (messageTable[i].string == NULL) {
+				messageTable[i].string = messagePtr;
+				messageTable[i].time = 0;
+				return;
+			}
+		}
+	}
+}
+// #endregion Text: Rendering, Reading, On-Screen Messages
+
+void OpenProgram(void)
+{
+	// time_t ltime;
+	FILE* fHandle;
+
+	setupScreen();
+	// setupInterrupt();
+	// setupInterrupt2();
+	// setupInterrupt3();
+
+	// setupVideoMode();
+
+	// time( &ltime );
+
+	// srand(ltime);
+
+	if (!initMusicDriver()) {
+		musicConfigured = musicEnabled = false;
+	}
+
+	// TODO: reverse sound init code
+
+
+	aux = (char*)malloc(65068);
+	if (!aux) {
+		fatalError(1, "Aux"); // TODO: Improve error message
+	}
+
+	aux2 = (char*)malloc(65068);
+	if (!aux2) {
+		fatalError(1, "Aux2"); // TODO: Improve error message
+	}
+
+	InitCopyBox(aux2, logicalScreen);
+	/* InitCopyPlot(aux2);
+	InitSpecialCopyPoly(aux2); */
+
+	BufferAnim.resize(NB_BUFFER_ANIM);
+	for (int i = 0; i < NB_BUFFER_ANIM; i++) {
+		BufferAnim[i].resize(SIZE_BUFFER_ANIM);
+	}
+
+	switch (g_gameId) {
+		case AITD3:
+		{
+#ifdef TARGET_OS_IPHONE
+			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
+#else
+			FILE* fHandle = fopen("font.bin", "rb");
+			fseek(fHandle, 0, SEEK_END);
+			int fontSize = ftell(fHandle);
+			PtrFont = (char*)malloc(fontSize);
+			fseek(fHandle, 0, SEEK_SET);
+			fread(PtrFont, fontSize, 1, fHandle);
+			fclose(fHandle);
+#endif
+			break;
+		}
+		case JACK:
+		case AITD2:
+		{
+			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
+			/*
+			int fontSize = getPakSize("ITD_RESS",1);
+			FILE* fhandle = fopen("font.bin", "wb+");
+			fwrite(fontData, fontSize, 1, fhandle);
+			fclose(fhandle);*/
+			break;
+		}
+		case AITD1:
+		{
+			PtrFont = CheckLoadMallocPak("ITD_RESS", 5);
+			break;
+		}
+		case TIMEGATE:
+			PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
+			break;
+		default:
+			FITD_throwFatal(); // assert(0);
+	}
+
+	ExtSetFont(PtrFont, 14);
+
+	if (g_gameId == AITD1) {
+		SetFontSpace(2, 0);
+	} else {
+		SetFontSpace(2, 1);
+	}
+
+	switch (g_gameId) {
+		case JACK:
+		case AITD2:
+		case AITD3:
+		{
+			PtrCadre = CheckLoadMallocPak("ITD_RESS", 0);
+			break;
+		}
+		case AITD1:
+		{
+			PtrCadre = CheckLoadMallocPak("ITD_RESS", 4);
+			break;
+		}
+	}
+
+	PtrPrioritySample = loadFromItd("PRIORITY.ITD");
+
+	// read cvars definitions
+	{
+		fHandle = Open("DEFINES.ITD", "rb");
+		if (!fHandle) {
+			fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
+		}
+		for (int i = 0; i < CVars.size(); i++) {
+			s16 cvarValue = 0;
+			fread(&cvarValue, 2, 1, fHandle);
+			CVars[i] = READ_BE_S16(&cvarValue);
+		}
+		fclose(fHandle);
+	}
+
+	allocTextes();
+
+	// if(musicConfigured)
+	listMus = HQR_InitRessource("LISTMUS", 110000, 40);
+
+	char sampleFileName[256] = "";
+	if (g_gameId == TIMEGATE) {
+		strcpy(sampleFileName, "SAMPLES");
+	} else {
+		strcpy(sampleFileName, "LISTSAMP");
+	}
+
+	listSamp = HQR_InitRessource(sampleFileName, 64000, 30);
+
+	HQ_Memory = HQR_Init(10000, 50);
+}
+
+/// @brief UNIMPLEMENTED
+/// @todo IMPLEMENT
+void freeAll(void)
+{
+	/* HQR_Free(hqrUnk);
+
+	HQR_Free(listSamp);
+
+	HQR_Free(listMus);
+
+	free(languageData);
+
+	free(tabTextes);
+
+	free(priority);
+
+	free(aitdBoxGfx);
+
+	free(fontData);
+
+	free(bufferAnim);
+
+	if(aux != aux3) free(aux);
+
+	free(aux2); */
+
+	// TODO: implement all the code that restore the interrupts & all
+}
+
+/// @brief 
+/// @param x1 
+/// @param y1 
+/// @param x2 
+/// @param y2 
+/// @param color 
+/// @todo document
+void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
+{
+	int width = x2 - x1 + 1;
+	int height = y2 - y1 + 1;
+
+	char* dest = logicalScreen + y1 * _SCREEN_INTERNAL_WIDTH + x1;
+
+	int j;
+	for (int i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) { *(dest++) = color; }
+
+		dest += _SCREEN_INTERNAL_WIDTH - width;
+	}
+}
+
+void loadPalette(void)
+{
+	unsigned char localPalette[768];
+
+	if (g_gameId != AITD2) {
+		loadPakTo("ITD_RESS", 3, aux);
+	} /* else loadPakToPtr("ITD_RESS", 59, aux); */
+	copyPalette((unsigned char*)aux, currentGamePalette);
+
+	copyPalette(currentGamePalette, localPalette);
+	// fadeInSub1(localPalette);
+
+	// TODO: to finish
+}
+
+/// @brief UNIMPLEMENTED
+/// @todo IMPLEMENT
+/// @todo Document
+void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
+
 extern "C" {
 	extern char homePath[512];
 }
@@ -1107,14 +1187,6 @@ void initEngine(void)
 
 	if (g_gameId == AITD1) {
 		currentWorldTarget = CVars[getCVarsIdx(WORLD_NUM_PERSO)];
-	}
-}
-
-/// @brief Clears all messages.
-void clearMessageTable(void)
-{
-	for (int i = 0; i < NUM_MAX_MESSAGE; i++) {
-		messageTable[i].string = NULL;
 	}
 }
 
@@ -4303,76 +4375,6 @@ int FitdMain(int argc, char* argv[])
 	}
 
 	return(0);
-}
-
-/// @brief Handles dispatching text render requests and updating `messageTable`.
-/// @return `0` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `1` otherwise; The current value of `var_14`.
-bool drawTextOverlay(void)
-{
-	bool anyEntriesUpdated = false;
-	/// The Y position the messages will be drawn to the screen at. Shifted up for every line of messages.
-	int msgsY = _SCREEN_INTERNAL_HEIGHT - 1 - MESSAGE_HEIGHT;
-	messageStruct* currMsg = messageTable;
-
-	// Should be updated in loop.
-	BBox3D4 = _SCREEN_INTERNAL_HEIGHT - 1;
-	BBox3D1 = _SCREEN_INTERNAL_WIDTH - 1;
-	BBox3D3 = 0;
-
-	if (lightOff == 0) {
-		for (int i = 0; i < NUM_MAX_MESSAGE; i++, currMsg++) {
-			if (currMsg->string) {
-				int width = currMsg->string->width;
-				int X = (_SCREEN_INTERNAL_WIDTH / 2) - width / 2;
-				int Y = X + width;
-
-				if (X < BBox3D1) { BBox3D1 = X; }
-				if (Y > BBox3D3) { BBox3D3 = Y; }
-
-				// If the message has been displayed for more than 55 units of time...
-				if ((currMsg->time++) > 55) { // NOTE: will overflow after an obscene amount of time; rn idc.
-					// ...the message is expired; clear the reference & don't display the message.
-					// NOTE: Updating the fields & such beforehand means a message will offset subsequent messages for 1 frame after 
-					currMsg->string = NULL;
-				} else { // Otherwise, display the message at full brightness for the first 26 time units, then darken it every 2 time units
-					ExtSetFont(PtrFont, 16 + ((currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2)));
-					renderText(X, msgsY + 1, logicalScreen, currMsg->string->textPtr);
-				}
-
-				msgsY -= MESSAGE_HEIGHT;
-				anyEntriesUpdated = true;
-			}
-		}
-	} // else { }
-
-	BBox3D2 = msgsY;
-	return(anyEntriesUpdated);
-}
-
-void makeMessage(int messageIdx)
-{
-	textEntryStruct* messagePtr = getTextFromIdx(messageIdx);
-
-	if (messagePtr) {
-		int i;
-
-		// If the message is already displayed, reset its timer.
-		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
-			if (messageTable[i].string == messagePtr) {
-				messageTable[i].time = 0;
-				return;
-			}
-		}
-
-		// Otherwise, find the first open slot and put the message into that slot.
-		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
-			if (messageTable[i].string == NULL) {
-				messageTable[i].string = messagePtr;
-				messageTable[i].time = 0;
-				return;
-			}
-		}
-	}
 }
 
 void hit(int animNumber, int arg_2, int arg_4, int arg_6, int hitForce, int arg_A)
