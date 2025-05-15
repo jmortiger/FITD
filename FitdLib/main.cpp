@@ -2571,7 +2571,7 @@ void drawMaskZone(cameraMaskStruct* maskZonePtr)
 {
 #ifndef _DBG_drawMaskZone_Color
 	return;
-#endif
+#else
 	for (int i = 0; i < maskZonePtr->numTestRect; i++) {
 		drawAAQuad(
 			maskZonePtr->rectTests->zoneX1 * 10,
@@ -2580,6 +2580,7 @@ void drawMaskZone(cameraMaskStruct* maskZonePtr)
 			maskZonePtr->rectTests->zoneZ2 * 10,
 			_DBG_drawMaskZone_Color);
 	}
+#endif
 }
 
 void drawMaskZones()
