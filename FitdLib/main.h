@@ -29,7 +29,7 @@ void flushScreen(void);
 int parseAllSaves(int arg);
 textEntryStruct* getTextFromIdx(int index);
 void cleanupAndExit(void);
-void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency);
+void drawProjectedBox(int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, int color, int transparency);
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index);
 
 void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar);

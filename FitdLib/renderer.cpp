@@ -928,6 +928,16 @@ renderFunction renderFunctions[] = {
 	renderZixel,
 };
 
+/// @brief 
+/// @param x 
+/// @param y 
+/// @param z 
+/// @param alpha 
+/// @param beta 
+/// @param gamma 
+/// @param modelPtr 
+/// @return BOOLEAN
+/// @todo Convert return type to bool.
 int AffObjet(int x, int y, int z, int alpha, int beta, int gamma, void* modelPtr)
 {
 	sBody* pBody = getBodyFromPtr(modelPtr);
@@ -1024,7 +1034,7 @@ int AffObjet(int x, int y, int z, int alpha, int beta, int gamma, void* modelPtr
 				break;
 			default:
 				return 0;
-				FITD_throwFatal(); // assert(0);
+				FITD_throwFatal();
 		}
 
 	}

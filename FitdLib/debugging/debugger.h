@@ -178,6 +178,7 @@ extern int numLoggedLifeScripts;
 // #define _DBG_drawRoomZv_Color_sceZone 20
 #define _DBG_drawZv_Color 10
 #define _DBG_drawMaskZone_Color 20
+#define _DBG_drawConverZone_Color 20
 // #endregion drawRoomZv
 
 // #region Emulation mode
