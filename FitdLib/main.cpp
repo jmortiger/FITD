@@ -3300,20 +3300,25 @@ void getZvRelativePosition(ZVStruct* zvPtr, int startRoom, int destRoom)
 	zvPtr->ZVZ2 += zDif;
 }
 
+/// @brief Update the given actor's collision table (`COL`) w/ the first 3 actors colliding w/ the given Zv.
+/// @param actorIdx 
+/// @param zvPtr 
+/// @return The number of actors found colliding w/ `zvPtr`.
 int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr)
 {
-	int currentCollisionSlot = 0;
-	tObject* currentActor = objectTable;
-	int actorRoom = objectTable[actorIdx].room;
-
+	// Clear the old list
 	for (int i = 0; i < 3; i++) {
 		currentProcessedActorPtr->COL[i] = -1;
 	}
-
-	for (int i = 0; i < NUM_MAX_OBJECT; i++) {
+	
+	int actorRoom = objectTable[actorIdx].room;
+	tObject* currentActor = objectTable;	
+	int currentCollisionSlot = 0;
+	for (int i = 0; i < NUM_MAX_OBJECT; i++, currentActor++) {
 		if (currentActor->indexInWorld != -1 && i != actorIdx) {
 			ZVStruct* currentActorZv = &currentActor->zv;
 
+			// TODO: Reduce duplication?
 			if (currentActor->room != actorRoom) {
 				ZVStruct localZv;
 
@@ -3336,7 +3341,6 @@ int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr)
 				}
 			}
 		}
-		currentActor++;
 	}
 
 	return(currentCollisionSlot);
@@ -3693,25 +3697,26 @@ void handleCollision(ZVStruct* startZv, ZVStruct* zvPtr2, ZVStruct* zvPtr3)
 	}
 }
 
+/// @brief Updates the list of collisions in `pRoomData->hardColTable`.
+/// @param zvPtr 
+/// @param pRoomData 
+/// @return The number of entries now in `pRoomData->hardColTable`.
 int AsmCheckListCol(ZVStruct* zvPtr, roomDataStruct* pRoomData)
 {
-	u16 i;
-	int hardColVar = 0;
-	hardColStruct* pCurrentEntry = pRoomData->hardColTable;
-
 #ifdef FITD_DEBUGGER
 	if (debuggerVar_noHardClip)
 		return 0;
 #endif
 
-	for (i = 0; i < pRoomData->numHardCol; i++) {
-		if (((pCurrentEntry->zv.ZVX1) < (zvPtr->ZVX2)) && ((zvPtr->ZVX1) < (pCurrentEntry->zv.ZVX2))) {
-			if (((pCurrentEntry->zv.ZVY1) < (zvPtr->ZVY2)) && ((zvPtr->ZVY1) < (pCurrentEntry->zv.ZVY2))) {
-				if (((pCurrentEntry->zv.ZVZ1) < (zvPtr->ZVZ2)) && ((zvPtr->ZVZ1) < (pCurrentEntry->zv.ZVZ2))) {
-					ASSERT(hardColVar < 10);
-					hardColTable[hardColVar++] = pCurrentEntry;
-				}
-			}
+	int hardColVar = 0;
+	hardColStruct* pCurrentEntry = pRoomData->hardColTable;
+
+	for (u16 i = 0; i < pRoomData->numHardCol; i++) {
+		if (((pCurrentEntry->zv.ZVX1) < (zvPtr->ZVX2)) && ((zvPtr->ZVX1) < (pCurrentEntry->zv.ZVX2)) &&
+			((pCurrentEntry->zv.ZVY1) < (zvPtr->ZVY2)) && ((zvPtr->ZVY1) < (pCurrentEntry->zv.ZVY2)) && 
+			((pCurrentEntry->zv.ZVZ1) < (zvPtr->ZVZ2)) && ((zvPtr->ZVZ1) < (pCurrentEntry->zv.ZVZ2))) {
+			ASSERT(hardColVar < 10);
+			hardColTable[hardColVar++] = pCurrentEntry;
 		}
 
 		pCurrentEntry++;
@@ -3723,6 +3728,16 @@ int AsmCheckListCol(ZVStruct* zvPtr, roomDataStruct* pRoomData)
 /// @brief UNIMPLEMENTED
 void menuWaitVSync() {}
 
+/// @brief No dependencies
+/// @param x1 
+/// @param z1 
+/// @param x2 
+/// @param z2 
+/// @param x3 
+/// @param z3 
+/// @param x4 
+/// @param z4 
+/// @return 
 int testCrossProduct(int x1, int z1, int x2, int z2, int x3, int z3, int x4, int z4)
 {
 	int returnFlag = 0;
@@ -4329,7 +4344,7 @@ void detectGame(void)
 	}
 
 	printf("FATAL: Game detection failed...\n");
-	FITD_throwFatal(); // assert(0);
+	FITD_throwFatal();
 }
 
 extern "C" {
@@ -4370,7 +4385,7 @@ int FitdMain(int argc, char* argv[])
 			startGame(0, 5, 1);
 			break;
 		default:
-			FITD_throwFatal(); // assert(0);
+			FITD_throwFatal();
 			break;
 	}
 
