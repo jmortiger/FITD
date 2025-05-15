@@ -974,6 +974,7 @@ void freeAll(void)
 /// @param y2 
 /// @param color 
 /// @todo document
+/// @todo Off by 1 problems
 void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 {
 	int width = x2 - x1 + 1;
@@ -981,8 +982,7 @@ void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 
 	char* dest = logicalScreen + y1 * _SCREEN_INTERNAL_WIDTH + x1;
 
-	int j;
-	for (int i = 0; i < height; i++) {
+	for (int i = 0, j; i < height; i++) {
 		for (j = 0; j < width; j++) { *(dest++) = color; }
 
 		dest += _SCREEN_INTERNAL_WIDTH - width;

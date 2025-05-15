@@ -161,6 +161,11 @@ int makeIntroScreens(void)
 	return(0);
 }
 
+/// @brief 
+/// @param x1 inclusive
+/// @param y1 inclusive
+/// @param x2 exclusive
+/// @param y2 exclusive
 void CopyBox_Aux_Log(int x1, int y1, int x2, int y2)
 {
 	for (int i = y1, j; i < y2; i++) {
