@@ -4332,7 +4332,7 @@ bool drawTextOverlay(void)
 					// NOTE: Updating the fields & such beforehand means a message will offset subsequent messages for 1 frame after 
 					currMsg->string = NULL;
 				} else { // Otherwise, display the message at full brightness for the first 26 time units, then darken it every 2 time units
-					ExtSetFont(PtrFont, 16 + (currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2));
+					ExtSetFont(PtrFont, 16 + ((currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2)));
 					renderText(X, msgsY + 1, logicalScreen, currMsg->string->textPtr);
 				}
 
