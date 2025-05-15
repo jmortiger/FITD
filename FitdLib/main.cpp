@@ -2499,22 +2499,21 @@ void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int
 /// @param actorPtr 
 void drawZv(tObject* actorPtr)
 {
-#ifndef _DBG_drawZv_Color
-	return;
-#else 
+#ifdef _DBG_drawZv_Color
 	ZVStruct localZv;
 
+	// If it's in a different room than the currently targeted actor...
 	if (actorPtr->room != objectTable[currentCameraTargetActor].room) {
 		getZvRelativePosition(&localZv, actorPtr->room, objectTable[currentCameraTargetActor].room);
-	} else {
+	} else { // ...otherwise, it's in the correct coordinate space.
 		copyZv(&actorPtr->zv, &localZv);
 	}
 
 	// bottom
 	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, _DBG_drawZv_Color);
-	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, 10);
-	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, 10);
-	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, 10);
+	drawProjectedLine(localZv.ZVX1, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ2, localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, _DBG_drawZv_Color);
+	drawProjectedLine(localZv.ZVX2, localZv.ZVY2, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY2, localZv.ZVZ1, _DBG_drawZv_Color);
 
 	// top
 	drawProjectedLine(localZv.ZVX1, localZv.ZVY1, localZv.ZVZ1, localZv.ZVX1, localZv.ZVY1, localZv.ZVZ2, _DBG_drawZv_Color);
@@ -2531,16 +2530,16 @@ void drawZv(tObject* actorPtr)
 
 void drawConverZone(cameraZoneEntryStruct* zonePtr)
 {
+#ifdef _DBG_drawConverZone_Color
 	int i;
-
-	for (i = 0; i < zonePtr->numPoints - 1; i++) {
-		drawProjectedLine(zonePtr->pointTable[i].x * 10, 0, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[i + 1].x * 10, 0, zonePtr->pointTable[i + 1].y * 10, 20);
+	for (i = 0; i < zonePtr->numPoints - 1; i++) { // Connect each point to the following point
+		drawProjectedLine(zonePtr->pointTable[i].x * 10, 0, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[i + 1].x * 10, 0, zonePtr->pointTable[i + 1].y * 10, _DBG_drawConverZone_Color);
 	}
 
-	// loop first and last
-
-	i = zonePtr->numPoints - 1;
-	drawProjectedLine(zonePtr->pointTable[0].x * 10, 0, zonePtr->pointTable[0].y * 10, zonePtr->pointTable[i].x * 10, 0, zonePtr->pointTable[i].y * 10, 20);
+	// Connect first and last points
+	assert(i == zonePtr->numPoints - 1); // i = zonePtr->numPoints - 1;
+	drawProjectedLine(zonePtr->pointTable[i].x * 10, 0, zonePtr->pointTable[i].y * 10, zonePtr->pointTable[0].x * 10, 0, zonePtr->pointTable[0].y * 10, _DBG_drawConverZone_Color);
+#endif
 }
 
 void drawConverZones()
@@ -2606,7 +2605,7 @@ void drawMaskZones()
 /// @param z2 
 /// @param z3 
 /// @param z4 
-/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to use.
 /// @param transparency 
 /// @todo change color to u8
 void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float z1, float z2, float z3, float z4, int color, int transparency)
@@ -2660,39 +2659,39 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 }
 
 /// @brief 
-/// @param x1 
-/// @param x2 
-/// @param y1 
-/// @param y2 
-/// @param z1 
-/// @param z2 
-/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param xMin 
+/// @param xMax 
+/// @param yMin 
+/// @param yMax 
+/// @param zMin 
+/// @param zMax 
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to use.
 /// @param transparency 
 /// @todo change color to u8
-void drawProjectedBox(float x1, float x2, float y1, float y2, float z1, float z2, int color, int transparency)
+void drawProjectedBox(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, int color, int transparency)
 {
 	//bottom
-	drawProjectedQuad(x1, x1, x2, x2, y1, y1, y1, y1, z1, z2, z2, z1, color, transparency);
+	drawProjectedQuad(xMin, xMin, xMax, xMax, yMin, yMin, yMin, yMin, zMin, zMax, zMax, zMin, color, transparency);
 	//top
-	drawProjectedQuad(x1, x1, x2, x2, y2, y2, y2, y2, z1, z2, z2, z1, color, transparency);
+	drawProjectedQuad(xMin, xMin, xMax, xMax, yMax, yMax, yMax, yMax, zMin, zMax, zMax, zMin, color, transparency);
 	//left
-	drawProjectedQuad(x1, x1, x1, x1, y1, y2, y2, y1, z1, z1, z2, z2, color, transparency);
+	drawProjectedQuad(xMin, xMin, xMin, xMin, yMin, yMax, yMax, yMin, zMin, zMin, zMax, zMax, color, transparency);
 	//right
-	drawProjectedQuad(x2, x2, x2, x2, y1, y2, y2, y1, z1, z1, z2, z2, color, transparency);
+	drawProjectedQuad(xMax, xMax, xMax, xMax, yMin, yMax, yMax, yMin, zMin, zMin, zMax, zMax, color, transparency);
 	//front
-	drawProjectedQuad(x1, x2, x2, x1, y1, y1, y2, y2, z1, z1, z1, z1, color, transparency);
+	drawProjectedQuad(xMin, xMax, xMax, xMin, yMin, yMin, yMax, yMax, zMin, zMin, zMin, zMin, color, transparency);
 	//back
-	drawProjectedQuad(x1, x2, x2, x1, y1, y1, y2, y2, z2, z2, z2, z2, color, transparency);
+	drawProjectedQuad(xMin, xMax, xMax, xMin, yMin, yMin, yMax, yMax, zMax, zMax, zMax, zMax, color, transparency);
 }
 
-void drawProjectedBox(int x1, int x2, int y1, int y2, int z1, int z2, int color, int transparency)
+void drawProjectedBox(int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, int color, int transparency)
 {
-	drawProjectedBox((float)x1, (float)x2, (float)y1, (float)y2, (float)z1, (float)z2, color, transparency);
+	drawProjectedBox((float)xMin, (float)xMax, (float)yMin, (float)yMax, (float)zMin, (float)zMax, color, transparency);
 }
 
 /// @brief 
 /// @param zoneData 
-/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to use.
 /// @param transparency 255 is opaque
 void drawRoomZv(ZVStruct* zoneData, int color, int transparency)
 {
@@ -2782,7 +2781,7 @@ void drawZone(char* zoneData, int color)
 
 /// @brief 
 /// @param zoneData 
-/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to draw the ZV in.
+/// @param color The index in AITD1's [palette](https://kb.speeddemosarchive.com/File:AITD_palette.png) of the color to use.
 /// @todo change color to u8
 void drawOverlayZone(char* zoneData, int color)
 {
@@ -3284,7 +3283,7 @@ void cleanClip()
 /// @param maxX `clipRight`
 /// @param minY `clipTop`
 /// @param maxY `clipBottom`
-/// @param fillColor the color to fill the area with
+/// @param fillColor The raw color to fill the area with (NOT USING A PALETTE)
 void cleanClip(int minX, int maxX, int minY, int maxY, char fillColor = 0)
 {
 	for (int x = minX; x < maxX; x++) {
@@ -3295,7 +3294,7 @@ void cleanClip(int minX, int maxX, int minY, int maxY, char fillColor = 0)
 }
 // #endregion cleanClip
 
-void drawFoundObect(int menuState, int objectName, int zoomFactor)
+void drawFoundObject(int menuState, int objectName, int zoomFactor)
 {
 	cleanClip();
 
@@ -3414,7 +3413,7 @@ void foundObject(int objIdx, int param)
 
 	AffBigCadre(160, 100, 240, 120);
 
-	drawFoundObect(var_6, objPtr->foundName, var_A);
+	drawFoundObject(var_6, objPtr->foundName, var_A);
 	osystem_flip(NULL);
 
 	input5 = 1;
@@ -3469,7 +3468,7 @@ void foundObject(int objIdx, int param)
 		if (var_A < 25000)
 			var_8 = -var_8;
 
-		drawFoundObect(var_6, objPtr->foundName, var_A);
+		drawFoundObject(var_6, objPtr->foundName, var_A);
 
 		// menuWaitVSync();
 	}
