@@ -731,7 +731,7 @@ void clearMessageTable(void)
 }
 
 /// @brief Handles dispatching text render requests and updating `messageTable`.
-/// @return `0` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `1` otherwise; The current value of `var_14`.
+/// @return `true` if any messages in `messageTable` were updated (i.e. had text in them BEFORE MODIFICATION), `false` otherwise.
 bool drawTextOverlay(void)
 {
 	bool anyEntriesUpdated = false;
@@ -754,12 +754,12 @@ bool drawTextOverlay(void)
 				if (X < BBox3D1) { BBox3D1 = X; }
 				if (Y > BBox3D3) { BBox3D3 = Y; }
 
-				// If the message has been displayed for more than 55 units of time...
+				// If the message has been displayed for more than 55 frames...
 				if ((currMsg->time++) > 55) { // NOTE: will overflow after an obscene amount of time; rn idc.
 					// ...the message is expired; clear the reference & don't display the message.
 					// NOTE: Updating the fields & such beforehand means a message will offset subsequent messages for 1 frame after 
 					currMsg->string = NULL;
-				} else { // Otherwise, display the message at full brightness for the first 26 time units, then darken it every 2 time units
+				} else { // Otherwise, display the message at full brightness for the first 26 frames, then darken it every 2 frames
 					ExtSetFont(PtrFont, 16 + ((currMsg->time < 26) ? 0 : ((currMsg->time - 26) / 2)));
 					renderText(X, msgsY + 1, logicalScreen, currMsg->string->textPtr);
 				}
@@ -774,6 +774,9 @@ bool drawTextOverlay(void)
 	return(anyEntriesUpdated);
 }
 
+// IDEA: Add return indicating success?
+/// @brief 
+/// @param messageIdx 
 void makeMessage(int messageIdx)
 {
 	textEntryStruct* messagePtr = getTextFromIdx(messageIdx);
@@ -781,6 +784,7 @@ void makeMessage(int messageIdx)
 	if (messagePtr) {
 		int i;
 
+		// IDEA: Store first open index in first loop?
 		// If the message is already displayed, reset its timer.
 		for (i = 0; i < NUM_MAX_MESSAGE; i++) {
 			if (messageTable[i].string == messagePtr) {
@@ -2970,6 +2974,8 @@ int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
 	return(0);
 }
 
+/// @brief Draw foreground cutouts over the given actor.
+/// @param actorPtr 
 void drawBgOverlay(tObject* actorPtr)
 {
 	actorPtr->screenXMin = BBox3D1;
@@ -3195,15 +3201,12 @@ void mainDraw(int flagFlip)
 				}
 #endif
 			}
-
-			if (BBox3D1 < 0)
-				BBox3D1 = 0;
-			if (BBox3D3 > _SCREEN_INTERNAL_WIDTH - 1)
-				BBox3D3 = _SCREEN_INTERNAL_WIDTH - 1;
-			if (BBox3D2 < 0)
-				BBox3D2 = 0;
-			if (BBox3D4 > _SCREEN_INTERNAL_HEIGHT - 1)
-				BBox3D4 = _SCREEN_INTERNAL_HEIGHT - 1;
+#define __L_clamp(v, sign, to) if ((v) sign (to)) v = (to)
+#define _L_clamp(v, sign, to) __L_clamp(v, sign, to)
+			_L_clamp(BBox3D1, <, 0);
+			_L_clamp(BBox3D3, >, _SCREEN_INTERNAL_WIDTH - 1);
+			_L_clamp(BBox3D2, <, 0);
+			_L_clamp(BBox3D4, >, _SCREEN_INTERNAL_HEIGHT - 1);
 
 			if (BBox3D1 <= _SCREEN_INTERNAL_WIDTH - 1 && BBox3D2 <= _SCREEN_INTERNAL_HEIGHT - 1 && BBox3D3 >= 0 && BBox3D4 >= 0) // is the character on screen ?
 			{

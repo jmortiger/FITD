@@ -31,6 +31,7 @@ bgfx::TextureHandle g_paletteTexture = BGFX_INVALID_HANDLE;
 extern int outputResolution[2];
 extern bool debuggerVar_debugMenuDisplayed;
 
+// TODO: Remove this from active dev?
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -109,9 +110,11 @@ float farVal = 100000;
 float cameraZoom = 0;
 float fov = 0;
 
+/// @brief 
+/// @details * Only set in `osystem_setPalette`
 char RGB_Pal[256 * 4];
 
-unsigned int    backTexture;
+unsigned int backTexture;
 
 int g_screenWidth = 0;
 int g_screenHeight = 0;
@@ -486,27 +489,30 @@ void osystem_startFrame()
 	osystem_drawBackground();
 }
 
+/// @brief ?FRONTBUFFER (screen): Not stored inside the game's memory at all, but is stored inside DOSBox. It should be an exact copy of the BACKBUFFER but desyncing may occur. This is because the game doesn't copy the entire BACKBUFFER, just parts that have changed, for optimization.? [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=FRONTBUFFER%20%28screen%29%3A,changed%2C%20for%20optimization%2E)
 unsigned char frontBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
 unsigned char physicalScreen[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
 unsigned char physicalScreenRGB[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 3];
 
+/// @brief 
+/// @param videoBuffer 
+/// @param left 
+/// @param top 
+/// @param right 
+/// @param bottom 
+/// @details * gets passed `logicalScreen`, `frontBuffer`, & `aux` as `videoBuffer`
 void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int right, int bottom)
 {
 	unsigned char* out = physicalScreenRGB;
 	unsigned char* in = (unsigned char*)&videoBuffer[0] + left + top * _SCREEN_INTERNAL_WIDTH;
 
-	int i;
-	int j;
-
-	while ((right - left) % 4) {
+	while ((right - left) % 4)
 		right++;
-	}
 
-	while ((bottom - top) % 4) {
+	while ((bottom - top) % 4)
 		bottom++;
-	}
 
-	for (i = top; i < bottom; i++) {
+	for (int i = top, j; i < bottom; i++) {
 		in = (unsigned char*)&videoBuffer[0] + left + i * _SCREEN_INTERNAL_WIDTH;
 		unsigned char* out2 = physicalScreen + left + i * _SCREEN_INTERNAL_WIDTH;
 		for (j = left; j < right; j++) {
@@ -528,10 +534,7 @@ void osystem_refreshFrontTextureBuffer()
 	unsigned char* out = physicalScreenRGB;
 	unsigned char* in = physicalScreen;
 
-	int i;
-	int j;
-
-	for (i = 0; i < _SCREEN_INTERNAL_HEIGHT * _SCREEN_INTERNAL_WIDTH; i++) {
+	for (int i = 0; i < _SCREEN_INTERNAL_HEIGHT * _SCREEN_INTERNAL_WIDTH; i++) {
 		unsigned char color = *(in++);
 		*(out++) = RGB_Pal[color * 3];
 		*(out++) = RGB_Pal[color * 3 + 1];

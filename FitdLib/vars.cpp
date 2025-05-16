@@ -35,10 +35,13 @@ int unkScreenVar2;
 int actorTurnedToObj = 0;
 /* #endregion Unused */
 
+/// @brief BACKGROUND1: A direct copy of a 2D background from the PAK file. Never overwritten after uncompressed. This is the third one in memory. Every time the camera changes, a new image is loaded into BACKGROUND1. [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKGROUND1%3A,loaded%20into%20BACKGROUND1%2E)
 char* aux;
+/// @brief BACKGROUND2: The same but with non-animated actors rendered onto it. When a static actor starts moving (gets the animated flag 0001 or redraw flag 0004), it gets removed from BACKGROUND2 by copying BACKGROUND1 and re-rendering all non-moving actors. The idea is to avoid having to render things that aren't currently moving. Similarly, when an actor becomes static, it is drawn into BACKGROUND2. This image is the second one in memory. [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKGROUND2%3A,second%20one%20in%20memory%2E)
 char* aux2;
 std::vector<std::vector<s16>> BufferAnim;
 
+/// @brief BACKBUFFER (offscreen): The same as BACKGROUND2 but with moving actors rendered also. When animating actors have to be re-rendered (every frame), the previous polygons are erased by copying small 2D rectangles from BACKGROUND2 to BACKBUFFER. Without the BACKBUFFER you would see all rendered objects flickering all the time. The BACKBUFFER has a size of 64320 (slightly bigger than 320 x 200) and it's the first one in memory. [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKBUFFER%20%28offscreen%29%3A,the%20first%20one%20in%20memory%2E)
 char* logicalScreen;
 
 std::vector<s16> CVars;

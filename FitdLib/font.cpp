@@ -15,6 +15,8 @@ s16 currentFontColor = 0;
 extern s16 currentFontColor;
 s16 g_fontInterWordSpace = 2;
 s16 g_fontInterLetterSpace = 1;
+/// @brief The color to draw the text in (?)
+/// @todo Document & rename
 s16 fontSm3 = 18;
 /// @brief Seemingly the text's x position?
 s16 fontVar6 = 0;

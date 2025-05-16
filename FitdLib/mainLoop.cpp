@@ -38,9 +38,7 @@ extern "C" {
 
 void mainLoop(int allowSystemMenu, int deltaTime)
 {
-	bool bLoop = true;
-
-	while (bLoop) {
+	while (true) {
 		process_events();
 
 		localKey = key;
@@ -85,12 +83,11 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 		executeFoundLife(inHandTable[currentInventory]);
 
 		if (changeFloor == 0) {
-			if (g_gameId == AITD1) {
-				if (CVars[getCVarsIdx(LIGHT_OBJECT)] == -1) {
-					//        mainVar2 = 2000;
-					//        mainVar3 = 2000;
-				}
-			}
+			/* if (g_gameId == AITD1 &&
+				CVars[getCVarsIdx(LIGHT_OBJECT)] == -1) {
+				mainVar2 = 2000;
+				mainVar3 = 2000;
+			} */
 
 			currentProcessedActorPtr = objectTable;
 
@@ -135,9 +132,9 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 							case AITD3:
 							case TIMEGATE:
 							{
-								if (currentProcessedActorPtr->lifeMode & 3)
-									if (!(currentProcessedActorPtr->lifeMode & 4))
-										processLife(currentProcessedActorPtr->life, false);
+								if ((currentProcessedActorPtr->lifeMode & 3) &&
+									!(currentProcessedActorPtr->lifeMode & 4))
+									processLife(currentProcessedActorPtr->life, false);
 								break;
 							}
 							case JACK:
@@ -171,24 +168,19 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 		} else {
 			checkIfCameraChangeIsRequired();
 			if (g_gameId >= AITD2) {
-				int tempCurrentCamera;
-
-				tempCurrentCamera = currentCamera;
+				int tempCurrentCamera = currentCamera;
 
 				currentCamera = startGameVar1;
 
 				currentProcessedActorPtr = objectTable;
 				for (currentProcessedActorIdx = 0; currentProcessedActorIdx < NUM_MAX_OBJECT; currentProcessedActorIdx++) {
-					if (currentProcessedActorPtr->indexInWorld >= 0) {
-						if (currentProcessedActorPtr->life != -1) {
-							if (currentProcessedActorPtr->_flags & 0x200) {
-								if (currentProcessedActorPtr->lifeMode & 3)
-									if (!(currentProcessedActorPtr->lifeMode & 4)) {
-										processLife(currentProcessedActorPtr->life, false);
-										actorTurnedToObj = 1;
-									}
-							}
-						}
+					if ((currentProcessedActorPtr->indexInWorld >= 0) &&
+						(currentProcessedActorPtr->life != -1) &&
+						(currentProcessedActorPtr->_flags & 0x200) &&
+						(currentProcessedActorPtr->lifeMode & 3) &&
+						!(currentProcessedActorPtr->lifeMode & 4)) {
+						processLife(currentProcessedActorPtr->life, false);
+						actorTurnedToObj = 1;
 					}
 
 					if (changeFloor)
