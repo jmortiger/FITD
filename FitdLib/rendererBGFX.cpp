@@ -551,10 +551,14 @@ void osystem_initBuffer()
 
 void gameScreenToViewport(float* X, float* Y)
 {
-	(*X) = (*X) * g_screenWidth / _SCREEN_INTERNAL_WIDTH_FLOAT;
-	(*Y) = (*Y) * g_screenHeight / _SCREEN_INTERNAL_HEIGHT_FLOAT;
+	// (*X) = (*X) * g_screenWidth / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	// (*Y) = (*Y) * g_screenHeight / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 
-	(*Y) = g_screenHeight - (*Y);
+	// (*Y) = g_screenHeight - (*Y);
+	(*X) = (*X) * gameResolution.x / _SCREEN_INTERNAL_WIDTH_FLOAT;
+	(*Y) = (*Y) * gameResolution.y / _SCREEN_INTERNAL_HEIGHT_FLOAT;
+
+	(*Y) = gameResolution.y - (*Y);
 }
 
 void osystem_setClip(float left, float top, float right, float bottom)
