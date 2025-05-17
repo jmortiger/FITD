@@ -3142,11 +3142,13 @@ void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 
 void mainDraw(int flagFlip)
 {
+	// If the camera background changed, copy that empty background into the main buffer (assuming static buffer already updated?)
 	if (/* flagFlip == 2 && */ cameraBackgroundChanged) {
 		osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 		cameraBackgroundChanged = false;
 	}
 
+	// Overwrite output buffer w/ static BACKGROUND2 buffer
 	if (flagFlip != 0) {
 		genVar5 = 0; // NOTE: Update unused variable
 		FastCopyScreen(aux2, logicalScreen);
@@ -3178,6 +3180,7 @@ void mainDraw(int flagFlip)
 
 		actorPtr = &objectTable[currentDrawActor];
 
+		// Redraw animated non-static actors
 		// NOTE: This is commented out to draw actors incrusted in background
 		// if(actorPtr->_flags & (AF_ANIMATED + AF_DRAWABLE + AF_SPECIAL))
 		{
@@ -3218,6 +3221,7 @@ void mainDraw(int flagFlip)
 					lightY = (BBox3D4 + BBox3D2) / 2;
 				}
 
+				// Redraw BG masks over animated actors
 #ifdef FITD_DEBUGGER
 				if (backgroundMode == backgroundModeEnum_2D)
 #endif
