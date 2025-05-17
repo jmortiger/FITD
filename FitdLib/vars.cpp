@@ -33,6 +33,26 @@ int unkScreenVar2;
 /// @brief Currently unused (set to 1 and otherwise unreferenced).
 /// @todo What was this for, and can it be removed?
 int actorTurnedToObj = 0;
+
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+boxStruct genVar2[15]; // recheckSize
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+boxStruct genVar4[50];
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+boxStruct* genVar1;
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+boxStruct* genVar3;
+
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+int genVar5;
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+int genVar6;
 /* #endregion Unused */
 
 /// @brief BACKGROUND1: A direct copy of a 2D background from the PAK file. Never overwritten after uncompressed. This is the third one in memory. Every time the camera changes, a new image is loaded into BACKGROUND1. [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKGROUND1%3A,loaded%20into%20BACKGROUND1%2E)
@@ -84,6 +104,7 @@ char localJoyD;
 char localClick;
 // #endregion Input Fields
 
+// #region Text
 // #region Languages
 /// @brief The filenames of supported languages.
 /// @todo Earlier entries take priority over later entries; change order with system locale or something.
@@ -100,8 +121,12 @@ const std::vector<std::string> languageNameTable =
 char languageNameString[20] = "";
 // #endregion Languages
 
+/// @brief Text entries pointers
+/// @details https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=0#gid=0&range=27:27
 textEntryStruct* tabTextes;
+/// @brief The raw text entries loaded from the language pak file.
 u8* systemTextes;
+// #endregion Text
 
 regularTextEntryStruct textTable[NUM_MAX_TEXT];
 
@@ -151,13 +176,6 @@ messageStruct messageTable[NUM_MAX_MESSAGE];
 s16 currentMusic;
 int action;
 
-boxStruct genVar2[15]; // recheckSize
-boxStruct genVar4[50];
-boxStruct* genVar1;
-boxStruct* genVar3;
-
-int genVar5;
-int genVar6;
 int nextSample;
 int nextMusic;
 s16 currentCameraTargetActor;

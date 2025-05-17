@@ -234,6 +234,7 @@ void InitCopyBox(char* var0, char* var1)
 }
 
 // #region Text: Rendering, Reading, On-Screen Messages
+/// @brief Determines language, then loads & hooks up localized strings from relevant PAK.
 void allocTextes(void)
 {
 	tabTextes = (textEntryStruct*)malloc(NUM_MAX_TEXT_ENTRY * sizeof(textEntryStruct)); // 2000 = 250 * 8
@@ -241,10 +242,10 @@ void allocTextes(void)
 	ASSERT_PTR(tabTextes);
 
 	if (!tabTextes) {
-		fatalError(1, "TabTextes");
+		fatalError(1, "Failed to allocate TabTextes");
 	}
 
-	// setup languageNameString
+	// Setup languageNameString
 	if (g_gameId == AITD3) {
 		strcpy(languageNameString, "TEXTES");
 	} else {
@@ -263,7 +264,7 @@ void allocTextes(void)
 
 	if (!languageNameString[0]) {
 		printf("Unable to detect language file..\n");
-		FITD_throwFatal(); // assert(0);
+		FITD_throwFatal();
 	}
 
 	systemTextes = (u8*)CheckLoadMallocPak(languageNameString, 0); // todo: use real language name
@@ -1208,11 +1209,13 @@ void initVars()
 
 	action = 0;
 
-	genVar1 = genVar2;
+	// #region Initialized unused variables
+	genVar1 = genVar2; // NOTE: Clear unused variable
 	genVar3 = genVar4;
 
 	genVar5 = 0;
 	genVar6 = 0;
+	// #endregion Initialized unused variables
 
 	// #region Sound & Music
 	LastSample = -1;
@@ -3145,14 +3148,14 @@ void mainDraw(int flagFlip)
 	}
 
 	if (flagFlip != 0) {
-		genVar5 = 0;
+		genVar5 = 0; // NOTE: Update unused variable
 		FastCopyScreen(aux2, logicalScreen);
 	}/*  else { restoreDirtyRects(); } */
 
 	// osystem_drawBackground();
 
 	SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
-	genVar6 = 0;
+	genVar6 = 0; // NOTE: Update unused variable
 
 	int i;
 #ifdef FITD_DEBUGGER

@@ -27,7 +27,7 @@
 #define NUM_MAX_MESSAGE     5
 #define MESSAGE_HEIGHT     16
 
-// 250
+// 250 ([in AITD1](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=0#gid=0&range=F27))
 #define NUM_MAX_TEXT_ENTRY  1000
 /* #endregion */
 
