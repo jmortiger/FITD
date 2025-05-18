@@ -58,9 +58,19 @@ struct point3dStruct
 	s16 z;
 }; typedef struct point3dStruct point3dStruct;
 
+// #region Text/Messages
+struct regularTextEntryStruct
+{
+	/// @brief The address of the actual characters in `systemTextes`.
+	u8* textPtr;
+	s16 width;
+}; typedef struct regularTextEntryStruct regularTextEntryStruct;
+
+// IDEA: Merge w/ `regularTextEntry`?
 struct textEntryStruct
 {
 	s16 index;
+	/// @brief The address of the actual characters in `systemTextes`.
 	u8* textPtr;
 	s16 width;
 }; typedef struct textEntryStruct textEntryStruct;
@@ -72,18 +82,13 @@ struct messageStruct
 	/// @details Only used in `drawTextOverlay` & `makeMessage`
 	s16 time;
 }; typedef struct messageStruct messageStruct;
+// #endregion Text/Messages
 
 struct saveEntry
 {
 	void* ptr;
 	unsigned int size;
 }; typedef struct saveEntry saveEntry;
-
-struct regularTextEntryStruct
-{
-	u8* textPtr;
-	s16 width;
-}; typedef struct regularTextEntryStruct regularTextEntryStruct;
 
 struct hqrSubEntryStruct
 {
@@ -238,6 +243,9 @@ struct tWorldObject
 	s16 mark;
 }; typedef struct tWorldObject tWorldObject;
 
+/// @brief 
+/// @todo Document
+/// @todo Rename fields
 struct boxStruct
 {
 	s16 var0;
@@ -248,12 +256,18 @@ struct boxStruct
 
 struct roomDefStruct
 {
-	s16 offsetToCameraDef; // 0
-	s16 offsetToPosDef; // 2
-	s16 worldX;//4
-	s16 worldY;//6
-	s16 worldZ;//8
-	s16 numCameraInRoom;//0xA
+	/// @brief Offset: 0
+	s16 offsetToCameraDef; 
+	/// @brief Offset: 2
+	s16 offsetToPosDef; 
+	/// @brief Offset: 4
+	s16 worldX;
+	/// @brief Offset: 6
+	s16 worldY;
+	/// @brief Offset: 8
+	s16 worldZ;
+	/// @brief Offset: 0xA
+	s16 numCameraInRoom;
 }; typedef struct roomDefStruct roomDefStruct;
 // #endregion Misc. Structs
 
@@ -267,14 +281,23 @@ extern int musicEnabled;
 extern int screenBufferSize;
 extern int unkScreenVar2;
 extern int actorTurnedToObj;
+
+extern boxStruct genVar2[15]; // recheckSize
+extern boxStruct genVar4[50];
+extern boxStruct* genVar1;
+extern boxStruct* genVar3;
+
+extern int genVar5;
+extern int genVar6;
 /* #endregion */
 
+// #region Screen Video Buffers
 extern char* aux;
 extern char* aux2;
+extern char* logicalScreen;
+// #endregion Screen Video Buffers
 
 extern std::vector<std::vector<s16>> BufferAnim;
-
-extern char* logicalScreen;
 
 extern std::vector<s16> CVars;
 
@@ -314,12 +337,14 @@ extern const std::vector<std::string> languageNameTable;
 extern char languageNameString[];
 // #endregion Languages
 
+// #region Text/Messages
 extern textEntryStruct* tabTextes;
 extern u8* systemTextes;
 
 extern regularTextEntryStruct textTable[40];
 
 extern int turnPageFlag;
+// #endregion Text/Messages
 
 extern int hqrKeyGen;
 
@@ -356,13 +381,6 @@ extern messageStruct messageTable[5];
 extern s16 currentMusic;
 extern int action;
 
-extern boxStruct genVar2[15]; // recheckSize
-extern boxStruct genVar4[50];
-extern boxStruct* genVar1;
-extern boxStruct* genVar3;
-
-extern int genVar5;
-extern int genVar6;
 extern int nextSample;
 extern int nextMusic;
 extern s16 currentCameraTargetActor;

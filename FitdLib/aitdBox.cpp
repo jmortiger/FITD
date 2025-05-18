@@ -90,6 +90,7 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 /// @param height 
 /// @details Has side effects:
 /// * `WindowX1`, `WindowY1`, `WindowX2`, `WindowY2`: Changes to define the border of the drawn box (?)
+/// @todo Causes off by 1 problems, make non-centered variant.
 void AffBigCadre(int x, int y, int width, int height)
 {
 	int top;

@@ -27,7 +27,7 @@
 #define NUM_MAX_MESSAGE     5
 #define MESSAGE_HEIGHT     16
 
-// 250
+// 250 ([in AITD1](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=0#gid=0&range=F27))
 #define NUM_MAX_TEXT_ENTRY  1000
 /* #endregion */
 
@@ -99,10 +99,76 @@ typedef signed int S32;
 
 // #define TYPE_MASK 0x1D1 // Redundant w/ actorFlags::AF_MASK
 
+// TODO: Convert to enum
 #define ANIM_ONCE             0
 #define ANIM_REPEAT           1
 #define ANIM_UNINTERRUPTABLE  2
 #define ANIM_RESET            4
+
+struct AaRectS32 {
+	s32 top;
+	s32 bottom;
+	s32 left;
+	s32 right;
+	s32 getCenterX() { return (right - left) / 2; }
+	s32 getCenterY() { return (bottom - top) / 2; }
+	void initFromCenter(s32 x, s32 y, s32 width, s32 height, bool shiftUp = true, bool shiftLeft = true) {
+		s32 halfWidth = width;
+		s32 halfHeight = height;
+		top = y - halfWidth;
+		bottom = y + halfWidth;
+		left = x - halfHeight;
+		right = x + halfHeight;
+		if (height % 2) {
+			if (shiftUp) {
+				top -= 1;
+			} else {
+				bottom += 1;
+			}
+		}
+		if (width % 2) {
+			if (shiftLeft) {
+				left -= 1;
+			} else {
+				right += 1;
+			}
+		}
+	}
+	void initFromExtents(s32 left, s32 right, s32 top, s32 bottom) {
+		this->top = top;
+		this->bottom = bottom;
+		this->left = left;
+		this->right = right;
+	}
+	void initFromTopLeft(s32 left, s32 right, s32 width, s32 height) {
+		this->top = top;
+		this->left = left;
+		this->bottom = top + height;
+		this->right = left + right;
+	}
+	/* void initFromProportions(s32 width, s32 height, , bool shiftUp = true, bool shiftLeft = true) {
+		s32 halfWidth = width;
+		s32 halfHeight = height;
+		top = y - halfWidth;
+		bottom = y + halfWidth;
+		left = x - halfHeight;
+		right = x + halfHeight;
+		if (height % 2) {
+			if (shiftUp) {
+				top -= 1;
+			} else {
+				bottom += 1;
+			}
+		}
+		if (width % 2) {
+			if (shiftLeft) {
+				left -= 1;
+			} else {
+				right += 1;
+			}
+		}
+	} */
+};
 
 #include "debugging/logging_defines.h"
 #include "room.h"
