@@ -3152,7 +3152,10 @@ void mainDraw(int flagFlip)
 	if (flagFlip != 0) {
 		genVar5 = 0; // NOTE: Update unused variable
 		FastCopyScreen(aux2, logicalScreen);
-	}/*  else { restoreDirtyRects(); } */
+	} else {
+		// restoreDirtyRects();
+		FastCopyScreen(aux2, logicalScreen); // HACK: To clear messages from screen. - J
+	}
 
 	// osystem_drawBackground();
 
@@ -3241,7 +3244,8 @@ void mainDraw(int flagFlip)
 
 	osystem_stopModelRender();
 
-	if (drawTextOverlay()) { /* addToRedrawBox(); */ }
+	// if (drawTextOverlay()) { /* addToRedrawBox(); */ }
+	if (drawTextOverlay()) { osystem_CopyBlockPhys((unsigned char*)logicalScreen, BBox3D1, BBox3D2, BBox3D3, BBox3D4); } // HACK: To draw messages to screen. - J
 
 	if (!lightOff) {
 		if (flagFlip) {
