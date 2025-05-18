@@ -31,18 +31,45 @@ enum gameTypeEnum
 extern enum gameTypeEnum g_gameId;
 // #endregion Game Type
 
-/// @brief 
+/// @brief [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#ACTOR_FLAGS)
 /// @details It doesn't *really* matter if it's signed; it's just easier b/c entries in the save data/arguments in life scripts are all signed 16 bit integers.
 enum actorFlags : s16
 {
+	/// @brief Tells the renderer the area around the actor (in its 2D bbox) has to be redrawn every frame (e.g. isn't a static actor to be drawn into the [BACKGROUND2 buffer](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKGROUND2%3A,second%20one%20in%20memory%2E))
+	///
+	/// `0b0000'0000'0001`/`0x001`/`0001`/`1`
 	AF_ANIMATED = 0b0000'0000'0001,
-	// AF_UNUSED = 	0b0000'0000'0010,
+	/* /// @brief unused
+	///
+	/// `0b0000'0000'0010`/`0x002`/`0002`/`2`
+	AF_UNUSED = 	0b0000'0000'0010, */
+	/// @brief redraw – redraw once, then set this flag off (not shown in the RV since it often flickers constantly)
+	///
+	/// `0b0000'0000'0100`/`0x004`/`0004`/`4`
 	AF_DRAWABLE = 0b0000'0000'0100,
+	/// @brief not currently animating (replaces flag 0001 if the actor has completed its current ANIM without entering a different ANIM)
+	///
+	/// `0b0000'0000'1000`/`0x008`/`0010`/`8`
 	AF_BOXIFY = 0b0000'0000'1000,
+	/// @brief pushable
+	///
+	/// `0b0000'0001'0000`/`0x010`/`0020`/`16`
 	AF_MOVABLE = 0b0000'0001'0000,
+	/// @brief collisions – game will check for collisions between this actor and other actors and colliders
+	///
+	/// `0b0000'0010'0000`/`0x020`/`0040`/`32`
 	AF_SPECIAL = 0b0000'0010'0000,
+	/// @brief triggers – game will check for collisions between this actor and any triggers
+	///
+	/// `0b0000'0100'0000`/`0x040`/`0100`/`64`
 	AF_TRIGGER = 0b0000'0100'0000,
+	/// @brief collectible – PC colliding with this actor issues a FOUND call
+	///
+	/// `0b0000'1000'0000`/`0x080`/`0200`/`128`
 	AF_FOUNDABLE = 0b0000'1000'0000,
+	/// @brief gravity – one of the requirements for falling
+	///
+	/// `0b0001'0000'0000`/`0x100`/`0400`/`256`
 	AF_FALLABLE = 0b0001'0000'0000,
 
 	/// @brief Used to remove invalid flags from values.
@@ -257,9 +284,9 @@ struct boxStruct
 struct roomDefStruct
 {
 	/// @brief Offset: 0
-	s16 offsetToCameraDef; 
+	s16 offsetToCameraDef;
 	/// @brief Offset: 2
-	s16 offsetToPosDef; 
+	s16 offsetToPosDef;
 	/// @brief Offset: 4
 	s16 worldX;
 	/// @brief Offset: 6
