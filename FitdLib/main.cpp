@@ -29,6 +29,7 @@ FILE* Open(const char* filename, const char* mode)
 
 int input5;
 
+// #region CVars
 int* currentCVarTable = NULL;
 
 int getCVarsIdx(enumCVars searchedType) // TODO: optimize by reversing the table....
@@ -43,9 +44,9 @@ int getCVarsIdx(enumCVars searchedType) // TODO: optimize by reversing the table
 }
 
 int getCVarsIdx(int searchedType) { return getCVarsIdx((enumCVars)searchedType); }
+// #endregion CVars
 
-const unsigned char defaultPalette[0x30] =
-{
+const unsigned char defaultPalette[0x30] = {
 	0x00,
 	0x00,
 	0x00,
@@ -96,8 +97,7 @@ const unsigned char defaultPalette[0x30] =
 	0x3F
 };
 
-const unsigned char defaultPaletteAITD3[0x30] =
-{
+const unsigned char defaultPaletteAITD3[0x30] = {
 	0x00,
 	0x00,
 	0x00,
@@ -1240,9 +1240,9 @@ void initVars()
 
 void loadCamera(int cameraIdx)
 {
-	char name[16];
 	int useSpecial = -1;
-
+	
+	char name[16];
 	sprintf(name, "CAMERA%02d", g_currentFloor);
 	//strcat(name,".PAK");
 
@@ -3324,9 +3324,9 @@ int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr)
 	for (int i = 0; i < 3; i++) {
 		currentProcessedActorPtr->COL[i] = -1;
 	}
-	
+
 	int actorRoom = objectTable[actorIdx].room;
-	tObject* currentActor = objectTable;	
+	tObject* currentActor = objectTable;
 	int currentCollisionSlot = 0;
 	for (int i = 0; i < NUM_MAX_OBJECT; i++, currentActor++) {
 		if (currentActor->indexInWorld != -1 && i != actorIdx) {
@@ -3727,7 +3727,7 @@ int AsmCheckListCol(ZVStruct* zvPtr, roomDataStruct* pRoomData)
 
 	for (u16 i = 0; i < pRoomData->numHardCol; i++) {
 		if (((pCurrentEntry->zv.ZVX1) < (zvPtr->ZVX2)) && ((zvPtr->ZVX1) < (pCurrentEntry->zv.ZVX2)) &&
-			((pCurrentEntry->zv.ZVY1) < (zvPtr->ZVY2)) && ((zvPtr->ZVY1) < (pCurrentEntry->zv.ZVY2)) && 
+			((pCurrentEntry->zv.ZVY1) < (zvPtr->ZVY2)) && ((zvPtr->ZVY1) < (pCurrentEntry->zv.ZVY2)) &&
 			((pCurrentEntry->zv.ZVZ1) < (zvPtr->ZVZ2)) && ((zvPtr->ZVZ1) < (pCurrentEntry->zv.ZVZ2))) {
 			ASSERT(hardColVar < 10);
 			hardColTable[hardColVar++] = pCurrentEntry;
@@ -4357,7 +4357,7 @@ void detectGame(void)
 		return;
 	}
 
-	printf("FATAL: Game detection failed...\n");
+	DebugPrintfLnCategory(DBO_L_ERROR, DBO_PAK, "FATAL: Game detection failed (None of the following files were found: LISTBOD2.PAK (AITD1), PERE.PAK (Jack), MER.PAK (AITD2), AN1.PAK (AITD3), PURSUIT.PAK (TIMEGATE))");
 	FITD_throwFatal();
 }
 

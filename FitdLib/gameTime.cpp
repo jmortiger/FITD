@@ -1,5 +1,7 @@
 #include "common.h"
 
+/// @brief 
+/// @details Is an int to force multiple calls to `freezeTime` to all be properly paired with a call to `unfreezeTime`.
 int timerSaved = false;
 unsigned int timerSavedValue = 0;
 

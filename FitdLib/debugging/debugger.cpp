@@ -325,9 +325,9 @@ bool strictEmulation = false;
 /// @brief Finds the index of the most-significant bit flag.
 /// @param flag The flag to find the index of.
 /// @return -1 if more than 1 bit is set
-int getBitFlagIndex(unsigned char flag)
+int getBitFlagIndex(unsigned char flag, int startingAt = 0)
 {
-	int iter = 0;
+	int iter = startingAt;
 	while (flag != 0) {
 		flag >>= 1;
 		iter++;
@@ -347,6 +347,18 @@ int getBitFlagIndex(unsigned char flag)
 	// } else {
 	// 	return iter;
 	// }
+}
+
+/// @brief Finds the bit flag from the index it held.
+/// @param idx The index to convert to a bit flag.
+/// @return -1 if more than 1 bit is set
+template <typename T> T getBitFlagFromIndex(T idx)
+{
+	T flag = 1;
+	for (; idx > 0; idx--) {
+		flag *= 2;
+	}
+	return flag;
 }
 
 #define MAX_DEBUG_OUTPUT_INDENTS 10
@@ -509,7 +521,7 @@ char soundMaskCameraLabel[] = "SOUND & MASK & CAMERA";								// 0b0001'1100
 char soundPakMaskCameraLabel[] = "SOUND & PAK & MASK & CAMERA";						// 0b0001'1101
 char soundFloorMaskCameraLabel[] = "SOUND & FLOOR & MASK & CAMERA";						// 0b0001'1110
 char soundPakFloorMaskCameraLabel[] = "SOUND & PAK & FLOOR & MASK & CAMERA";				// 0b0001'1111
-char itdNoneLabel[] = "ITD & NONE";										// 0b0000'0000
+char itdLabel[] = "ITD";										// 0b0000'0000
 char itdPakLabel[] = "ITD & PAK";											// 0b0000'0001
 char itdFloorLabel[] = "ITD & FLOOR";										// 0b0000'0010
 char itdPakFloorLabel[] = "ITD & PAK & FLOOR";									// 0b0000'0011
@@ -573,7 +585,7 @@ char lifeSoundMaskCameraLabel[] = "LIFE & SOUND & MASK & CAMERA";						// 0b0011
 char lifeSoundPakMaskCameraLabel[] = "LIFE & SOUND & PAK & MASK & CAMERA";				// 0b0011'1101
 char lifeSoundFloorMaskCameraLabel[] = "LIFE & SOUND & FLOOR & MASK & CAMERA";				// 0b0011'1110
 char lifeSoundPakFloorMaskCameraLabel[] = "LIFE & SOUND & PAK & FLOOR & MASK & CAMERA";		// 0b0011'1111
-char lifeItdNoneLabel[] = "LIFE & ITD & NONE";									// 0b0010'0000
+char lifeItdNoneLabel[] = "LIFE & ITD";									// 0b0010'0000
 char lifeItdPakLabel[] = "LIFE & ITD & PAK";									// 0b0010'0001
 char lifeItdFloorLabel[] = "LIFE & ITD & FLOOR";								// 0b0010'0010
 char lifeItdPakFloorLabel[] = "LIFE & ITD & PAK & FLOOR";							// 0b0010'0011
@@ -638,7 +650,7 @@ char* debugCategoryLabels[] = {
 	soundPakMaskCameraLabel,
 	soundFloorMaskCameraLabel,
 	soundPakFloorMaskCameraLabel,
-	itdNoneLabel,
+	itdLabel,
 	itdPakLabel,
 	itdFloorLabel,
 	itdPakFloorLabel,
@@ -672,7 +684,30 @@ char* debugCategoryLabels[] = {
 	itdSoundPakFloorMaskCameraLabel,
 };
 
-char debugLabel[] = FormatDleLabel(DLE_C_DEBUG, DEBUG);	// 0b0000'0001
+char* catLabels[] = {
+	noneLabel,
+	pakLabel,
+	floorLabel,
+	maskLabel,
+	cameraLabel,
+	soundLabel,
+	itdLabel,
+	lifeLabel,
+};
+
+char* buildCategoryLabel(char* dest, debugCategoryEnum value) {
+	uint currFlagIndex = 0;
+	while (value != 0)
+	{
+		currFlagIndex = getBitFlagIndex(value, -1);
+		value ^= getBitFlagFromIndex<u8>(currFlagIndex);
+		strcat(dest, catLabels[currFlagIndex + 1]);
+		if (value != 0) strcat(dest, " & ");
+	}
+	return dest;
+}
+
+char debugLabel[] = FormatDleLabel(DLE_C_DEBUG, DBG);	// 0b0000'0001
 char logLabel[] = FormatDleLabel(DLE_C_LOG, LOG);		// 0b0000'0010
 char infoLabel[] = FormatDleLabel(DLE_C_INFO, INFO);		// 0b0000'0100
 char warnLabel[] = FormatDleLabel(DLE_C_WARN, WARN);		// 0b0000'1000
@@ -711,6 +746,27 @@ char* debugLevelLabels[] = {
 	errorLabel,	// 0b0001'1110
 	errorLabel,	// 0b0001'1111
 };
+
+char* levLabels[] = {
+	noneLabel,
+	debugLabel,
+	logLabel,
+	infoLabel,
+	warnLabel,
+	errorLabel,
+};
+
+char* buildLevelLabel(char* dest, debugLevelEnum value) {
+	uint currFlagIndex = 0;
+	while (value != 0)
+	{
+		currFlagIndex = getBitFlagIndex(value, -1);
+		value ^= getBitFlagFromIndex<u8>(currFlagIndex);
+		strcat(dest, levLabels[currFlagIndex + 1]);
+		if (value != 0) strcat(dest, " & ");
+	}
+	return dest;
+}
 // #endregion LABELS
 
 /// @brief 
@@ -720,7 +776,7 @@ char* debugLevelLabels[] = {
 bool _shouldPrint(debugCategoryEnum category, debugLevelEnum level = (debugLevelEnum)DBO_L_ALL)
 {
 	if (outputConfig.debugOutputEnabled & category) {
-		unsigned int flag = DBO_NONE + 1;
+		debugCategoryEnum flag = DBO_NONE + 1;
 		while (flag < DBO_ALL) {
 			if (category & flag &&
 				((debugLevelEnum*)&outputConfig)[getBitFlagIndex(flag) * sizeof(debugLevelEnum)] & level) {
@@ -809,7 +865,9 @@ bool DebugPrintfLn(debugLevelEnum level, const char* format, ...)
 
 		va_end(argList);
 
-		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buff);
+		char b2[128] = {};
+		// char bL[128] = {};
+		printf("[%s]\t[%s]: %s%s\n", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buff);
 		return true;
 	}
 	return false;
@@ -831,7 +889,9 @@ void DebugPrintfLnCategory(debugLevelEnum level, debugCategoryEnum category, con
 
 		va_end(argList);
 
-		printf("[%s]\t[%s]: %s%s\n", debugLevelLabels[level], debugCategoryLabels[t], indent, buff);
+		char b2[128] = {};
+		// char bL[128] = {};
+		printf("[%s]\t[%s]: %s%s\n", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, t)/* debugCategoryLabels[t] */, indent, buff);
 	}
 }
 char buffer[256];
@@ -851,7 +911,9 @@ void DebugBPrintf(debugLevelEnum level, const char* format, ...)
 
 		va_end(argList);
 
-		printf("[%s]\t[%s]: %s%s", debugLevelLabels[level], debugCategoryLabels[resultantCategory], indent, buffer);
+		char b2[128] = {};
+		// char bL[128] = {};
+		printf("[%s]\t[%s]: %s%s", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buffer);
 	}
 }
 void DebugBFlushLn()
@@ -861,7 +923,7 @@ void DebugBFlushLn()
 		buffer[0] = '\000';
 	}
 }
-#if 1 // DebugBPrintRaw definition
+// #region DebugBPrintRaw definition
 #define ___DEBUG_B_PRINT_RAW {\
 	if (_shouldPrint(resultantCategory, level)) {\
 		char buff[256];\
@@ -881,7 +943,7 @@ ___DEBUG_B_PRINT_RAW__SIGNATURE(u32)
 #undef ___DEBUG_B_PRINT_RAW
 #undef ___DEBUG_B_PRINT_RAW__SIGNATURE
 #undef ____DEBUG_B_PRINT_RAW__SIGNATURE
-#endif
+// #endregion DebugBPrintRaw definition
 void DebugSPrintZVStruct(char* destination, ZVStruct& zv)
 {
 	sprintf(destination, "{ ZVX1: %i, ZVX2: %i, ZVY1: %i, ZVY2: %i, ZVZ1: %i, ZVZ2: %i }", zv.ZVX1, zv.ZVX2, zv.ZVY1, zv.ZVY2, zv.ZVZ1, zv.ZVZ2);

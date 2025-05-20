@@ -37,6 +37,7 @@ enum debugCategoryEnum : unsigned char {
 };
 #define DBO_ALL 0b0111'1111
 typedef enum debugCategoryEnum debugCategoryEnum;
+ENUM_CLASS_FLAGS(debugCategoryEnum)
 
 /// @brief The debug levels supported, as a bit flag.
 /// @todo Add mask to enum
@@ -51,6 +52,7 @@ enum debugLevelEnum : unsigned char {
 #define DBO_L_ALL 0b0001'1111
 
 typedef enum debugLevelEnum debugLevelEnum;
+ENUM_CLASS_FLAGS(debugLevelEnum)
 
 // #region Color Macros
 #ifndef ANSI_RESET

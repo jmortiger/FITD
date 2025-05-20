@@ -2,6 +2,7 @@
 #define _COMMON_H_
 
 #include "config.h"
+#include "macroUtil.h"
 
 #ifdef USE_IMGUI
 #include "imgui.h"
@@ -240,6 +241,7 @@ struct AaRectS32 {
 #endif
 #endif */
 
+#ifndef FORCEINLINE
 #ifdef UNIX
 #define FORCEINLINE static inline
 #else
@@ -249,11 +251,13 @@ struct AaRectS32 {
 #define FORCEINLINE inline
 #endif
 #endif
+#endif
 
 FORCEINLINE u8 READ_LE_U8(void* ptr) { return *(u8*)ptr; }
 
 FORCEINLINE s8 READ_LE_S8(void* ptr) { return *(s8*)ptr; }
 
+// #region 16 bit
 FORCEINLINE u16 READ_LE_U16(void* ptr)
 {
 #ifdef MACOSX
@@ -275,7 +279,9 @@ FORCEINLINE u16 READ_BE_U16(void* ptr)
 }
 
 FORCEINLINE s16 READ_BE_S16(void* ptr) { return (s16)READ_BE_U16(ptr); }
+// #endregion 16 bit
 
+// #region 32 bit
 FORCEINLINE u32 READ_LE_U32(void* ptr)
 {
 #ifdef MACOSX
@@ -297,6 +303,28 @@ FORCEINLINE u32 READ_BE_U32(void* ptr)
 }
 
 FORCEINLINE s32 READ_BE_S32(void* ptr) { return (s32)READ_BE_U32(ptr); }
+// #endregion 32 bit
+
+// #region Invert
+FORCEINLINE u32 READ_INVERT_ENDIAN_U32(void* ptr)
+{
+	return (((u8*)ptr)[3] << 24) | (((u8*)ptr)[2] << 16) | (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
+}
+
+FORCEINLINE s32 READ_INVERT_ENDIAN_S32(void* ptr) { return (s32)READ_INVERT_ENDIAN_U32(ptr); }
+FORCEINLINE u16 READ_INVERT_ENDIAN_U16(void* ptr)
+{
+	return (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
+}
+
+FORCEINLINE s16 READ_INVERT_ENDIAN_S16(void* ptr) { return (s16)READ_INVERT_ENDIAN_U16(ptr); }
+FORCEINLINE u8 READ_INVERT_ENDIAN_U8(void* ptr)
+{
+	return *((u8*)ptr);
+}
+
+FORCEINLINE s8 READ_INVERT_ENDIAN_S8(void* ptr) { return (s8)READ_INVERT_ENDIAN_U8(ptr); }
+// #endregion Invert
 /* #endregion */
 
 /// @brief Add a breakpoint here to catch all fatal exits.

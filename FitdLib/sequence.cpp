@@ -2,14 +2,14 @@
 
 // cspell:ignore BATL EFER ENDX FALA GLIS GRAP GREN ITRO JEND MEDU PIRA PROL TORD VERE
 
-void convertPaletteIfRequired(unsigned char* lpalette)
+void convertPaletteIfRequired(unsigned char* lPalette)
 {
 	if (g_gameId >= JACK && g_gameId < AITD3) {
 		int i;
-		unsigned char* ptr2 = lpalette;
-		for (i = 0;i < 256;i++) {
+		unsigned char* ptr2 = lPalette;
+		for (i = 0; i < 256; i++) {
 			int j;
-			for (j = 0;j < 3;j++) {
+			for (j = 0; j < 3; j++) {
 				unsigned int component = *(ptr2);
 				component *= 255;
 				component /= 63;
@@ -19,8 +19,7 @@ void convertPaletteIfRequired(unsigned char* lpalette)
 	}
 }
 
-const char* sequenceListAITD2[] =
-{
+const char* sequenceListAITD2[] = {
 	"BATL",
 	"GRAP",
 	"CLE1",
@@ -58,15 +57,11 @@ const char* sequenceListAITD2[] =
 
 void unpackSequenceFrame(unsigned char* source, unsigned char* dest)
 {
-	unsigned char byteCode;
-
-	byteCode = *(source++);
+	unsigned char byteCode = *(source++);
 
 	while (byteCode) {
 		if (!(--byteCode)) { // change pixel or skip pixel
-			unsigned char changeColor;
-
-			changeColor = *(source++);
+			unsigned char changeColor = *(source++);
 
 			if (changeColor) {
 				*(dest++) = changeColor;
@@ -74,9 +69,7 @@ void unpackSequenceFrame(unsigned char* source, unsigned char* dest)
 				dest++;
 			}
 		} else if (!(--byteCode)) { // change 2 pixels or skip 2 pixels
-			unsigned char changeColor;
-
-			changeColor = *(source++);
+			unsigned char changeColor = *(source++);
 
 			if (changeColor) {
 				*(dest++) = changeColor;
@@ -85,16 +78,11 @@ void unpackSequenceFrame(unsigned char* source, unsigned char* dest)
 				dest += 2;
 			}
 		} else if (!(--byteCode)) { // fill or skip
-			unsigned char size;
-			unsigned char fillColor;
-
-			size = *(source++);
-			fillColor = *(source++);
+			unsigned char size = *(source++);
+			unsigned char fillColor = *(source++);
 
 			if (fillColor) {
-				int i;
-
-				for (i = 0;i < size;i++) {
+				for (int i = 0; i < size; i++) {
 					*(dest++) = fillColor;
 				}
 			} else {
@@ -109,9 +97,7 @@ void unpackSequenceFrame(unsigned char* source, unsigned char* dest)
 			fillColor = *(source++);
 
 			if (fillColor) {
-				int i;
-
-				for (i = 0;i < size;i++) {
+				for (int i = 0; i < size; i++) {
 					*(dest++) = fillColor;
 				}
 			} else {
@@ -169,7 +155,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 				convertPaletteIfRequired(localPalette);
 
 				if (var_4 != 0) {
-					/*      if(fadeStart & 1)
+					/* if(fadeStart & 1)
 					{
 					fadeOut(0x10,0);
 					}
@@ -184,9 +170,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 					copyPalette(localPalette, currentGamePalette);
 				}
 			} else { // if it's not the  first frame
-				u32 frameSize;
-
-				frameSize = READ_LE_U32(logicalScreen);
+				u32 frameSize = READ_LE_U32(logicalScreen);
 
 				// key frame
 				if (frameSize < 64000) {
@@ -212,7 +196,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 			currentFrameId++;
 
 			// display the frame 5 times (original seems to wait 5 sync)
-			for (int i = 0;i < 5;i++) {
+			for (int i = 0; i < 5; i++) {
 				process_events();
 			}
 

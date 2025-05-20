@@ -231,6 +231,10 @@ void osystem_endOfFrame()
 	//SDL_SemPost(emptyCount);
 }
 
+/// @brief 
+/// @param name 
+/// @return 
+/// @todo convert to bool
 int fileExists(const char* name)
 {
 	FILE* fHandle = fopen(name, "rb");

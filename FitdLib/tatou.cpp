@@ -186,6 +186,9 @@ void setCameraTarget(int x, int y, int z, int alpha, int beta, int gamma, int ti
 	SetAngleCamera(alpha, beta, gamma);
 }
 
+#include <filesystem>
+extern "C" { extern char homePath[512]; }
+
 /// @brief 
 /// @param num 
 void playSound(int num)
