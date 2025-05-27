@@ -3,5 +3,5 @@
 
 int PAK_deflate(unsigned char* srcBuffer, unsigned char* dstBuffer, unsigned int compressedSize, unsigned int uncompressedSize);
 int PAK_explode(unsigned char* srcBuffer, unsigned char* dstBuffer, unsigned int compressedSize, unsigned int uncompressedSize, unsigned short flags);
-
+int PAK_decompress(unsigned char* srcBuffer, unsigned char* dstBuffer, unsigned int compressedSize, unsigned int uncompressedSize, unsigned short flags = 0, bool deflate = true);
 #endif

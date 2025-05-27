@@ -544,6 +544,10 @@ int PAK_deflate(unsigned char* srcBuffer, unsigned char* dstBuffer, unsigned int
 	return(0);
 }
 
+int PAK_decompress(unsigned char* srcBuffer, unsigned char* dstBuffer, unsigned int compressedSize, unsigned int uncompressedSize, unsigned short flags, bool deflate) {
+	return deflate ? PAK_deflate(srcBuffer, dstBuffer, compressedSize, uncompressedSize) : PAK_explode(srcBuffer, dstBuffer, compressedSize, uncompressedSize, flags) ;
+}
+
 // --------------------------------------------------------------
 // UTILS
 // --------------------------------------------------------------
