@@ -322,6 +322,12 @@ int numLoggedLifeScripts = 0;
 bool strictEmulation = false;
 // #endregion Emulation mode
 
+// #region System Enable
+/// @brief Entirely enables/disables sound; set only in `parseDebugParam`.
+/// @todo Enable w/ debug param
+bool masterEnableSound = true;
+// #endregion System Enable
+
 /// @brief Finds the index of the most-significant bit flag.
 /// @param flag The flag to find the index of.
 /// @return -1 if more than 1 bit is set
@@ -769,13 +775,20 @@ char* buildLevelLabel(char* dest, debugLevelEnum value) {
 }
 // #endregion LABELS
 
+// #region Temp disable output
+bool isOutputEnabled = true;
+void DebugDisableOutput() { isOutputEnabled = false; }
+void DebugEnableOutput() { isOutputEnabled = true; }
+void DebugToggleOutput() { isOutputEnabled = !isOutputEnabled; }
+// #endregion Temp disable output
+
 /// @brief 
 /// @param category 
 /// @param level 
 /// @return true if 1 or more enabled categories are included & 1 or more of the included categories have the debug level enabled, false otherwise.
 bool _shouldPrint(debugCategoryEnum category, debugLevelEnum level = (debugLevelEnum)DBO_L_ALL)
 {
-	if (outputConfig.debugOutputEnabled & category) {
+	if (isOutputEnabled && (outputConfig.debugOutputEnabled & category)) {
 		debugCategoryEnum flag = DBO_NONE + 1;
 		while (flag < DBO_ALL) {
 			if (category & flag &&
