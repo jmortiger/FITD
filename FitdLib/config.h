@@ -52,10 +52,12 @@
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
+typedef uint64_t u64;
 
 typedef int8_t s8;
 typedef int16_t s16;
 typedef int32_t s32;
+typedef int64_t s64;
 #else
 typedef unsigned char u8;
 typedef unsigned short int u16;
@@ -64,6 +66,15 @@ typedef unsigned int u32;
 typedef signed char s8;
 typedef signed short int s16;
 typedef signed int s32;
+
+// #ifdef _MSC_VER
+#ifdef __int64
+typedef signed __int64 s64;
+typedef unsigned __int64 u64;
+#else
+typedef signed long int s64;
+typedef unsigned long int u64;
+#endif
 #endif
 
 #include <stdlib.h>

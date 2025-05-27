@@ -8,27 +8,17 @@ int SetAnimObjet(int frame, char* anim, char* body)
 {
 	sAnimation* pAnimation = getAnimationFromPtr(anim);
 
-	s16 temp;
-	s16 ax;
-	s16 cx;
-	s16 bx;
-	char* saveAnim;
-	int i;
-	int flag;
+	int flag = (*(s16*)body);
 
-	flag = (*(s16*)body);
-
-	temp = *(s16*)anim;
+	s16 temp = *(s16*)anim;
 	anim += 2;
 
-	if (frame >= temp) {
-		return(0);
-	}
+	if (frame >= temp) return 0;
 
-	ax = *(s16*)anim;
+	s16 ax = *(s16*)anim;
 	anim += 2;
 
-	cx = ax;
+	s16 cx = ax;
 
 	if (flag & INFO_OPTIMISE) {
 		ax = ((ax << 4) + 8) * frame;
@@ -41,9 +31,7 @@ int SetAnimObjet(int frame, char* anim, char* body)
 	animCurrentTime = *(s16*)anim;
 	animKeyframeLength = animCurrentTime;
 
-	if (!(flag & 2)) {
-		return(0);
-	}
+	if (!(flag & 2)) return 0;
 
 	body += 14;
 
@@ -54,7 +42,7 @@ int SetAnimObjet(int frame, char* anim, char* body)
 	body += 2;
 
 	ax = *(s16*)body;
-	bx = ax;
+	s16 bx = ax;
 
 	body += (((ax << 1) + bx) << 1) + 2;
 
@@ -62,42 +50,28 @@ int SetAnimObjet(int frame, char* anim, char* body)
 
 	body += bx << 1;
 
-	if (cx > ax)
-		cx = ax;
+	if (cx > ax) cx = ax;
 
 	body += 10;
 
-	saveAnim = anim;
+	char* saveAnim = anim;
 
 	anim += 8;
 
-	for (i = 0; i < cx; i++) {
-		*(s16*)(body) = *(s16*)(anim);
-		body += 2;
-		anim += 2;
-		*(s16*)(body) = *(s16*)(anim);
-		body += 2;
-		anim += 2;
-		*(s16*)(body) = *(s16*)(anim);
-		body += 2;
-		anim += 2;
-		*(s16*)(body) = *(s16*)(anim);
-		body += 2;
-		anim += 2;
+	for (int i = 0; i < cx; i++) {
+		for (unsigned int j = 0; j < 4; j++) {
+			*(s16*)(body) = *(s16*)(anim);
+			body += 2;
+			anim += 2;
+		}
+
 
 		if (flag & INFO_OPTIMISE) {
-			*(s16*)(body) = *(s16*)(anim);
-			body += 2;
-			anim += 2;
-			*(s16*)(body) = *(s16*)(anim);
-			body += 2;
-			anim += 2;
-			*(s16*)(body) = *(s16*)(anim);
-			body += 2;
-			anim += 2;
-			*(s16*)(body) = *(s16*)(anim);
-			body += 2;
-			anim += 2;
+			for (unsigned int k = 0; k < 4; k++) {
+				*(s16*)(body) = *(s16*)(anim);
+				body += 2;
+				anim += 2;
+			}
 		}
 
 		body += 8;
@@ -107,15 +81,11 @@ int SetAnimObjet(int frame, char* anim, char* body)
 
 	anim += 2;
 
-	animStepX = *(s16*)anim;
-	anim += 2;
-	animStepY = *(s16*)anim;
-	anim += 2;
-	animStepZ = *(s16*)anim;
-	anim += 2;
+	animStepX = *(s16*)anim; anim += 2;
+	animStepY = *(s16*)anim; anim += 2;
+	animStepZ = *(s16*)anim; anim += 2;
 
-	return(1);
-
+	return 1;
 }
 
 /// @brief 
@@ -128,9 +98,8 @@ int InitAnim(int animNum, int animType, int animInfo)
 {
 	if (animNum == currentProcessedActorPtr->ANIM) {
 		if (!(currentProcessedActorPtr->_flags & AF_ANIMATED)) {
-			if (currentProcessedActorPtr->_flags & AF_BOXIFY) {
+			if (currentProcessedActorPtr->_flags & AF_BOXIFY)
 				removeFromBGIncrust(currentProcessedActorIdx);
-			}
 
 			currentProcessedActorPtr->_flags |= AF_ANIMATED;
 
@@ -139,9 +108,7 @@ int InitAnim(int animNum, int animType, int animInfo)
 			currentProcessedActorPtr->animType = animType;
 			currentProcessedActorPtr->animInfo = animInfo;
 
-			if (g_gameId > AITD1) {
-				currentProcessedActorPtr->FRAME = 0;
-			}
+			if (g_gameId > AITD1) currentProcessedActorPtr->FRAME = 0;
 
 			return 1;
 		} else {
@@ -153,33 +120,28 @@ int InitAnim(int animNum, int animType, int animInfo)
 
 	if (animNum == -1) {
 		currentProcessedActorPtr->newAnim = -2;
-		return(1);
+		return 1;
 	}
 
 	if (!(currentProcessedActorPtr->_flags & AF_ANIMATED)) {
 		currentProcessedActorPtr->_flags |= AF_ANIMATED;
 
-		if (currentProcessedActorPtr->_flags & AF_BOXIFY) {
+		if (currentProcessedActorPtr->_flags & AF_BOXIFY)
 			removeFromBGIncrust(currentProcessedActorIdx);
-		}
 
 		SetAnimObjet(0, HQR_Get(listAnim, animNum), HQR_Get(listBody, currentProcessedActorPtr->bodyNum));
 
 		currentProcessedActorPtr->newAnim = animNum;
 		currentProcessedActorPtr->newAnimType = animType;
 		currentProcessedActorPtr->newAnimInfo = animInfo;
-		if (g_gameId > AITD1) {
-			currentProcessedActorPtr->FRAME = 0;
-		}
+		if (g_gameId > AITD1) currentProcessedActorPtr->FRAME = 0;
 		return 1;
 	}
 
 	if (g_gameId == AITD1) {
-		if (currentProcessedActorPtr->animType & ANIM_UNINTERRUPTABLE)
-			return(0);
-
-		if (currentProcessedActorPtr->newAnimType & ANIM_UNINTERRUPTABLE)
-			return(0);
+		if (currentProcessedActorPtr->animType & ANIM_UNINTERRUPTABLE ||
+			currentProcessedActorPtr->newAnimType & ANIM_UNINTERRUPTABLE)
+			return 0;
 	} else {
 		if (currentProcessedActorPtr->animType & ANIM_UNINTERRUPTABLE) {
 			if (currentProcessedActorPtr->newAnimType & ANIM_UNINTERRUPTABLE) {
@@ -195,17 +157,14 @@ int InitAnim(int animNum, int animType, int animInfo)
 	currentProcessedActorPtr->newAnimType = animType;
 	currentProcessedActorPtr->newAnimInfo = animInfo;
 
-	if (g_gameId != AITD1) {
-		currentProcessedActorPtr->FRAME = 0;
-	}
+	if (g_gameId != AITD1) currentProcessedActorPtr->FRAME = 0;
 
-	return(1);
+	return 1;
 }
 
 int evaluateReal(interpolatedValue* data)
 {
-	if (!data->param)
-		return data->newAngle;
+	if (!data->param) return data->newAngle;
 
 	if (timer - data->timeOfRotate > (unsigned int)data->param) {
 		data->param = 0;
@@ -244,7 +203,7 @@ int manageFall(int actorIdx, ZVStruct* zvPtr)
 		}
 	}
 
-	return(fallResult);
+	return fallResult;
 }
 
 void updateAnimation(void)
@@ -263,8 +222,7 @@ void updateAnimation(void)
 
 	if (newAnim != -1) // next anim ?
 	{
-		if (newAnim == -2) // completely stop anim and add actor to background
-		{
+		if (newAnim == -2) { // completely stop anim and add actor to background
 			addActorToBgInscrust(currentProcessedActorIdx);
 			currentProcessedActorPtr->newAnim = -1;
 			currentProcessedActorPtr->newAnimType = 0;
@@ -307,8 +265,7 @@ void updateAnimation(void)
 		currentProcessedActorPtr->numOfFrames = GetNbFramesAnim(HQR_Get(listAnim, newAnim));
 	}
 
-	if (currentProcessedActorPtr->ANIM == -1) // no animation
-	{
+	if (currentProcessedActorPtr->ANIM == -1) { // no animation
 		currentProcessedActorPtr->END_FRAME = 0;
 		if (currentProcessedActorPtr->speed == 0) {
 			int numObjectCollisions = checkObjectCollisions(currentProcessedActorIdx, &currentProcessedActorPtr->zv);
@@ -338,8 +295,7 @@ void updateAnimation(void)
 			stepZ = animMoveZ - oldStepZ;
 			stepY = 0;
 		}
-	} else // animation
-	{
+	} else { // animation
 		oldStepX = currentProcessedActorPtr->stepX;
 		oldStepY = currentProcessedActorPtr->stepY;
 		oldStepZ = currentProcessedActorPtr->stepZ;
@@ -353,12 +309,10 @@ void updateAnimation(void)
 
 	}
 
-	if (currentProcessedActorPtr->YHandler.param) // currently falling ?
-	{
+	if (currentProcessedActorPtr->YHandler.param) { // currently falling ?
 		if (currentProcessedActorPtr->YHandler.param != -1) {
 			stepY = evaluateReal(&currentProcessedActorPtr->YHandler) - oldStepY;
-		} else // stop falling
-		{
+		} else { // stop falling
 			stepY = currentProcessedActorPtr->YHandler.newAngle - oldStepY;
 
 			currentProcessedActorPtr->YHandler.param = 0;
@@ -371,8 +325,7 @@ void updateAnimation(void)
 
 	memcpy(localTable, currentProcessedActorPtr->COL, 6);
 
-	if (stepX || stepY || stepZ) // start of movement management
-	{
+	if (stepX || stepY || stepZ) { // start of movement management
 		zvPtr = &currentProcessedActorPtr->zv;
 		copyZv(&currentProcessedActorPtr->zv, &zvLocal);
 
@@ -385,24 +338,21 @@ void updateAnimation(void)
 		zvLocal.ZVZ1 += stepZ;
 		zvLocal.ZVZ2 += stepZ;
 
-		if (currentProcessedActorPtr->dynFlags & 1) // hard collision enabled for actor ?
-		{
+		if (currentProcessedActorPtr->dynFlags & 1) { // hard collision enabled for actor ?
 			int numCol = AsmCheckListCol(&zvLocal, &roomDataTable[currentProcessedActorPtr->room]);
 
 			for (int i = 0; i < numCol; i++) {
 				hardColStruct* pHardCol = hardColTable[i];
 
-				if (pHardCol->type == 9) {
+				if (pHardCol->type == 9)
 					currentProcessedActorPtr->HARD_COL = (short)pHardCol->parameter;
-				}
 
-				if (pHardCol->type == 3) {
+				if (pHardCol->type == 3)
 					currentProcessedActorPtr->HARD_COL = 255;
-				}
 
-				if (g_gameId == AITD1 || (g_gameId >= JACK && (pHardCol->type != 10 || currentProcessedActorIdx != currentCameraTargetActor))) {
-					if (stepX || stepZ) // move on the X or Z axis ? update to avoid entering the hard col
-					{
+				if (g_gameId == AITD1 ||
+					(g_gameId >= JACK && (pHardCol->type != 10 || currentProcessedActorIdx != currentCameraTargetActor))) {
+					if (stepX || stepZ) { // move on the X or Z axis ? update to avoid entering the hard col
 						//ZVStruct tempZv;
 
 						hardColStepX = stepX;
@@ -427,19 +377,14 @@ void updateAnimation(void)
 					}
 				}
 			}
-		} else // no hard collision -> just update the flag without performing the position update
-		{
-			if (AsmCheckListCol(&zvLocal, &roomDataTable[currentProcessedActorPtr->room])) {
-				currentProcessedActorPtr->HARD_COL = 1;
-			} else {
-				currentProcessedActorPtr->HARD_COL = 0;
-			}
+		} else { // no hard collision -> just update the flag without performing the position update
+			currentProcessedActorPtr->HARD_COL = AsmCheckListCol(&zvLocal, &roomDataTable[currentProcessedActorPtr->room]) ? 1 : 0;
 		}
 
 		int numCol = checkObjectCollisions(currentProcessedActorIdx, &zvLocal); // get the number of actor/actor collision
 
-		for (int j = 0; j < numCol; j++) // process the actor/actor collision
-		{
+		// process the actor/actor collision
+		for (int j = 0; j < numCol; j++) {
 			int collisionIndex = currentProcessedActorPtr->COL[j];
 
 			tObject* actorTouchedPtr = &objectTable[collisionIndex];
@@ -455,8 +400,7 @@ void updateAnimation(void)
 					foundObject(actorTouchedPtr->indexInWorld, 0);
 				}
 			} else {
-				if (actorTouchedPtr->_flags & AF_MOVABLE) // can be pushed ?
-				{
+				if (actorTouchedPtr->_flags & AF_MOVABLE) { // can be pushed ?
 					ZVStruct localZv2;
 
 					bool isPushPossible = true;
@@ -469,13 +413,9 @@ void updateAnimation(void)
 					localZv2.ZVZ1 += stepZ;
 					localZv2.ZVZ2 += stepZ;
 
-					if (!AsmCheckListCol(&localZv2, &roomDataTable[currentProcessedActorPtr->room])) {
-						if (checkObjectCollisions(collisionIndex, &localZv2)) {
-							isPushPossible = false;
-						}
-					} else {
+					if (AsmCheckListCol(&localZv2, &roomDataTable[currentProcessedActorPtr->room]) ||
+						checkObjectCollisions(collisionIndex, &localZv2))
 						isPushPossible = false;
-					}
 
 					if (!isPushPossible) {
 						if (stepX || stepZ) //if we're trying to move
@@ -504,11 +444,9 @@ void updateAnimation(void)
 								stepZ = hardColStepZ;
 							}
 						}
-					} else // push succeed
-					{
-						if (actorTouchedPtr->_flags & AF_BOXIFY) {
+					} else { // push succeed
+						if (actorTouchedPtr->_flags & AF_BOXIFY)
 							removeFromBGIncrust(collisionIndex);
-						}
 
 						actorTouchedPtr->_flags |= AF_ANIMATED;
 
@@ -520,13 +458,10 @@ void updateAnimation(void)
 
 						copyZv(&localZv2, touchedZv);
 					}
-				} else {
-					// can't be pushed
+				} else { // can't be pushed
 					if (currentProcessedActorPtr->dynFlags & 1) {
-						if (stepX || stepZ) // if moving
-						{
-							if (actorTouchedPtr->room == currentProcessedActorPtr->room) // same room -> easy case
-							{
+						if (stepX || stepZ) { // if moving
+							if (actorTouchedPtr->room == currentProcessedActorPtr->room) { // same room -> easy case
 								hardColStepX = stepX;
 								hardColStepZ = stepZ;
 
@@ -534,8 +469,7 @@ void updateAnimation(void)
 
 								stepX = hardColStepX;
 								stepZ = hardColStepZ;
-							} else // different room
-							{
+							} else { // different room
 								ZVStruct localZv3;
 
 								copyZv(touchedZv, &localZv3);
@@ -590,10 +524,8 @@ void updateAnimation(void)
 				currentProcessedActorPtr->falling = 0;
 			}
 		}
-	} else {
-		if ((currentProcessedActorPtr->YHandler.param != -1) && (currentProcessedActorPtr->_flags & AF_FALLABLE)) {
-			currentProcessedActorPtr->falling = 1;
-		}
+	} else if ((currentProcessedActorPtr->YHandler.param != -1) && (currentProcessedActorPtr->_flags & AF_FALLABLE)) {
+		currentProcessedActorPtr->falling = 1;
 	}
 
 	for (int i = 0; i < 3; i++) {
@@ -604,7 +536,6 @@ void updateAnimation(void)
 
 			if (actorTouchedPtr->_flags & AF_MOVABLE) {
 				int i;
-
 				for (i = 0; i < 3; i++) {
 					if (currentProcessedActorPtr->COL[i] == collisionIndex)
 						break;
@@ -618,17 +549,14 @@ void updateAnimation(void)
 		}
 	}
 
-	if (currentProcessedActorPtr->END_FRAME) // key frame change
-	{
+	if (currentProcessedActorPtr->END_FRAME) { // key frame change
 		currentProcessedActorPtr->FRAME++;
 
-		if (currentProcessedActorPtr->FRAME >= currentProcessedActorPtr->numOfFrames) // end of anim ?
-		{
+		if (currentProcessedActorPtr->FRAME >= currentProcessedActorPtr->numOfFrames) { // end of anim ?
 			currentProcessedActorPtr->END_ANIM = 1; // end of anim
 			currentProcessedActorPtr->FRAME = 0; // restart anim
 
-			if (!(currentProcessedActorPtr->animType & 1) && (currentProcessedActorPtr->newAnim == -1)) // is another anim waiting ?
-			{
+			if (!(currentProcessedActorPtr->animType & 1) && (currentProcessedActorPtr->newAnim == -1)) { // is another anim waiting ?
 				currentProcessedActorPtr->animType &= 0xFFFD;
 
 				InitAnim(currentProcessedActorPtr->animInfo, 1, -1);
@@ -646,8 +574,7 @@ void updateAnimation(void)
 		currentProcessedActorPtr->animNegX = 0;
 		currentProcessedActorPtr->animNegY = 0;
 		currentProcessedActorPtr->animNegZ = 0;
-	} else // not the end of anim
-	{
+	} else { // not the end of anim
 		if ((currentProcessedActorPtr->ANIM == -1) && (currentProcessedActorPtr->speed != 0) && (currentProcessedActorPtr->speedChange.param == 0)) {
 			currentProcessedActorPtr->worldX += currentProcessedActorPtr->stepX;
 			currentProcessedActorPtr->roomX += currentProcessedActorPtr->stepX;
@@ -713,7 +640,6 @@ void initBufferAnim(std::vector<s16>& buffer, char* bodyPtr)
 
 			source += 8;
 		}
-
 	}
 }
 
@@ -730,7 +656,7 @@ s16 PatchType(char** bodyPtr) // local
 	*(s16*)(*bodyPtr) = temp;
 	(*bodyPtr) += 2;
 
-	return(temp);
+	return temp;
 }
 
 void PatchInterAngle(char** bodyPtr, int bp, int bx) // local
@@ -772,10 +698,9 @@ void PatchInterAngle(char** bodyPtr, int bp, int bx) // local
 void PatchInterStep(char** bodyPtr, int bp, int bx) // local
 {
 	s16 cx = *(s16*)animVar4;
-	s16 ax;
 	animVar4 += 2;
 
-	ax = *(s16*)animVar1;
+	s16 ax = *(s16*)animVar1;
 	animVar1 += 2;
 
 	if (ax == cx) {
@@ -790,17 +715,10 @@ void PatchInterStep(char** bodyPtr, int bp, int bx) // local
 s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr)
 {
 	int numOfBonesInAnim = *(s16*)(animPtr + 2);
-	u16 keyframeLength;
-	u16 timeOfKeyframeStart;
-	int ax;
-	u16 bx;
-	u16 time;
-	int bp;
-	int flag;
 
 	sBody* pBody = getBodyFromPtr(bodyPtr);
 
-	flag = pBody->m_flags;
+	int flag = pBody->m_flags;
 
 	animPtr += 4;
 
@@ -813,51 +731,45 @@ s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr)
 	// animVar1 = ptr to the current keyFrame
 	animVar1 = animPtr;
 
-	keyframeLength = *(u16*)animPtr; // keyframe length
+	u16 keyframeLength = *(u16*)animPtr; // keyframe length
 
-	if (!(pBody->m_flags & INFO_ANIM)) // do not anim if the model can't be animated
-	{
-		return(0);
-	}
+	// Don't animate if the model can't be animated
+	if (!(pBody->m_flags & INFO_ANIM)) return 0;
 
 	bodyPtr += 16;// skip the flags, ZV, scratch buffer size
 
 	animVar3 = bodyPtr; // this is the scratch buffer
 
-	timeOfKeyframeStart = *(u16*)(bodyPtr + 4); // time of start of keyframe
+	u16 timeOfKeyframeStart = *(u16*)(bodyPtr + 4); // time of start of keyframe
 
 	char* animBufferPtr = g_bodyBufferMap[bodyPtr];
 
-	if (!animBufferPtr) {
-		animBufferPtr = animVar1;
-	}
+	if (!animBufferPtr) animBufferPtr = animVar1;
 
 	// animVar4 = ptr to previous key frame
 	animVar4 = animBufferPtr;
 
 	bodyPtr += *(s16*)(bodyPtr - 2); // skip over scratch buffer
 
-	ax = *(s16*)bodyPtr; // num vertices
+	int ax = *(s16*)bodyPtr; // num vertices
 	ax = (ax * 6) + 2;
 	bodyPtr += ax; // skip the vertices
 
 	ax = *(s16*)bodyPtr; // num of group order
-	bx = ax;
+	u16 bx = ax;
 	bodyPtr += bx * 2; // skip group order table
 
-	if (numOfBonesInAnim > pBody->m_groupOrder.size()) {
+	if (numOfBonesInAnim > pBody->m_groupOrder.size())
 		numOfBonesInAnim = pBody->m_groupOrder.size();
-	}
 
 	bodyPtr += 10; // skip bone 0
 
-	time = (u16)timer - timeOfKeyframeStart;
+	u16 time = (u16)timer - timeOfKeyframeStart;
 
 	bx = keyframeLength;
-	bp = time;
+	int bp = time;
 
-	if (time < keyframeLength) // interpolate keyframe
-	{
+	if (time < keyframeLength) { // interpolate keyframe
 		char* animVar1Backup = animVar1;
 		// skip bone 0 anim
 		animVar4 += 8; // anim buffer
@@ -929,12 +841,10 @@ s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr)
 
 		animCurrentTime = bx;
 		animKeyframeLength = bp;
-		return(0);
-	} else // change keyframe
-	{
+		return 0;
+	} else { // change keyframe
 		char* tempBx = animVar1;
 		char* si = animVar1;
-
 
 		si += 8;
 
@@ -975,8 +885,7 @@ s16 SetInterAnimObjet(int frame, char* animPtr, char* bodyPtr)
 		animStepZ = *(s16*)(tempBx + 4);
 
 		tempBx += 6;
-		return(1);
-
+		return 1;
 	}
 
 }
