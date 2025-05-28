@@ -305,9 +305,8 @@ void startAITD1()
 	setPalette(currentGamePalette);
 
 #ifndef AITD_UE4
-	if (!make3dTatou()) {
-		makeIntroScreens();
-	}
+	// If the armadillo wasn't skipped, continue to the rest of the intro sequence.
+	if (!make3dTatou()) makeIntroScreens();
 #endif
 
 	while (1) {
@@ -323,7 +322,7 @@ void startAITD1()
 				startGame(7, 1, 0);
 
 				// TODO: `makeSlideshow()` is a dead end; what was that?
-				if (!make3dTatou() && !makeIntroScreens()); // makeSlideshow();
+				if (!make3dTatou()) makeIntroScreens(); // if (!make3dTatou() && !makeIntroScreens()) makeSlideshow();
 
 				break;
 			}
@@ -387,26 +386,27 @@ void startAITD1()
 
 void AITD1_ReadBook(int index, int type)
 {
+	static constexpr int bookFontColor = 26;
 	switch (type) {
 		case DocumentTypeAITD1::DT1_LETTER: // READ_MESSAGE
 		{
 			loadPakTo("ITD_RESS", AITD1_LETTRE, aux);
 			turnPageFlag = 0;
-			Lire(index, 60, 10, 245, 190, 0, 26, 0);
+			Lire(index, 60, 10, 245, 190, 0, bookFontColor, 0);
 			break;
 		}
 		case DocumentTypeAITD1::DT1_BOOK: // READ_BOOK
 		{
 			loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
 			turnPageFlag = 1;
-			Lire(index, 48, 2, 260, 197, 0, 26, 0);
+			Lire(index, 48, 2, 260, 197, 0, bookFontColor, 0);
 			break;
 		}
 		case DocumentTypeAITD1::DT1_NOTEBOOK: // READ_CARNET
 		{
 			loadPakTo("ITD_RESS", AITD1_CARNET, aux);
 			turnPageFlag = 0;
-			Lire(index, 50, 20, 250, 199, 0, 26, 0);
+			Lire(index, 50, 20, 250, 199, 0, bookFontColor, 0);
 			break;
 		}
 		default:

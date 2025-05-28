@@ -2,11 +2,11 @@
 
 #include "AITD1.h"
 
+/// @brief 
+/// @todo What's with the magic number `45120`? 
 void clearScreenTatou(void)
 {
-	for (int i = 0; i < 45120; i++) {
-		frontBuffer[i] = 0;
-	}
+	for (int i = 0; i < 45120; i++) { frontBuffer[i] = 0; }
 }
 
 /// @brief Handles the 3D armadillo from the intro to AITD1.
@@ -121,9 +121,7 @@ int make3dTatou(void)
 	// If there was an input event...
 	if (key || Click || JoyD) {
 		// ...handle it and return 1 to skip the title sequence.
-		while (key) {
-			process_events();
-		}
+		while (key) { process_events(); }
 
 		FadeOutPhys(32, 0);
 		copyPalette((unsigned char*)paletteBackup, currentGamePalette);

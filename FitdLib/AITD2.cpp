@@ -256,8 +256,7 @@ void drawInventoryAITD2()
 		case 2:
 			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_GRACE, logicalScreen);
 			break;
-		default:
-			FITD_throwFatal(); // assert(0);
+		default: FITD_throwFatal(); // TODO: Improve error message
 	}
 
 	statusLeft = 27;
@@ -274,7 +273,6 @@ int	TabYSprite[3] = { 136,104,131 };
 void redrawInventorySpriteAITD2()
 {
 	int inventoryType = CVars[getCVarsIdx(TYPE_INVENTAIRE)];
-
 	AffSpfI(TabXSprite[inventoryType], TabYSprite[inventoryType], inventoryType, pAITD2InventorySprite);
 }
 

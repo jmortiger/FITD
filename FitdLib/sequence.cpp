@@ -117,7 +117,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 	int var_4 = 1;
 	int quitPlayback = 0;
 	int nextFrame = 1;
-	unsigned char localPalette[0x300];
+	u8 localPalette[0x300];//BYTES_IN_PALETTE
 
 	char buffer[256];
 	if (g_gameId == AITD2) {

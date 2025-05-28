@@ -53,6 +53,8 @@ enum DocumentTypeAITD1 {
 	DT1_CARNET = 2,
 }; typedef enum DocumentTypeAITD1 DocumentTypeAITD1;
 
+#define AITD1_AUTO_SCROLL_TIME 300
+
 void startAITD1();
 void AITD1_ReadBook(int index, int type);
 #endif

@@ -1,5 +1,3 @@
-#include "common.h"
-
 /***************************************************************************
 mainSDL.cpp  -  description
 -------------------
@@ -17,6 +15,7 @@ email                : yaz0r@yaz0r.net
 *                                                                         *
 ***************************************************************************/
 
+#include "common.h"
 #include "osystem.h"
 #include <bgfx/bgfx.h>
 #include <bx/platform.h>
@@ -54,7 +53,7 @@ struct maskStruct
 
 std::vector<std::vector<maskStruct>> maskTextures; // [room][mask]
 
-//vertex buffers for rendering
+// #region vertex buffers for rendering
 struct polyVertex
 {
 	float X;
@@ -101,18 +100,21 @@ int numUsedFlatVertices = 0;
 int numUsedNoiseVertices = 0;
 int numUsedTransparentVertices = 0;
 int numUsedRampVertices = 0;
-int numUsedSpheres = 0;
+int numUsedSpheres = 0; // IDEA: Change name to `numUsedSphereVertices` to match others?
+// #endregion vertex buffers for rendering
 
+/* #region Camera Values */
 //static unsigned long int zoom = 0;
 
 float nearVal = 100;
 float farVal = 100000;
 float cameraZoom = 0;
 float fov = 0;
+/* #endregion Camera Values */
 
 /// @brief 
 /// @details * Only set in `osystem_setPalette`
-char RGB_Pal[256 * 4];
+char RGB_Pal[COLORS_IN_PALETTE * 4];
 
 unsigned int backTexture;
 
@@ -148,7 +150,7 @@ void osystem_initGL(int screenWidth, int screenHeight)
 	glViewport(0, 0, g_screenWidth, g_screenHeight);
 	checkGL();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);       // Black Background
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Black Background
 	checkGL();
 
 	// generate textures
@@ -202,9 +204,9 @@ void osystem_initGL(int screenWidth, int screenHeight)
 
 void osystem_setPalette(u8* palette)
 {
-	memcpy(RGB_Pal, palette, 256 * 3);
-
-	bgfx::updateTexture2D(g_paletteTexture, 0, 0, 0, 0, 3, 256, bgfx::copy(RGB_Pal, 256 * 3));
+	memcpy(RGB_Pal, (u8*)palette, BYTES_IN_PALETTE);
+	bgfx::updateTexture2D(g_paletteTexture, 0, 0, 0, 0, BYTES_PER_PALETTE_COLOR, COLORS_IN_PALETTE, bgfx::copy(RGB_Pal, BYTES_IN_PALETTE));
+	// assert(comparePalettes(RGB_Pal, palette));
 }
 
 void osystem_getPalette(unsigned char* palette) { memcpy(palette, RGB_Pal, 256 * 3); }
@@ -217,6 +219,7 @@ struct s_vertexData
 };
 s_vertexData gVertexArray[1024 * 1024];
 
+// #region Get Shaders
 bgfx::ShaderHandle loadBgfxShader(const std::string& filename)
 {
 	std::vector<u8> memBlob;
@@ -295,6 +298,7 @@ bgfx::ProgramHandle getSphereShader()
 
 	return programHandle;
 }
+// #endregion Get Shaders
 
 void osystem_drawBackground()
 {
@@ -407,7 +411,9 @@ void initBgfxMainResources()
 }
 
 /// @brief The current output resolution of the game window; changes with window resizing & debug menu visibility
-/// @details Game is running in dos resolution mode 13h, ie 320x200x256, but is displayed in 4:3 (320x240), so pixel are not square (1.6:1)
+/// @details Game is running in dos resolution mode 13h, ie 320x200x256, but is displayed in 4:3 (320x240), so pixel are not square (1.6:1).
+///
+/// Seemingly replaced the s32's `g_screenWidth` & `g_screenHeight`.
 ImVec2 gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
 
 /// @brief Renders the game sub-window in the debug menu.
@@ -529,6 +535,7 @@ void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int ri
 	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, bgfx::copy(physicalScreen, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT));
 }
 
+/// @brief Updates `physicalScreenRGB`
 void osystem_refreshFrontTextureBuffer()
 {
 	unsigned char* out = physicalScreenRGB;
@@ -544,17 +551,10 @@ void osystem_refreshFrontTextureBuffer()
 	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, bgfx::copy(physicalScreen, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT));
 }
 
-void osystem_initBuffer()
-{
-	memset(backBuffer, 0x0, 512 * 256 * 3);
-}
+void osystem_initBuffer() { memset(backBuffer, 0x0, 512 * 256 * 3); }
 
 void gameScreenToViewport(float* X, float* Y)
 {
-	// (*X) = (*X) * g_screenWidth / _SCREEN_INTERNAL_WIDTH_FLOAT;
-	// (*Y) = (*Y) * g_screenHeight / _SCREEN_INTERNAL_HEIGHT_FLOAT;
-
-	// (*Y) = g_screenHeight - (*Y);
 	(*X) = (*X) * gameResolution.x / _SCREEN_INTERNAL_WIDTH_FLOAT;
 	(*Y) = (*Y) * gameResolution.y / _SCREEN_INTERNAL_HEIGHT_FLOAT;
 
@@ -574,11 +574,16 @@ void osystem_setClip(float left, float top, float right, float bottom)
 	float width = x2 - x1;
 	float height = y2 - y1;
 
-	float currentScissor[4];
-	currentScissor[0] = ((left - 1) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0];
+	float currentScissor[4] = {
+		((left - 1) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0],
+		((top - 1) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1],
+		((right - left + 2) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0],
+		((bottom - top + 2) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1],
+	};
+	/* currentScissor[0] = ((left - 1) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0];
 	currentScissor[1] = ((top - 1) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1];
 	currentScissor[2] = ((right - left + 2) / _SCREEN_INTERNAL_WIDTH_FLOAT) * gameResolution[0];
-	currentScissor[3] = ((bottom - top + 2) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1];
+	currentScissor[3] = ((bottom - top + 2) / _SCREEN_INTERNAL_HEIGHT_FLOAT) * gameResolution[1]; */
 
 	currentScissor[0] = std::max<float>(currentScissor[0], 0);
 	currentScissor[1] = std::max<float>(currentScissor[1], 0);
@@ -589,7 +594,6 @@ void osystem_setClip(float left, float top, float right, float bottom)
 void osystem_clearClip() { bgfx::setScissor(0, 0, gameResolution[0], gameResolution[1]); }
 
 void osystem_stopFrame() {}
-
 void osystem_startModelRender() {}
 
 void osystem_stopModelRender() { osystem_flushPendingPrimitives(); }
@@ -1162,9 +1166,14 @@ void osystem_drawPoint(float X, float Y, float Z, u8 color, u8 material, float s
 	}
 }
 
-void osystem_flip(unsigned char* videoBuffer) { osystem_flushPendingPrimitives(); }
+void osystem_flip(u8* videoBuffer) { osystem_flushPendingPrimitives(); }
 
-void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2)
+void osystem_createMask(
+	const std::array<u8, _SCREEN_INTERNAL_PIXELS>& mask,
+	int roomId, int maskId,
+	u8* refImage,
+	int maskX1, int maskY1,
+	int maskX2, int maskY2)
 {
 	if (maskTextures.size() < roomId + 1) {
 		maskTextures.resize(roomId + 1);
@@ -1246,27 +1255,23 @@ void osystem_drawMask(int roomId, int maskId)
 		return;
 
 #ifdef FITD_DEBUGGER
-	if (backgroundMode != backgroundModeEnum_2D)
-		return;
+	if (backgroundMode != backgroundModeEnum_2D) return;
 #endif
 
 	static bgfx::UniformHandle backgroundTextureUniform = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(backgroundTextureUniform)) {
+	if (!bgfx::isValid(backgroundTextureUniform))
 		backgroundTextureUniform = bgfx::createUniform("s_backgroundTexture", bgfx::UniformType::Sampler);
-	}
 	static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(paletteTextureUniform)) {
+	if (!bgfx::isValid(paletteTextureUniform))
 		paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
-	}
 	static bgfx::UniformHandle maskTextureUniform = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(maskTextureUniform)) {
+	if (!bgfx::isValid(maskTextureUniform))
 		maskTextureUniform = bgfx::createUniform("s_maskTexture", bgfx::UniformType::Sampler);
-	}
 
-	bgfx::setState(
-		BGFX_STATE_WRITE_RGB |
-		BGFX_STATE_MSAA |
-		BGFX_STATE_PT_TRISTRIP
+	bgfx::setState(0
+		| BGFX_STATE_WRITE_RGB
+		| BGFX_STATE_MSAA
+		| BGFX_STATE_PT_TRISTRIP
 	);
 
 	bgfx::setVertexBuffer(0, maskTextures[roomId][maskId].vertexBuffer);

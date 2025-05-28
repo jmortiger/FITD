@@ -57,14 +57,15 @@ mouseRight = 0;
 #define CALLBACK
 #endif
 
-void OPL_musicPlayer(void* udata, Uint8* stream, int len)
-{
-	musicUpdate(udata, stream, len);
-}
+/**
+ * @brief Wrapper for `int musicUpdate(void *udata, uint8 *stream, int len)`
+ * @param udata
+ * @param stream
+ * @param len
+ */
+void OPL_musicPlayer(void* udata, Uint8* stream, int len) { musicUpdate(udata, stream, len); }
 
-extern "C" {
-	void Sound_Quit(void);
-}
+extern "C" { void Sound_Quit(void); }
 
 void Sound_Quit(void) {}
 
@@ -81,12 +82,16 @@ SDL_Semaphore* endOfRender = NULL;
 
 bool bFirst = true;
 
+/// @brief 1st Entrypoint
+/// @param argc 
+/// @param argv 
+/// @return 
 int FitdInit(int argc, char* argv[])
 {
 	parseDebugParam(argc, argv);
-#ifdef WIN32
-	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
-#endif
+	//#ifdef WIN32
+	//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
+	//#endif
 	startOfRender = SDL_CreateSemaphore(0);
 	endOfRender = SDL_CreateSemaphore(0);
 
@@ -107,9 +112,6 @@ int FitdInit(int argc, char* argv[])
 
 	gWindowBGFX = SDL_CreateWindow("FITD", resolution[0], resolution[1], flags);
 
-	// char version[256];
-	// getVersion(version);
-	// printf(version);
 	printVersion();
 
 	detectGame();
@@ -124,7 +126,7 @@ int FitdInit(int argc, char* argv[])
 	u32 startOfPreviousFrame = SDL_GetTicks();
 	bool bFirstFrame = true;
 
-	while (1) {
+	while (true) {
 		u32 startOfFrame = SDL_GetTicks();
 
 		assert(startOfPreviousFrame <= startOfFrame);
@@ -184,9 +186,9 @@ u32 osystem_startOfFrame()
 
 	static bool firstFrame = true;
 	if (firstFrame) {
-// #ifdef USE_IMGUI
-// 		ImGui_ImplSdlGL3_Init(sdl_window);
-// #endif
+		// #ifdef USE_IMGUI
+		// 		ImGui_ImplSdlGL3_Init(sdl_window);
+		// #endif
 		lastFrameTime = SDL_GetTicks();
 
 		firstFrame = false;
@@ -194,14 +196,13 @@ u32 osystem_startOfFrame()
 
 	u32 numFramesToAdvance = (SDL_GetTicks() - lastFrameTime) / (1000 / FRAMES_PER_SECOND);
 
-	if (numFramesToAdvance == 0)
-		numFramesToAdvance = 1;
+	if (numFramesToAdvance == 0) numFramesToAdvance = 1;
 
 	lastFrameTime = SDL_GetTicks();
 
-// #ifdef USE_IMGUI
-// 	ImGui_ImplSdlGL3_NewFrame(sdl_window);
-// #endif
+	// #ifdef USE_IMGUI
+	// 	ImGui_ImplSdlGL3_NewFrame(sdl_window);
+	// #endif
 
 	return numFramesToAdvance;
 }
@@ -214,18 +215,17 @@ void osystem_endOfFrame()
 	debugger_draw();
 #endif
 
-// #ifdef USE_IMGUI
-// 	ImGui::Render();
-// #endif
+	// #ifdef USE_IMGUI
+	// 	ImGui::Render();
+	// #endif
 
-   // osystem_flip(NULL);
+	// osystem_flip(NULL);
 
 	renderGameWindow();
 
 	EndFrame();
 
-	if (bFirst)
-		bFirst = false;
+	if (bFirst) bFirst = false;
 
 	SDL_SignalSemaphore(endOfRender);
 	//SDL_SemPost(emptyCount);
@@ -272,7 +272,7 @@ void osystem_init()  // that's the constructor of the system dependent object us
 
 	osystem_initGL(screen_width, screen_height);
 
-	osystemAL_init();
+	if (masterEnableSound) osystemAL_init();
 }
 
 int posInStream = 0;

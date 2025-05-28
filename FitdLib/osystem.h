@@ -14,9 +14,9 @@ extern "C" {
 #endif
 
 #define byte char
-//#ifndef bool
-//#define bool char
-//#endif
+	//#ifndef bool
+	//#define bool char
+	//#endif
 #define u8 unsigned char
 #define true 1
 #define false 0
@@ -87,7 +87,7 @@ extern "C" {
 	void osystem_setClip(float left, float top, float right, float bottom);
 	void osystem_clearClip();
 
-	/// @todo Unimplemented; Remove?
+	/// @todo Unimplemented, but commented-out reference in `processInventory`; Remove?
 	void osystem_cleanScreenKeepZBuffer();
 
 	void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyType);

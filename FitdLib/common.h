@@ -312,27 +312,6 @@ FORCEINLINE u32 READ_BE_U32(void* ptr)
 
 FORCEINLINE s32 READ_BE_S32(void* ptr) { return (s32)READ_BE_U32(ptr); }
 // #endregion 32 bit
-
-// #region Invert
-FORCEINLINE u32 READ_INVERT_ENDIAN_U32(void* ptr)
-{
-	return (((u8*)ptr)[3] << 24) | (((u8*)ptr)[2] << 16) | (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
-}
-
-FORCEINLINE s32 READ_INVERT_ENDIAN_S32(void* ptr) { return (s32)READ_INVERT_ENDIAN_U32(ptr); }
-FORCEINLINE u16 READ_INVERT_ENDIAN_U16(void* ptr)
-{
-	return (((u8*)ptr)[1] << 8) | ((u8*)ptr)[0];
-}
-
-FORCEINLINE s16 READ_INVERT_ENDIAN_S16(void* ptr) { return (s16)READ_INVERT_ENDIAN_U16(ptr); }
-FORCEINLINE u8 READ_INVERT_ENDIAN_U8(void* ptr)
-{
-	return *((u8*)ptr);
-}
-
-FORCEINLINE s8 READ_INVERT_ENDIAN_S8(void* ptr) { return (s8)READ_INVERT_ENDIAN_U8(ptr); }
-// #endregion Invert
 /* #endregion */
 
 /// @brief Add a breakpoint here to catch all fatal exits.
@@ -349,5 +328,64 @@ FORCEINLINE void FITD_throwFatal(const char* format = NULL, ...) {
 	}
 	assert(0);
 }
-
+// TODO: Import bmp encoder
+/* struct BmpHeader {
+	union {
+		u16 idShort;
+		u8 idBytes[2] = { 0x42, 0x4D };
+	} id;
+	union {
+		u32 fileSizeInt;
+		u8 fileSizeBytes[4] = { 0x36, 0x03, 0x00, 0x00 };
+	} fileSize;
+	u16 blank1 = 0;
+	u16 blank2 = 0;
+	union {
+		u32 dataOffsetInt;
+		u8 dataOffsetBytes[4] = { 0x36, 0x00, 0x00, 0x00 };
+	} dataOffset;
+}; typedef struct BmpHeader BmpHeader;
+enum BmpCompressionEnum {
+	BI_RGB = 0, 	// none 	Most common
+	BI_RLE8 = 1, 	// RLE 8-bit/pixel 	Can be used only with 8-bit/pixel bitmaps
+	BI_RLE4 = 2, 	// RLE 4-bit/pixel 	Can be used only with 4-bit/pixel bitmaps
+	BI_BITFIELDS = 3, 	// OS22XBITMAPHEADER: Huffman 1D 	BITMAPV2INFOHEADER: RGB bit field masks, BITMAPV3INFOHEADER+: RGBA
+	BI_JPEG = 4, 	// OS22XBITMAPHEADER: RLE-24 	BITMAPV4INFOHEADER+: JPEG image for printing[14]
+	BI_PNG = 5, 	// BITMAPV4INFOHEADER+: PNG image for printing[14]
+	BI_ALPHABITFIELDS = 6, 	// RGBA bit field masks 	only Windows CE 5.0 with .NET 4.0 or later
+	BI_CMYK = 11, 	// none 	only Windows Metafile CMYK[4]
+	BI_CMYKRLE8 = 12, 	// RLE-8 	only Windows Metafile CMYK
+	BI_CMYKRLE4 = 13, 	// RLE-4 	only Windows Metafile CMYK 
+};
+struct BitmapInfoHeader {
+	union {
+		u32 headerSizeInt;
+		u8 headerSizeBytes[4] = { 0x28, 0x00, 0x00, 0x00 };
+	} headerSize;
+	s32 pixelWidth;
+	s32 pixelHeight;
+	u16 numColorPlanes = 1;
+	u16 bpp = 24;
+	u32 compressionMethod = 0;
+	union {
+		u32 rawDataSizeInt;
+		u8 rawDataSizeBytes[4] = { 0x00, 0x03, 0x00, 0x00 };
+	} rawDataSize;
+	union {
+		s32 horizontalResolutionInt;
+		s8 horizontalResolutionBytes[4] = { 0x00, 0x00, 0x00, 0x00 };
+	} horizontalResolution;
+	union {
+		s32 verticalResolutionInt;
+		s8 verticalResolutionBytes[4] = { 0x00, 0x00, 0x00, 0x00 };
+	} verticalResolution;
+	union {
+		u32 numColorsInt;
+		u8 numColorsBytes[4] = { 0x00, 0x00, 0x00, 0x00 };
+	} numColors;
+	union {
+		u32 numImportantColorsInt;
+		u8 numImportantColorsBytes[4] = { 0x00, 0x00, 0x00, 0x00 };
+	} numImportantColors;
+}; typedef struct BitmapInfoHeader BitmapInfoHeader; */
 #endif
