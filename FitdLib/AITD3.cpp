@@ -1,10 +1,11 @@
 #include "common.h"
 
+// TODO: Convert to enum
 #define AITD3_CADRE_SPF						0
-#define AITD3_ITDFONT						1
-#define AITD3_LETTRE						2
-#define AITD3_LIVRE							3
-#define AITD3_CARNET						4
+#define AITD3_ITDFONT						1 // Font gfx
+#define AITD3_LETTRE						2 // Letter reading background image
+#define AITD3_LIVRE							3 // Book reading background image
+#define AITD3_CARNET						4 // Notebook reading background image
 #define AITD3_CYM00001						5
 #define AITD3_CYM00007						6
 #define AITD3_CYM00013						7
@@ -14,11 +15,11 @@
 #define AITD3_CYM13005						11
 #define AITD3_CYM13013						12
 #define AITD3_MENU3							13
-#define AITD3_INVENTAIRE_CAVERNE			14 // Cave
+#define AITD3_INVENTAIRE_CAVERNE			14
 #define AITD3_INVENTAIRE_COWBOY				15
 #define AITD3_INVENTAIRE_COUGUAR			16
 #define AITD3_OPTION_SCREEN					17
-#define AITD3_SPRITES_INVENTAIRE_CAVERNE	18 // Cave
+#define AITD3_SPRITES_INVENTAIRE_CAVERNE	18
 #define AITD3_SPRITES_INVENTAIRE_COWBOY		19
 #define AITD3_SPRITES_INVENTAIRE_COUGUAR	20
 
@@ -45,13 +46,11 @@ void startAITD3()
 			case -1: // timeout
 			{
 				startGame(1, 0, 0);
-
 				break;
 			}
 			case 0: // new game
 			{
 				startGame(0, 12, 1);
-
 				break;
 			}
 			case 1: // continue

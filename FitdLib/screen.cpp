@@ -16,10 +16,7 @@ void setupScreen(void)
 
 void flushScreen(void)
 {
-	int i;
-	int j;
-
-	for (i = 0; i < _SCREEN_INTERNAL_HEIGHT; i++) {
+	for (int i = 0, j; i < _SCREEN_INTERNAL_HEIGHT; i++) {
 		for (j = 0; j < _SCREEN_INTERNAL_WIDTH; j++) {
 			*(logicalScreen + i * _SCREEN_INTERNAL_WIDTH + j) = 0;
 		}

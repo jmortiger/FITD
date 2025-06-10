@@ -561,7 +561,7 @@ void setupChannelFrequency(int channelIdx, int cl, int dx, int bp)
 	di = globTable[cl & 0xF];
 
 	if (bp & 0x80) {
-		// FITD_throwFatal(); // assert(0);
+		// FITD_throwFatal();
 	}
 
 	if (cl & 0x80) {
@@ -684,13 +684,9 @@ int initialize(void* dummy)
 	return 0;
 }
 
-int getSignature(void* dummy)
-{
-	return 0;
-}
+int getSignature(void* dummy) { return 0; }
 
-void commandNop(channelTable2Element* entry, int param, u8* ptr)
-{}
+void commandNop(channelTable2Element* entry, int param, u8* ptr) {}
 
 void command0(channelTable2Element* entry, int param, u8* ptr)
 {
@@ -726,25 +722,13 @@ void command2(channelTable2Element* entry, int param, u8* ptr)
 	entry->var15 = param;
 }
 
-void command3(channelTable2Element* entry, int param, u8* ptr)
-{
-	entry->var12 = param;
-}
+void command3(channelTable2Element* entry, int param, u8* ptr) { entry->var12 = param; }
 
-void command4(channelTable2Element* entry, int param, u8* ptr)
-{
-	entry->var1E = param;
-}
+void command4(channelTable2Element* entry, int param, u8* ptr) { entry->var1E = param; }
 
-void command5(channelTable2Element* entry, int param, u8* ptr)
-{
-	entry->var17 = param;
-}
+void command5(channelTable2Element* entry, int param, u8* ptr) { entry->var17 = param; }
 
-void command6(channelTable2Element* entry, int param, u8* ptr)
-{
-	FITD_throwFatal(); // assert(0);
-}
+void command6(channelTable2Element* entry, int param, u8* ptr) { FITD_throwFatal(); }
 
 musicCommandType musicCommandTable[10] =
 {
@@ -762,8 +746,6 @@ musicCommandType musicCommandTable[10] =
 
 void executeMusicCommand(channelTable2Element* entry)
 {
-	u16 opcode;
-
 	if (entry->var4 & 0x40)
 		return;
 
@@ -774,7 +756,7 @@ void executeMusicCommand(channelTable2Element* entry)
 		entry->var18 = 0;
 	} else {
 		if (entry->var1A != entry->var1D) {
-			FITD_throwFatal(); // assert(0);
+			FITD_throwFatal();
 		}
 
 		entry->varE--; // voice delay
@@ -786,6 +768,7 @@ void executeMusicCommand(channelTable2Element* entry)
 		}
 	}
 
+	u16 opcode;
 	do {
 		opcode = READ_LE_U16(entry->commandPtr);
 		entry->commandPtr += 2;
@@ -857,8 +840,7 @@ void applyDirectFrequency(int index, int param1, int param2, int param3)
 	}
 }
 
-unsigned char smallData2[] =
-{
+unsigned char smallData2[] = {
 	0,
 	1,
 	2,
@@ -896,23 +878,25 @@ void configChannel(u8 value, u8* data)
 	sendAdlib(0xE0 + value, data[3]); //  Waveform Select
 }
 
+/// @brief 
+/// @param value 
+/// @param data 
+/// @param bp 
+/// @todo Fix name
 void changeOuputLevel(u8 value, u8* data, int bp)
 {
-	int keyScaleLevel;
-	int outputLevel;
-
 	if (value == 0xFF)
 		return;
 
 	data++;
 
-	outputLevel = (*data) & 0x3F;
+	int outputLevel = (*data) & 0x3F;
 
 	outputLevel = 0x3F - ((((outputLevel * bp) * 2) + 0x7F) / 0xFE);
 
 	ASSERT((outputLevel & 0x3F) == outputLevel);
 
-	keyScaleLevel = data[0] & 0xC0;
+	int keyScaleLevel = data[0] & 0xC0;
 
 	sendAdlib(0x40 + value, (data[0] & 0xC0) | (outputLevel & 0x3F));
 }
@@ -1013,15 +997,12 @@ void applyMusicCommandToOPL(channelTable2Element* element2, channelTableElement*
 
 int update(void* dummy)
 {
-	int i;
-
-	channelTable2Element* si;
-
 	if (generalVolume & 0xFF) {
 		return 0;
 	}
 
-	for (i = 0; i < 11; i++) {
+	channelTable2Element* si;
+	for (int i = 0; i < 11; i++) {
 		currentMusicPtr2 = currentMusicPtr;
 
 		executeMusicCommand(&channelTable2[i]);
@@ -1043,29 +1024,23 @@ int update(void* dummy)
 
 int musicFade(void* param)
 {
-	int i;
-	int cx;
-	int si;
-	int dx;
-	int bp;
+	int cx = ((int*)param)[0];
+	int si = ((int*)param)[1];
+	int dx = ((int*)param)[2];
 
-	cx = ((int*)param)[0];
-	si = ((int*)param)[1];
-	dx = ((int*)param)[2];
-
-	bp = si;
+	int bp = si;
 
 	si = -1;
 
 	if (!bp)
 		bp = 0x7FF;
 
-	for (i = 0; i < 11; i++) {
+	for (int i = 0; i < 11; i++) {
 		//  if((bp&i))
 		{
 			if (channelTable2[i].dataPtr) {
 				if (dx & 0x100) {
-					FITD_throwFatal(); // assert(0);
+					FITD_throwFatal();
 				}
 
 				if (dx & 0x40) {
@@ -1089,11 +1064,11 @@ int musicFade(void* param)
 				}
 
 				if (dx & 0x20) {
-					FITD_throwFatal(); // assert(0);
+					FITD_throwFatal();
 				}
 
 				if (dx & 0x2000) {
-					FITD_throwFatal(); // assert(0);
+					FITD_throwFatal();
 				}
 
 				if (dx & 0x8000) {
@@ -1101,7 +1076,7 @@ int musicFade(void* param)
 				}
 
 				if (dx & 0x1000) {
-					FITD_throwFatal(); // assert(0);
+					FITD_throwFatal();
 				}
 
 				if (dx & 0x10) // still running ?
@@ -1124,8 +1099,7 @@ int musicFade(void* param)
 	return si;
 }
 
-musicDrvFunctionType musicDrvFunc[14] =
-{
+musicDrvFunctionType musicDrvFunc[14] = {
 	update,
 	initialize,
 	musicStart,
@@ -1145,7 +1119,8 @@ musicDrvFunctionType musicDrvFunc[14] =
 int callMusicDrv(int commandArg, void* ptr)
 {
 	if (!musicDrvFunc[commandArg]) {
-		FITD_throwFatal(); // assert(0);
+		DebugPrintfLnCategory(debugLevelEnum::DBO_L_ERROR, DBO_SOUND, "Unsupported music driver function (%i)", commandArg);
+		FITD_throwFatal();
 	}
 
 	return musicDrvFunc[commandArg](ptr);
@@ -1228,7 +1203,4 @@ void callMusicUpdate(void)
 	}
 }
 
-void destroyMusicDriver(void)
-{
-	YM3812Shutdown();
-}
+void destroyMusicDriver(void) { YM3812Shutdown(); }

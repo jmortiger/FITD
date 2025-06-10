@@ -23,6 +23,8 @@ void debugger_draw(void);
 /// @todo Support flag to print palette
 void parseDebugParam(int argc, char* argv[]);
 
+// TODO: Convert to use a struct/object.
+
 /// @brief The categories of debug info supported, as a bit flag.
 /// @todo Add mask to enum
 enum debugCategoryEnum : unsigned char {
@@ -37,6 +39,7 @@ enum debugCategoryEnum : unsigned char {
 };
 #define DBO_ALL 0b0111'1111
 typedef enum debugCategoryEnum debugCategoryEnum;
+ENUM_CLASS_FLAGS(debugCategoryEnum)
 
 /// @brief The debug levels supported, as a bit flag.
 /// @todo Add mask to enum
@@ -51,6 +54,7 @@ enum debugLevelEnum : unsigned char {
 #define DBO_L_ALL 0b0001'1111
 
 typedef enum debugLevelEnum debugLevelEnum;
+ENUM_CLASS_FLAGS(debugLevelEnum)
 
 // #region Color Macros
 #ifndef ANSI_RESET
@@ -125,6 +129,12 @@ typedef struct debugOutputConfig debugOutputConfig;
 #define PF_LE_U32(address) "%u", READ_LE_U32((address)), (*((u32*)(address)))
 // PF_LE_S8(var + 4)
 
+// #region Temp disable output
+void DebugDisableOutput();
+void DebugEnableOutput();
+void DebugToggleOutput();
+// #endregion Temp disable output
+
 /// @brief Adds the given flags to the current category.
 /// @param category The category to add
 /// @return The actual added flags (excluding ones already present); use with `DebugRemoveCategory` to properly remove.
@@ -185,4 +195,6 @@ extern int numLoggedLifeScripts;
 // #region Emulation mode
 extern bool strictEmulation;
 // #endregion Emulation mode
+
+extern bool masterEnableSound;
 #endif

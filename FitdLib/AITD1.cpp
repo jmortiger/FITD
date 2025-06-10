@@ -123,32 +123,23 @@ enumLifeMacro AITD1LifeMacroTable[] =
 /// @return 
 int makeIntroScreens(void)
 {
-	char* data;
-	unsigned int chrono;
-
-	data = loadPak("ITD_RESS", AITD1_TITRE);
+	char* data = loadPak("ITD_RESS", RESS1_TITRE);
 	FastCopyScreen(data + 770, frontBuffer);
 	osystem_CopyBlockPhys(frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 	FadeInPhys(8, 0);
 	memcpy(logicalScreen, frontBuffer, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT);
 	osystem_flip(NULL);
 	free(data);
-	loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
+	loadPakTo("ITD_RESS", RESS1_LIVRE, aux);
+
+	unsigned int chrono;
 	startChrono(&chrono);
 
 	osystem_drawBackground();
 
 	do {
-		int time;
-
 		process_events();
-
-		time = evalChrono(&chrono);
-
-		if (time >= 0x30)
-			break;
-
-	} while (key == 0 && Click == 0);
+	} while (key == 0 && Click == 0 && evalChrono(&chrono) < AITD1_AUTO_SCROLL_TIME); // < 0x30); // 1st page didn't match other pages' auto scroll times
 
 	playSound(CVars[getCVarsIdx(SAMPLE_PAGE)]);
 	/*  LastSample = -1;
@@ -267,7 +258,7 @@ int ChoosePerso(void)
 			{
 				FastCopyScreen(frontBuffer, logicalScreen);
 				SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
-				loadPakTo("ITD_RESS", AITD1_FOND_INTRO, aux);
+				loadPakTo("ITD_RESS", RESS1_FOND_INTRO, aux);
 				CopyBox_Aux_Log(_SCREEN_INTERNAL_WIDTH / 2, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 				FastCopyScreen(logicalScreen, aux);
 				Lire(CVars[getCVarsIdx(INTRO_HERITIERE)] + 1, 165, 5, 314, 194, 2, 15, 0);
@@ -278,7 +269,7 @@ int ChoosePerso(void)
 			{
 				FastCopyScreen(frontBuffer, logicalScreen);
 				SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
-				loadPakTo("ITD_RESS", AITD1_FOND_INTRO, aux);
+				loadPakTo("ITD_RESS", RESS1_FOND_INTRO, aux);
 				CopyBox_Aux_Log(0, 0, (_SCREEN_INTERNAL_WIDTH / 2) - 1, _SCREEN_INTERNAL_HEIGHT - 1);
 				FastCopyScreen(logicalScreen, aux);
 				Lire(CVars[getCVarsIdx(INTRO_DETECTIVE)] + 1, 5, 5, 154, 194, 2, 15, 0);
@@ -305,9 +296,8 @@ void startAITD1()
 	setPalette(currentGamePalette);
 
 #ifndef AITD_UE4
-	if (!make3dTatou()) {
-		makeIntroScreens();
-	}
+	// If the armadillo wasn't skipped, continue to the rest of the intro sequence.
+	if (!make3dTatou()) makeIntroScreens();
 #endif
 
 	while (1) {
@@ -323,7 +313,7 @@ void startAITD1()
 				startGame(7, 1, 0);
 
 				// TODO: `makeSlideshow()` is a dead end; what was that?
-				if (!make3dTatou() && !makeIntroScreens()); // makeSlideshow();
+				if (!make3dTatou()) makeIntroScreens(); // if (!make3dTatou() && !makeIntroScreens()) makeSlideshow();
 
 				break;
 			}
@@ -387,26 +377,27 @@ void startAITD1()
 
 void AITD1_ReadBook(int index, int type)
 {
+	static constexpr int bookFontColor = 26;
 	switch (type) {
 		case DocumentTypeAITD1::DT1_LETTER: // READ_MESSAGE
 		{
-			loadPakTo("ITD_RESS", AITD1_LETTRE, aux);
+			loadPakTo("ITD_RESS", RESS1_LETTRE, aux);
 			turnPageFlag = 0;
-			Lire(index, 60, 10, 245, 190, 0, 26, 0);
+			Lire(index, 60, 10, 245, 190, 0, bookFontColor, 0);
 			break;
 		}
 		case DocumentTypeAITD1::DT1_BOOK: // READ_BOOK
 		{
-			loadPakTo("ITD_RESS", AITD1_LIVRE, aux);
+			loadPakTo("ITD_RESS", RESS1_LIVRE, aux);
 			turnPageFlag = 1;
-			Lire(index, 48, 2, 260, 197, 0, 26, 0);
+			Lire(index, 48, 2, 260, 197, 0, bookFontColor, 0);
 			break;
 		}
 		case DocumentTypeAITD1::DT1_NOTEBOOK: // READ_CARNET
 		{
-			loadPakTo("ITD_RESS", AITD1_CARNET, aux);
+			loadPakTo("ITD_RESS", RESS1_CARNET, aux);
 			turnPageFlag = 0;
-			Lire(index, 50, 20, 250, 199, 0, 26, 0);
+			Lire(index, 50, 20, 250, 199, 0, bookFontColor, 0);
 			break;
 		}
 		default:

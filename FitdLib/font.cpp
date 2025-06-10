@@ -1,7 +1,7 @@
 #include "common.h"
 
 /// @brief The height of on-screen messages & menu text I think. 16 for all but AITD2.
-/// @todo Check conflict w/ `common.cpp`'s `MESSAGE_HEIGHT` & `systemMenu.cpp`'s `SIZE_FONT`.
+/// @todo Check conflict w/ `common.h`'s `MESSAGE_HEIGHT` & `systemMenu.cpp`'s `SIZE_FONT`.
 int fontHeight = 16;
 
 char* fontVar1 = NULL;
@@ -28,12 +28,9 @@ unsigned char flagTable[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 
 void ExtSetFont(char* fontData, int color)
 {
-	s16 tempDx;
-	s16 tempAxFlip;
-
 	fontVar1 = fontData; // fontPtr
 
-	tempDx = READ_LE_S16(fontData); // alignement
+	s16 tempDx = READ_LE_S16(fontData); // alignement
 	fontData += 2;
 
 	fontSm1 = *(fontData++); // character height
@@ -45,7 +42,7 @@ void ExtSetFont(char* fontData, int color)
 
 	fontData += 2;
 
-	tempAxFlip = READ_LE_S16(fontData);
+	s16 tempAxFlip = READ_LE_S16(fontData);
 	fontData += 2;
 
 	tempAxFlip = ((tempAxFlip & 0xFF) << 8) | ((tempAxFlip & 0xFF00) >> 8);
@@ -68,22 +65,17 @@ void SetFontSpace(int interWordSpace, int interLetterSpace)
 int ExtGetSizeFont(u8* string)
 {
 	int width = 0;
-	unsigned char character;
+	u8 character;
 
 	while ((character = *(string++))) {
-		char* dataPtr;
-		u16 data;
-
-		dataPtr = fontVar5 + character * 2;
-		data = READ_LE_S16(dataPtr);
+		char* dataPtr = fontVar5 + character * 2;
+		u16 data = READ_LE_S16(dataPtr);
 
 		data >>= 4;
 
 		data &= 0xF;
 
-		if (!data) {
-			width += g_fontInterWordSpace;
-		}
+		if (!data) width += g_fontInterWordSpace;
 
 		width += g_fontInterLetterSpace;
 		width += data;
@@ -101,38 +93,28 @@ void renderText(int x, int y, char* surface, u8* string)
 
 	// Until the null-terminator is reached...
 	while ((character = *(string++))) {
-		char* dataPtr;
-		u16 data;
-		u16 dx;
-
-		dataPtr = fontVar5 + character * 2;
-		data = READ_LE_U16(dataPtr);
+		char* dataPtr = fontVar5 + character * 2;
+		u16 data = READ_LE_U16(dataPtr);
 
 		data = ((data & 0xFF) << 8) | ((data & 0xFF00) >> 8);
 
-		dx = data;
+		u16 dx = data;
 
 		data >>= 12;
 
 		// If it's a real character (width != 0)...
 		if (data & 0xF) {
-			char* characterPtr;
-			int bp;
-			int ch;
-
 			dx &= 0xFFF;
 
-			characterPtr = (dx >> 3) + fontVar4;
+			char* characterPtr = (dx >> 3) + fontVar4;
 
 			fontSm9 = flagTable[dx & 7];
 
-			bp = fontSm7;
+			int bp = fontSm7;
 
 			fontSm8 = fontVar6;
 
-			ch;
-
-			for (ch = fontSm1; ch > 0; ch--) {
+			for (int ch = fontSm1; ch > 0; ch--) {
 				if (bp >= 200)
 					return;
 				char* outPtr = logicalScreen + bp * _SCREEN_INTERNAL_WIDTH + fontSm8;
@@ -143,14 +125,10 @@ void renderText(int x, int y, char* surface, u8* string)
 
 				int al = *characterPtr;
 
-				int bx;
-
 				bp++;
 
-				for (bx = 0; cl > 0; cl--) {
-					if (dh & al) {
-						*(outPtr) = (char)fontSm3;
-					}
+				for (int bx = 0; cl > 0; cl--) {
+					if (dh & al) *(outPtr) = (char)fontSm3;
 
 					outPtr++;
 
@@ -177,32 +155,26 @@ void renderText(int x, int y, char* surface, u8* string)
 
 void SelectedMessage(int x, int y, int index, int color1, int color2)
 {
-	textEntryStruct* entryPtr;
-	u8* textPtr;
+	textEntryStruct* entryPtr = getTextFromIdx(index);
 
-	entryPtr = getTextFromIdx(index);
-
-	if (!entryPtr)
-		return;
+	if (!entryPtr) return;
 
 	x -= (entryPtr->width / 2); // center
 
-	textPtr = entryPtr->textPtr;
+	u8* textPtr = entryPtr->textPtr;
 
 	ExtSetFont(PtrFont, color2);
 	renderText(x, y + 1, logicalScreen, textPtr);
 
 	ExtSetFont(PtrFont, color1);
 	renderText(x, y, logicalScreen, textPtr);
-
 }
 
 void SimpleMessage(int x, int y, int index, int color)
 {
 	textEntryStruct* entryPtr = getTextFromIdx(index);
 
-	if (!entryPtr)
-		return;
+	if (!entryPtr) return;
 
 	x -= (entryPtr->width / 2); // center
 

@@ -15,31 +15,69 @@ void blitScreenTatou(void)
 	// for (int i = 0; i < 45120; i++) { frontBuffer[i] = backBuffer[i]; }
 }
 
-// void blitScreenTatou(void)
-// {
-// 	/*
-// 	int i;
-// 	for(i=0;i<45120;i++)
-// 	{
-// 		frontBuffer[i] = backbuffer[i];
-// 	}
-// 	*/
-// }
-
-void copyPalette(unsigned char* source, unsigned char* dest)
+// #region `comparePalettes`
+bool comparePalettes(unsigned char* source, unsigned char* dest)
 {
-	for (int i = 0; i < 768; i++) { dest[i] = source[i]; }
+	for (int i = 0; i < BYTES_IN_PALETTE; i++) {
+		if (dest[i] != source[i]) return false;
+	}
+	return true;
 }
 
-// void copyPalette(unsigned char* source, unsigned char* dest)
-// {
-// 	int i;
-// 	for (i = 0; i < 768; i++) { dest[i] = source[i]; }
-// }
+bool comparePalettes(PaletteColorRGB* source, PaletteColorRGB* dest)
+{
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
+		if (dest[i] != source[i]) return false;
+	}
+	return true;
+}
+// !!!!
+bool comparePalettes(unsigned char* source, PaletteColorRGB* dest)
+{
+	for (int i = 0; i < BYTES_IN_PALETTE; i++) {
+		if (dest[i] != (PaletteColorRGB)((PaletteColorRGB*)source)[i]) return false;
+	}
+	return true;
+}
 
-void FastCopyScreen(void* source, void* dest) { memcpy(dest, source, 64000); }
+bool comparePalettes(PaletteColorRGB* source, unsigned char* dest)
+{
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
+		if (((PaletteColorRGB*)dest)[i] != source[i]) return false;
+	}
+	return true;//{ ((PaletteColorRGB*)dest)[i] = source[i]; }
+}
+// #endregion `comparePalettes`
+// #region `copyPalette`
+void copyPalette(unsigned char* source, unsigned char* dest)
+{
+	for (int i = 0; i < BYTES_IN_PALETTE; i++) { dest[i] = source[i]; }
+}
 
-void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned b)
+void copyPalette(PaletteColorRGB* source, PaletteColorRGB* dest)
+{
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) { dest[i] = source[i]; }
+	// assert(comparePalettes(source, dest));
+}
+
+void copyPalette(unsigned char* source, PaletteColorRGB* dest)
+{
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
+		dest[i] = (PaletteColorRGB)((PaletteColorRGB*)source)[i];
+		// dest[i].update(source + (i * BYTES_PER_PALETTE_COLOR));
+	}
+	// assert(comparePalettes(source, dest));
+}
+
+void copyPalette(PaletteColorRGB* source, unsigned char* dest)
+{
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) { ((PaletteColorRGB*)dest)[i] = source[i]; }
+	// assert(comparePalettes(source, dest));
+}
+// #endregion `copyPalette`
+
+// #region paletteFill
+void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned char b)
 {
 	unsigned char* paletteLocal = (unsigned char*)palette;
 	int offset = 0;
@@ -49,7 +87,7 @@ void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned b)
 	g <<= 1;
 	b <<= 1;
 
-	for (i = 0; i < 256; i++) {
+	for (i = 0; i < COLORS_IN_PALETTE; i++) {
 		paletteLocal[offset] = r;
 		paletteLocal[offset + 1] = g;
 		paletteLocal[offset + 2] = b;
@@ -57,35 +95,76 @@ void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned b)
 	}
 }
 
+void paletteFill(void* palette, PaletteColorRGB color)
+{
+	unsigned char* paletteLocal = (unsigned char*)palette;
+	int offset = 0;
+	int i;
+
+	color.r <<= 1;
+	color.g <<= 1;
+	color.b <<= 1;
+
+	/// OPTIMIZE: For struct
+	for (i = 0; i < 256; i++) {
+		paletteLocal[offset] = color.r;
+		paletteLocal[offset + 1] = color.g;
+		paletteLocal[offset + 2] = color.b;
+		offset += 3;
+	}
+}
+// #endregion paletteFill
+
+// #region `computePalette`
 void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coefficient)
 {
-	for (int i = 0; i < 256; i++) {
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
 		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
 		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
 		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
 	}
 }
-
-/* void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coefficient)
+void computePalette(unsigned char* inPalette, PaletteColorRGB* outPalette, int coefficient)
 {
-	int i;
-
-	for (i = 0; i < 256; i++) {
-		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
-		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
-		*(outPalette++) = ((*(inPalette++)) * coefficient) >> 8;
+	for (int i = 0; i < COLORS_IN_PALETTE; i++, outPalette++) {
+		(*outPalette).r = ((*(inPalette++)) * coefficient) >> 8;
+		(*outPalette).g = ((*(inPalette++)) * coefficient) >> 8;
+		(*outPalette).b = ((*(inPalette++)) * coefficient) >> 8;
 	}
-} */
+}
+void computePalette(PaletteColorRGB* inPalette, unsigned char* outPalette, int coefficient)
+{
+	for (int i = 0; i < COLORS_IN_PALETTE; i++, inPalette++) {
+		*(outPalette++) = ((*(inPalette)).r * coefficient) >> 8;
+		*(outPalette++) = ((*(inPalette)).g * coefficient) >> 8;
+		*(outPalette++) = ((*(inPalette)).b * coefficient) >> 8;
+	}
+}
+void computePalette(PaletteColorRGB* inPalette, PaletteColorRGB* outPalette, int coefficient)
+{
+	for (int i = 0; i < 256; i++, inPalette++, outPalette++) {
+		(*outPalette).r = ((*(inPalette)).r * coefficient) >> 8;
+		(*outPalette).g = ((*(inPalette)).g * coefficient) >> 8;
+		(*outPalette).b = ((*(inPalette)).b * coefficient) >> 8;
+	}
+}
+// #endregion `computePalette`
 
+void setPalette(void* sourcePal) { osystem_setPalette((PaletteColorRGB*)sourcePal); }
+
+void FastCopyScreen(void* source, void* dest) { memcpy(dest, source, 64000); }
+
+/// @brief 
+/// @param step 
+/// @param start ALWAYS ZERO; UNUSED
 void FadeInPhys(int step, int start)
 {
-	unsigned char localPalette[0x300];
+	unsigned char localPalette[BYTES_IN_PALETTE];
 
 	freezeTime();
 
-	if (fadeState == 2) // only used for the ending ?
-	{
-	} else {
+	// only used for the ending ?
+	if (fadeState == 2) {} else {
 		for (int i = 0; i < 256; i += step) {
 			process_events();
 			computePalette(currentGamePalette, localPalette, i);
@@ -100,13 +179,16 @@ void FadeInPhys(int step, int start)
 	unfreezeTime();
 }
 
-void FadeOutPhys(int var1, int var2)
+/// @brief 
+/// @param step 
+/// @param start ALWAYS ZERO; UNUSED
+void FadeOutPhys(int step, int start)
 {
-	unsigned char localPalette[0x300];
+	unsigned char localPalette[BYTES_IN_PALETTE];
 
 	freezeTime();
 
-	for (int i = 256; i >= 0; i -= var1) {
+	for (int i = 256; i >= 0; i -= step) {
 		process_events();
 		computePalette(currentGamePalette, localPalette, i);
 		setPalette(localPalette);
@@ -116,8 +198,6 @@ void FadeOutPhys(int var1, int var2)
 
 	unfreezeTime();
 }
-
-void setPalette(void* sourcePal) { osystem_setPalette((unsigned char*)sourcePal); }
 
 void process_events(void)
 {
@@ -186,6 +266,9 @@ void setCameraTarget(int x, int y, int z, int alpha, int beta, int gamma, int ti
 	SetAngleCamera(alpha, beta, gamma);
 }
 
+#include <filesystem>
+extern "C" { extern char homePath[512]; }
+
 /// @brief 
 /// @param num 
 void playSound(int num)
@@ -202,6 +285,13 @@ void playSound(int num)
 	}
 
 	int size = getPakSize(sampleFileName, num); */
+	// std::filesystem::path path = std::filesystem::path(homePath) / "SFX" / (g_gameId == TIMEGATE ? "SAMPLES" : "LISTSAMP");
+	// path += ".PAK.";
+	// path += num;
+	// path += ".wav";
+	// if (std::filesystem::exists(path)) {
+	// 	osystem_playSampleFromName(path.c_str());
+	// }
 	int size = getPakSize(g_gameId == TIMEGATE ? "SAMPLES" : "LISTSAMP", num);
 	DebugPrintfLn(size == 0 ? DBO_L_WARN : DBO_L_INFO, "Sample %i has size %i%s", num, size, size == 0 ? "; exiting early" : "");
 	assert(size);
