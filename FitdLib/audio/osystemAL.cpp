@@ -205,3 +205,62 @@ int osystem_playTrack(int trackId)
 	DebugEndSection();
 	return 0;
 }
+
+// void osystem_playSampleFromName(char* sampleName)
+// {
+// 	DebugPrintfLnCategory(DBO_L_INFO, DBO_SOUND, "osystem_playSampleFromName(%s):", sampleName);
+// 	DebugBeginSection(DBO_SOUND);
+
+// 	FILE* fHandle = fopen(sampleName, "rb");
+// 	SoLoud::WAVSTREAM_FILETYPE filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_WAV;
+// 	if (fHandle == NULL) {
+// 		// DebugPrintfLn(DBO_L_WARN, "File %s failed to open; exiting early w/ a value of 0", sampleName);
+// 		// DebugEndSection();
+// 		// return 0;
+// 		DebugPrintfLn(DBO_L_WARN, "File %s failed to open; trying .mp3", sampleName);
+// 		sampleName[0] = '\000';
+// 		sprintf(sampleName, "%02d.mp3", trackId);
+
+// 		FILE* fHandle = fopen(sampleName, "rb");
+// 		filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_MP3;
+// 		if (fHandle == NULL) {
+// 			DebugPrintfLn(DBO_L_WARN, "File %s failed to open; trying .ogg", sampleName);
+// 			sampleName[0] = '\000';
+// 			sprintf(sampleName, "%02d.ogg", trackId);
+	
+// 			FILE* fHandle = fopen(sampleName, "rb");
+// 			filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_OGG;
+// 			if (fHandle == NULL) {
+// 				DebugPrintfLn(DBO_L_WARN, "File %s failed to open; trying .flac", sampleName);
+// 				sampleName[0] = '\000';
+// 				sprintf(sampleName, "%02d.flac", trackId);
+		
+// 				FILE* fHandle = fopen(sampleName, "rb");
+// 				filetype = SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_FLAC;
+// 				if (fHandle == NULL) {
+// 					DebugPrintfLn(DBO_L_WARN, "File %s failed to open; exiting early w/ a value of 0", sampleName);
+// 					DebugEndSection();
+// 					return 0;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	pFile = new SoLoud::DiskFile(fHandle);
+// 	pWavStream = new SoLoud::WavStream();
+// 	// pWavStream->loadFile(pFile);
+// 	pWavStream->parse(pFile);
+// 	/* switch (filetype)
+// 	{
+// 	case SoLoud::WAVSTREAM_FILETYPE::WAVSTREAM_WAV:
+// 		pWavStream->loadwav(pFile);
+// 		break;
+	
+// 	default:
+// 		break;
+// 	} */
+// 	gSoloud->play(*pWavStream);
+
+// 	DebugEndSection();
+// 	return 0;
+// }

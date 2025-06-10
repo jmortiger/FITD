@@ -2,27 +2,6 @@
 
 char* pAITD2InventorySprite = NULL;
 
-// ITD_RESS mapping
-#define AITD2_CADRE_SPF						0
-#define AITD2_ITDFONT						1
-#define AITD2_LETTRE						2
-#define AITD2_LIVRE							3
-#define AITD2_CARNET						4
-#define AITD2_CYM11001						5
-#define AITD2_CYM11011						6
-#define AITD2_CYM11012						7
-#define AITD2_CYM11013						8
-#define AITD2_PRO07011						9
-#define AITD2_PRO07012						10
-#define AITD2_PRO07013						11
-#define AITD2_PRO08001						12
-#define AITD2_PRO08008						13
-#define AITD2_INVENTAIRE_PIRATE				14
-#define AITD2_INVENTAIRE_GANG				15
-#define AITD2_INVENTAIRE_GRACE				16
-#define AITD2_OPTION_SCREEN					17
-#define AITD2_SPRITES_INVENTAIRE			18
-
 int AITD2KnownCVars[] =
 {
 	SAMPLE_PAGE,
@@ -198,7 +177,7 @@ void startAITD2()
 {
 	fontHeight = 14;
 	g_gameUseCDA = true;
-	pAITD2InventorySprite = loadPak("ITD_RESS", AITD2_SPRITES_INVENTAIRE);
+	pAITD2InventorySprite = loadPak("ITD_RESS", RESS2_SPRITES_INVENTAIRE);
 	assert(pAITD2InventorySprite);
 
 	startGame(8, 0, 0); // intro
@@ -248,13 +227,13 @@ void drawInventoryAITD2()
 {
 	switch (CVars[getCVarsIdx(TYPE_INVENTAIRE)]) {
 		case 0:
-			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_PIRATE, logicalScreen);
+			loadPakTo("ITD_RESS", RESS2_INVENTAIRE_PIRATE, logicalScreen);
 			break;
 		case 1:
-			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_GANG, logicalScreen);
+			loadPakTo("ITD_RESS", RESS2_INVENTAIRE_GANG, logicalScreen);
 			break;
 		case 2:
-			loadPakTo("ITD_RESS", AITD2_INVENTAIRE_GRACE, logicalScreen);
+			loadPakTo("ITD_RESS", RESS2_INVENTAIRE_GRACE, logicalScreen);
 			break;
 		default: FITD_throwFatal(); // TODO: Improve error message
 	}
@@ -281,44 +260,29 @@ void AITD2_ReadBook(int index, int type)
 	switch (type) {
 		case 0: // READ_MESSAGE
 		{
-			loadPakTo("ITD_RESS", AITD2_LETTRE, aux);
-			unsigned char lpalette[0x300];
-			copyPalette((unsigned char*)aux + 64000, lpalette);
-			convertPaletteIfRequired(lpalette);
-			copyPalette(lpalette, currentGamePalette);
-			setPalette(lpalette);
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+			loadPakTo("ITD_RESS", RESS2_LETTRE, aux);
 			turnPageFlag = 0;
-			Lire(index, 60, 10, 245, 190, 0, 124, 124);
 			break;
 		}
 		case 1: // READ_BOOK
 		{
-			loadPakTo("ITD_RESS", AITD2_LIVRE, aux);
-			unsigned char lpalette[0x300];
-			copyPalette((unsigned char*)aux + 64000, lpalette);
-			convertPaletteIfRequired(lpalette);
-			copyPalette(lpalette, currentGamePalette);
-			setPalette(lpalette);
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+			loadPakTo("ITD_RESS", RESS2_LIVRE, aux);
 			turnPageFlag = 1;
-			Lire(index, 60, 10, 245, 190, 0, 124, 124);
 			break;
 		}
 		case 2: // READ_CARNET
 		{
-			loadPakTo("ITD_RESS", AITD2_CARNET, aux);
-			unsigned char lpalette[0x300];
-			copyPalette((unsigned char*)aux + 64000, lpalette);
-			convertPaletteIfRequired(lpalette);
-			copyPalette(lpalette, currentGamePalette);
-			setPalette(lpalette);
-			osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+			loadPakTo("ITD_RESS", RESS2_CARNET, aux);
 			turnPageFlag = 0;
-			Lire(index, 60, 10, 245, 190, 0, 124, 124);
 			break;
 		}
-		default:
-			FITD_throwFatal(); // assert(0);
+		default: FITD_throwFatal(); // TODO: Improve error message
 	}
+	unsigned char paletteLocal[BYTES_IN_PALETTE];
+	copyPalette((unsigned char*)aux + _SCREEN_INTERNAL_PIXELS, paletteLocal);
+	convertPaletteIfRequired(paletteLocal);
+	copyPalette(paletteLocal, currentGamePalette);
+	setPalette(paletteLocal);
+	osystem_CopyBlockPhys((unsigned char*)aux, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+	Lire(index, 60, 10, 245, 190, 0, 124, 124);
 }

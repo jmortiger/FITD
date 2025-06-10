@@ -14,24 +14,19 @@ void clearScreenTatou(void)
 /// @return 1 if the sequence was canceled, otherwise 0.
 int make3dTatou(void)
 {
-	char* tatou2d;
-	char* tatou3d;
-	unsigned char* tatouPal;
-	int time;
-	int deltaTime;
-	int rotation;
-	int unk1;
-	unsigned char paletteBackup[768];
+/// @brief The time before the 3d spinning armadillo pops up in AITD1's intro.
+#define AITD1_TIME_BEFORE_3D_TATOU 180
+	unsigned char paletteBackup[BYTES_IN_PALETTE];
 	unsigned int localChrono;
-
-	tatou2d = CheckLoadMallocPak("ITD_RESS", AITD1_TATOU_MCG);
-	tatou3d = CheckLoadMallocPak("ITD_RESS", AITD1_TATOU_3DO);
-	tatouPal = (unsigned char*)CheckLoadMallocPak("ITD_RESS", AITD1_TATOU_PAL);
-
-	time = 8920;
-	deltaTime = 50;
-	rotation = 256;
-	unk1 = 8;
+	
+	char* tatou2d = CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_MCG);
+	char* tatou3d = CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_3DO);
+	unsigned char* tatouPal = (unsigned char*)CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_PAL);
+	
+	int time = 8920;
+	int deltaTime = 50;
+	int rotation = 256;
+	int unk1 = 8;
 
 	setupCameraProjection(160, 100, 128, 500, 490);
 
@@ -58,7 +53,7 @@ int make3dTatou(void)
 		timer = timeGlobal;
 
 		// avant eclair (before lightning)
-		if (evalChrono(&localChrono) <= 180) {
+		if (evalChrono(&localChrono) <= AITD1_TIME_BEFORE_3D_TATOU) {
 			if (key || Click || JoyD) {
 				break;
 			}
@@ -134,4 +129,5 @@ int make3dTatou(void)
 	}
 
 	return(false); // TODO: Redundant return?
+#undef AITD1_TIME_BEFORE_3D_TATOU
 }

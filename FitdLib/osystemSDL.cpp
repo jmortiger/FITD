@@ -28,28 +28,15 @@ email                : yaz0r@yaz0r.net
 void detectGame(void);
 void renderGameWindow();
 
-int osystem_mouseRight;
-int osystem_mouseLeft;
+/// @brief A wrapper for `void SDL_Delay(Uint32 ms)`
+/// @param ms the number of milliseconds to delay.
+/// @details Wait a specified number of milliseconds before returning.
+///
+/// This function waits a specified number of milliseconds before returning. It waits at least the specified time, but possibly longer due to OS scheduling.
+/// \threadsafety It is safe to call this function from any thread.
+void osystem_delay(int ms) { SDL_Delay(ms); }
 
-void osystem_delay(int time)
-{
-	SDL_Delay(time);
-}
-
-void osystem_updateImage()
-{}
-
-/*void OSystem::getMouseStatus(mouseStatusStruct * mouseData)
-{
-
-SDL_GetMouseState(&mouseData->X, &mouseData->Y);
-
-mouseData->left = mouseLeft;
-mouseData->right = mouseRight;
-
-mouseLeft = 0;
-mouseRight = 0;
-}*/
+void osystem_updateImage() {}
 
 #ifdef WIN32
 #define CALLBACK __stdcall
@@ -245,7 +232,30 @@ int fileExists(const char* name)
 	return 0;
 }
 
-void osystem_init()  // that's the constructor of the system dependent object used for the SDL port
+// TODO: Pull all input-related code, disabled & otherwise, into dedicated files (`input.h` & `input.cpp`?).
+// Unused w/o even a comment-out reference anywhere beyond declaration & init, so disabled.
+/* /// @brief
+/// @details * Initialized to `0` in `osystem_init`
+/// @todo Evaluate for pre-init assignment (is it changed beforehand & needs to be cleared?)
+int osystem_mouseRight;
+/// @brief
+/// @details * Initialized to `0` in `osystem_init`
+/// @todo Evaluate for pre-init assignment (is it changed beforehand & needs to be cleared?)
+int osystem_mouseLeft; */
+
+/*void OSystem::getMouseStatus(mouseStatusStruct * mouseData)
+{
+SDL_GetMouseState(&mouseData->X, &mouseData->Y);
+
+mouseData->left = mouseLeft;
+mouseData->right = mouseRight;
+
+mouseLeft = 0;
+mouseRight = 0;
+}*/
+
+/// @brief Constructor of the system dependent object used for the SDL port
+void osystem_init()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -267,8 +277,8 @@ void osystem_init()  // that's the constructor of the system dependent object us
 	windowFlags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALLOW_HIGHDPI;
 #endif
 
-	osystem_mouseLeft = 0;
-	osystem_mouseRight = 0;
+	// osystem_mouseLeft = 0;
+	// osystem_mouseRight = 0;
 
 	osystem_initGL(screen_width, screen_height);
 

@@ -58,7 +58,7 @@ void SetClip(int left, int top, int right, int bottom);
 
 // #region Text: Rendering, Reading, On-Screen Messages
 void readBook(int index, int type);
-int Lire(int index, int left, int top, int right, int bottom, int mode, int color, int shadow);
+int Lire(int index, int left, int top, int right, int bottom, int mode, int fontColor, int shadow);
 void makeMessage(int messageIdx);
 bool drawTextOverlay(void);
 // #endregion Text: Rendering, Reading, On-Screen Messages

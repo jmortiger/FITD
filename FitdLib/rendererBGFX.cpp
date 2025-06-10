@@ -66,7 +66,7 @@ struct polyVertex
 	unsigned char R;
 	unsigned char G;
 	unsigned char B;
-	unsigned char A;
+	unsigned char A = 255;
 };
 
 struct sphereVertex
@@ -500,12 +500,19 @@ unsigned char frontBuffer[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
 unsigned char physicalScreen[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT];
 unsigned char physicalScreenRGB[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT * 3];
 
-/// @brief 
+/// @brief Updates `physicalScreenRGB` at `out` by indexing `RGB_Pal` with `color`.
+/// @todo Figure out exactly what's going on here.
+#define updateFromRGB_Pal(out, color) \
+	*(out++) = RGB_Pal[color * 3];\
+	*(out++) = RGB_Pal[color * 3 + 1];\
+	*(out++) = RGB_Pal[color * 3 + 2];
+
+/// @brief Copies the specified area of the specified buffer to the rendered output window.
 /// @param videoBuffer 
-/// @param left 
-/// @param top 
-/// @param right 
-/// @param bottom 
+/// @param left inclusive
+/// @param top inclusive
+/// @param right exclusive
+/// @param bottom exclusive
 /// @details * gets passed `logicalScreen`, `frontBuffer`, & `aux` as `videoBuffer`
 void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int right, int bottom)
 {
@@ -523,11 +530,7 @@ void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int ri
 		unsigned char* out2 = physicalScreen + left + i * _SCREEN_INTERNAL_WIDTH;
 		for (j = left; j < right; j++) {
 			unsigned char color = *(in++);
-
-			*(out++) = RGB_Pal[color * 3];
-			*(out++) = RGB_Pal[color * 3 + 1];
-			*(out++) = RGB_Pal[color * 3 + 2];
-
+			updateFromRGB_Pal(out, color);
 			*(out2++) = color;
 		}
 	}
@@ -543,9 +546,7 @@ void osystem_refreshFrontTextureBuffer()
 
 	for (int i = 0; i < _SCREEN_INTERNAL_HEIGHT * _SCREEN_INTERNAL_WIDTH; i++) {
 		unsigned char color = *(in++);
-		*(out++) = RGB_Pal[color * 3];
-		*(out++) = RGB_Pal[color * 3 + 1];
-		*(out++) = RGB_Pal[color * 3 + 2];
+		updateFromRGB_Pal(out, color);
 	}
 
 	bgfx::updateTexture2D(g_backgroundTexture, 0, 0, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT, bgfx::copy(physicalScreen, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT));
@@ -807,8 +808,7 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 
 				int bank = (color & 0xF0) >> 4;
 				int startColor = color & 0xF;
-				float colorf = startColor;
-				pVertex->U = colorf / 15.f;
+				pVertex->U = startColor / 15.f;
 				pVertex->V = bank / 15.f;
 				pVertex++;
 			}
@@ -837,8 +837,7 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 
 				int bank = (color & 0xF0) >> 4;
 				int startColor = color & 0xF;
-				float colorf = startColor;
-				pVertex->U = colorf / 15.f;
+				pVertex->U = startColor / 15.f;
 				pVertex->V = bank / 15.f;
 				pVertex++;
 			}
@@ -896,9 +895,9 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 				pVertex->Y = buffer[i * 3 + 1];
 				pVertex->Z = buffer[i * 3 + 2];
 
-				float colorf = startColor + colorStep * (pVertex->Y - polyMinY);
+				float colorFloat = startColor + colorStep * (pVertex->Y - polyMinY);
 
-				pVertex->U = colorf / 15.f;
+				pVertex->U = colorFloat / 15.f;
 				pVertex->V = bank / 15.f;
 				pVertex++;
 			}
@@ -929,9 +928,9 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 				pVertex->Y = buffer[i * 3 + 1];
 				pVertex->Z = buffer[i * 3 + 2];
 
-				float colorf = startColor + colorStep * (pVertex->X - polyMinX);
+				float colorFloat = startColor + colorStep * (pVertex->X - polyMinX);
 
-				pVertex->U = colorf / 15.f;
+				pVertex->U = colorFloat / 15.f;
 				pVertex->V = bank / 15.f;
 				pVertex++;
 			}
@@ -962,15 +961,16 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 				pVertex->Y = buffer[i * 3 + 1];
 				pVertex->Z = buffer[i * 3 + 2];
 
-				float colorf = startColor + colorStep * (pVertex->X - polyMinX);
+				float colorFloat = startColor + colorStep * (pVertex->X - polyMinX);
 
-				pVertex->U = 1.f - colorf / 15.f;
+				pVertex->U = 1.f - colorFloat / 15.f;
 				pVertex->V = bank / 15.f;
 				pVertex++;
 			}
 			break;
 		}
 	}
+#undef MAX_POINTS_PER_POLY
 }
 
 /// @brief 

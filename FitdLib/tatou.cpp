@@ -49,7 +49,7 @@ void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned b)
 	g <<= 1;
 	b <<= 1;
 
-	for (i = 0; i < 256; i++) {
+	for (i = 0; i < COLORS_IN_PALETTE; i++) {
 		paletteLocal[offset] = r;
 		paletteLocal[offset + 1] = g;
 		paletteLocal[offset + 2] = b;
@@ -79,13 +79,12 @@ void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coe
 
 void FadeInPhys(int step, int start)
 {
-	unsigned char localPalette[0x300];
+	unsigned char localPalette[BYTES_IN_PALETTE];
 
 	freezeTime();
 
-	if (fadeState == 2) // only used for the ending ?
-	{
-	} else {
+	// only used for the ending ?
+	if (fadeState == 2) {} else {
 		for (int i = 0; i < 256; i += step) {
 			process_events();
 			computePalette(currentGamePalette, localPalette, i);
@@ -100,13 +99,16 @@ void FadeInPhys(int step, int start)
 	unfreezeTime();
 }
 
-void FadeOutPhys(int var1, int var2)
+/// @brief 
+/// @param step 
+/// @param start ALWAYS ZERO; UNUSED
+void FadeOutPhys(int step, int start)
 {
-	unsigned char localPalette[0x300];
+	unsigned char localPalette[BYTES_IN_PALETTE];
 
 	freezeTime();
 
-	for (int i = 256; i >= 0; i -= var1) {
+	for (int i = 256; i >= 0; i -= step) {
 		process_events();
 		computePalette(currentGamePalette, localPalette, i);
 		setPalette(localPalette);
@@ -205,6 +207,13 @@ void playSound(int num)
 	}
 
 	int size = getPakSize(sampleFileName, num); */
+	// std::filesystem::path path = std::filesystem::path(homePath) / "SFX" / (g_gameId == TIMEGATE ? "SAMPLES" : "LISTSAMP");
+	// path += ".PAK.";
+	// path += num;
+	// path += ".wav";
+	// if (std::filesystem::exists(path)) {
+	// 	osystem_playSampleFromName(path.c_str());
+	// }
 	int size = getPakSize(g_gameId == TIMEGATE ? "SAMPLES" : "LISTSAMP", num);
 	DebugPrintfLn(size == 0 ? DBO_L_WARN : DBO_L_INFO, "Sample %i has size %i%s", num, size, size == 0 ? "; exiting early" : "");
 	assert(size);

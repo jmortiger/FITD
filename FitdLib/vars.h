@@ -316,6 +316,11 @@ extern boxStruct* genVar3;
 
 extern int genVar5;
 extern int genVar6;
+
+extern int overlaySize1;
+extern int overlaySize2;
+
+extern int bgOverlayVar1;
 /* #endregion */
 
 // #region Screen Video Buffers
@@ -432,6 +437,8 @@ extern roomDefStruct* pCurrentRoomData;
 
 extern s16 currentRoom;
 extern int flagInitView;
+extern int flagRedraw;
+extern bool cameraBackgroundChanged;
 extern int numCameraInRoom;
 extern int numCameraZone;
 extern char* cameraZoneData;
@@ -479,9 +486,6 @@ extern char* currentLifePtr;
 s16 readNextArgument(const char* name = NULL);
 // #endregion Life Script Fields
 
-extern bool cameraBackgroundChanged;
-extern int flagRedraw;
-
 extern float renderPointList[6400];
 
 extern int numActorInList;
@@ -517,11 +521,6 @@ extern char cameraBuffer4[400];
 extern char* cameraBufferPtr;
 extern char* cameraBuffer2Ptr;
 extern char* cameraBuffer3Ptr;
-
-extern int overlaySize1;
-extern int overlaySize2;
-
-extern int bgOverlayVar1;
 
 extern s16 newRoom;
 

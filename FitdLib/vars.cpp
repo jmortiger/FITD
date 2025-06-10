@@ -53,11 +53,24 @@ int genVar5;
 /// @brief Currently Unused
 /// @todo Determine what this was for.
 int genVar6;
+
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+int overlaySize1;
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+int overlaySize2;
+
+/// @brief Currently Unused
+/// @todo Determine what this was for.
+int bgOverlayVar1;
 /* #endregion Unused */
 
 /// @brief BACKGROUND1: A direct copy of a 2D background from the PAK file. Never overwritten after uncompressed. This is the third one in memory. Every time the camera changes, a new image is loaded into BACKGROUND1. [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKGROUND1%3A,loaded%20into%20BACKGROUND1%2E)
+/// @todo Change name
 char* aux;
 /// @brief BACKGROUND2: The same but with non-animated actors rendered onto it. When a static actor starts moving (gets the animated flag 0001 or redraw flag 0004), it gets removed from BACKGROUND2 by copying BACKGROUND1 and re-rendering all non-moving actors. The idea is to avoid having to render things that aren't currently moving. Similarly, when an actor becomes static, it is drawn into BACKGROUND2. This image is the second one in memory. [Link](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#:~:text=BACKGROUND2%3A,second%20one%20in%20memory%2E)
+/// @todo Change name
 char* aux2;
 std::vector<std::vector<s16>> BufferAnim;
 
@@ -144,7 +157,7 @@ tObject objectTable[NUM_MAX_OBJECT];
 
 s16 currentWorldTarget;
 
-// #region Caches
+// #region HQR Caches
 hqrEntryStruct* listMus;
 hqrEntryStruct* listSamp;
 hqrEntryStruct* listBody;
@@ -152,7 +165,7 @@ hqrEntryStruct* listAnim;
 hqrEntryStruct* listLife;
 hqrEntryStruct* listTrack;
 hqrEntryStruct* listMatrix;
-// #endregion Caches
+// #endregion HQR Caches
 
 s16 maxObjects;
 
@@ -200,7 +213,23 @@ char* cameraPtr;
 roomDefStruct* pCurrentRoomData;
 
 s16 currentRoom;
+/// @todo Determine & describe specific difference with `flagRedraw`
+/// @brief 
+/// @details Not a true flag, but a mode switch.
+/// 0: No BG change
+/// 1: Static actors changed (update BG2)
+/// 2: Cam/Background image changed (update BG1)
+/// @todo Determine & describe specific difference with `flagRedraw`
 int flagInitView;
+/// @brief 
+/// @details Not a true flag, but a mode switch.
+/// 0: No BG change
+/// 1: Static actors changed (update BG2)
+/// 2: Cam/Background image changed (update BG1)
+/// @todo Determine & describe specific difference with `flagInitView`
+int flagRedraw;
+/// @brief Seemingly replaces `flagRedraw`
+bool cameraBackgroundChanged = false;
 int numCameraInRoom;
 int numCameraZone;
 char* cameraZoneData;
@@ -239,7 +268,7 @@ int cameraFovY;
 char currentCameraVisibilityList[30];
 // #endregion Floor, Room, & Camera
 
-// #region Life Script Fields
+// #region Life Script
 int currentProcessedActorIdx;
 tObject* currentProcessedActorPtr;
 
@@ -262,10 +291,7 @@ s16 readNextArgument(const char* name)
 
 	return value;
 }
-// #endregion Life Script Fields
-
-bool cameraBackgroundChanged = false;
-int flagRedraw;
+// #endregion Life Script
 
 float renderPointList[6400];
 
@@ -305,11 +331,6 @@ char cameraBuffer4[400];
 char* cameraBufferPtr = cameraBuffer;
 char* cameraBuffer2Ptr = cameraBuffer2;
 char* cameraBuffer3Ptr = cameraBuffer3;
-
-int overlaySize1;
-int overlaySize2;
-
-int bgOverlayVar1;
 
 s16 newRoom;
 

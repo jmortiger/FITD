@@ -374,35 +374,33 @@ void readBook(int index, int type)
 /// @param top 
 /// @param endX 
 /// @param bottom 
-/// @param demoMode 
-/// @param color 
+/// @param demoMode The auto-advance mode; 0 for user controlled, 1 for ???, 2 for ???
+/// @param fontColor 
 /// @param shadow 
 /// @return 
-int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int color, int shadow)
+int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int fontColor, int shadow)
 {
 	bool lastPageReached = false;
 	/// The string representing a tab character. Tabs are 4 spaces.
 	static u8 tabString[] = "    ";
-	int firstpage = 1;
+	bool onFirstPage = true;
 	int page = 0;
-	int quit = 0;
+	bool quit = false;
 	int previousPage = -1;
 	int var_1C3;
 	std::array<u8*, 100> ptrpage;
 	int currentTextIdx;
-	int maxStringWidth;
 	u8* textPtr;
 
-	ExtSetFont(PtrFont, color);
+	ExtSetFont(PtrFont, fontColor);
 
-	maxStringWidth = endX - startX + 4;
+	int maxStringWidth = endX - startX + 4;
 
 	int textIndexMalloc = HQ_Malloc(HQ_Memory, getPakSize(languageNameString, index) + 300);
 	textPtr = (u8*)HQ_PtrMalloc(HQ_Memory, textIndexMalloc);
 
-	if (!loadPakTo(languageNameString, index, (char*)textPtr)) {
+	if (!loadPakTo(languageNameString, index, (char*)textPtr))
 		fatalError(1, languageNameString); // TODO: Improve error message
-	}
 
 	ptrpage.fill(nullptr);
 	ptrpage[0] = textPtr;
@@ -423,7 +421,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 		while (currentTextY <= bottom - 16) {
 #define _LIRE_type_mask 0xFFFE
 			// TODO: Change ad-hoc `line_type` flag magic numbers to enum/macro.
-			/// Flag that changes rendering settings.
+			/// @brief Flag that changes rendering settings.
 			/// 1: stretch words on line
 			/// 2: bigger font size
 			/// 4: ???
@@ -509,7 +507,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 				currentStringWidth = ExtGetSizeFont(currentText->textPtr) + 3;
 
 				if (currentStringWidth > maxStringWidth) {
-					quit = 1;
+					quit = true;
 					break;
 				}
 
@@ -578,6 +576,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 
 			if (lastPageReached)
 				break;
+#undef _LIRE_type_mask
 		}
 
 	pageChange:
@@ -588,26 +587,22 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 		}
 
 		if (demoMode == 0) {
-			if (page > 0) {
+			if (page > 0)
 				AffSpfI(startX - 19, 185, 12, PtrCadre);
-			}
 
-			if (!lastPageReached) {
+			if (!lastPageReached)
 				AffSpfI(endX + 4, 185, 11, PtrCadre);
-			}
 		}
 
 		if (demoMode == 2) {
-			if (page > 0) {
+			if (page > 0)
 				AffSpfI(startX - 3, 191, 13, PtrCadre);
-			}
 
-			if (!lastPageReached) {
+			if (!lastPageReached)
 				AffSpfI(endX - 10, 191, 14, PtrCadre);
-			}
 		}
 
-		if (firstpage) {
+		if (onFirstPage) {
 			if (demoMode != 1) {
 				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 				FadeInPhys(16, 0);
@@ -619,7 +614,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 				}
 			}
 
-			firstpage = 0;
+			onFirstPage = false;
 		} else {
 			if (turnPageFlag) {
 				if (previousPage < page) {
@@ -647,12 +642,12 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 				localClick = Click;
 
 				if ((localKey == 1) || localClick) {
-					quit = 1;
+					quit = true;
 					break;
 				}
 
 				if ((demoMode == 2) && (localKey == 0x1C)) {
-					quit = 1;
+					quit = true;
 					break;
 				}
 
@@ -670,7 +665,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 						break;
 					} else {
 						if (localKey == 0x1C) {
-							quit = 1;
+							quit = true;
 							break;
 						}
 					}
@@ -692,26 +687,22 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 			}
 		} else // Demo mode: pages automatically flips
 		{
-			unsigned int var_6;
-			startChrono(&var_6);
+			unsigned int timeOnCurrentPage;
+			startChrono(&timeOnCurrentPage);
 
+			// While not interupted by input or the timer being exceeded...
 			do {
 				process_events();
-				if (evalChrono(&var_6) > 300) {
-					break;
-				}
-			} while (!key && !Click);
+			} while (evalChrono(&timeOnCurrentPage) <= AITD1_AUTO_SCROLL_TIME && !key && !Click);
 
-			if (key || Click) {
-				quit = 1;
-			}
+			if (key || Click) quit = true;
 
 			if (!lastPageReached) {
 				page++;
 				playSound(CVars[getCVarsIdx(SAMPLE_PAGE)]);
 				LastSample = -1;
 			} else {
-				quit = 1;
+				quit = true;
 				demoMode = 0;
 			}
 		}
@@ -720,7 +711,6 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 	HQ_Free_Malloc(HQ_Memory, textIndexMalloc);
 
 	return(demoMode);
-#undef _LIRE_type_mask
 }
 
 /// @brief Clears all messages.
@@ -808,7 +798,7 @@ void makeMessage(int messageIdx)
 
 void OpenProgram(void)
 {
-	// time_t ltime;
+	// time_t localTime;
 	FILE* fHandle;
 
 	setupScreen();
@@ -818,26 +808,21 @@ void OpenProgram(void)
 
 	// setupVideoMode();
 
-	// time( &ltime );
+	// time( &localTime );
 
-	// srand(ltime);
+	// srand(localTime);
 
-	if (!initMusicDriver()) {
+	if (!initMusicDriver())
 		musicConfigured = musicEnabled = false;
-	}
 
 	// TODO: reverse sound init code
 
-
+	// TODO: Check aux buffer sizes
 	aux = (char*)malloc(65068);
-	if (!aux) {
-		fatalError(1, "Aux"); // TODO: Improve error message
-	}
+	if (!aux) fatalError(1, "Aux"); // TODO: Improve error message
 
 	aux2 = (char*)malloc(65068);
-	if (!aux2) {
-		fatalError(1, "Aux2"); // TODO: Improve error message
-	}
+	if (!aux2) fatalError(1, "Aux2"); // TODO: Improve error message
 
 	InitCopyBox(aux2, logicalScreen);
 	/* InitCopyPlot(aux2);
@@ -848,6 +833,7 @@ void OpenProgram(void)
 		BufferAnim[i].resize(SIZE_BUFFER_ANIM);
 	}
 
+	// Load font
 	switch (g_gameId) {
 		case AITD3:
 		{
@@ -867,9 +853,9 @@ void OpenProgram(void)
 		case JACK:
 		case AITD2:
 		{
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
+			PtrFont = CheckLoadMallocPak("ITD_RESS", RESS2_ITDFONT);
 			/*
-			int fontSize = getPakSize("ITD_RESS",1);
+			int fontSize = getPakSize("ITD_RESS", RESS2_ITDFONT);
 			FILE* fhandle = fopen("font.bin", "wb+");
 			fwrite(fontData, fontSize, 1, fhandle);
 			fclose(fhandle);*/
@@ -877,35 +863,31 @@ void OpenProgram(void)
 		}
 		case AITD1:
 		{
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 5);
+			PtrFont = CheckLoadMallocPak("ITD_RESS", RESS1_ITDFONT);
 			break;
 		}
 		case TIMEGATE:
 			PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
 			break;
-		default:
-			FITD_throwFatal(); // assert(0);
+		default: FITD_throwFatal(); // TODO: Improve error message
 	}
 
 	ExtSetFont(PtrFont, 14);
 
-	if (g_gameId == AITD1) {
-		SetFontSpace(2, 0);
-	} else {
-		SetFontSpace(2, 1);
-	}
+	SetFontSpace(2, (g_gameId == AITD1) ? 0 : 1);
 
+	// Load Frame
 	switch (g_gameId) {
 		case JACK:
 		case AITD2:
 		case AITD3:
 		{
-			PtrCadre = CheckLoadMallocPak("ITD_RESS", 0);
+			PtrCadre = CheckLoadMallocPak("ITD_RESS", RESS2_CADRE_SPF);
 			break;
 		}
 		case AITD1:
 		{
-			PtrCadre = CheckLoadMallocPak("ITD_RESS", 4);
+			PtrCadre = CheckLoadMallocPak("ITD_RESS", RESS1_CADRE_SPF);
 			break;
 		}
 	}
@@ -931,14 +913,7 @@ void OpenProgram(void)
 	// if(musicConfigured)
 	listMus = HQR_InitRessource("LISTMUS", 110000, 40);
 
-	char sampleFileName[256] = "";
-	if (g_gameId == TIMEGATE) {
-		strcpy(sampleFileName, "SAMPLES");
-	} else {
-		strcpy(sampleFileName, "LISTSAMP");
-	}
-
-	listSamp = HQR_InitRessource(sampleFileName, 64000, 30);
+	listSamp = HQR_InitRessource((g_gameId == TIMEGATE) ? "SAMPLES" : "LISTSAMP", 64000, 30);
 
 	HQ_Memory = HQR_Init(10000, 50);
 }
@@ -996,7 +971,7 @@ void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 
 void loadPalette(void)
 {
-	unsigned char localPalette[768];
+	unsigned char localPalette[BYTES_IN_PALETTE];
 
 	if (g_gameId != AITD2) {
 		loadPakTo("ITD_RESS", 3, aux);
@@ -1014,9 +989,7 @@ void loadPalette(void)
 /// @todo Document
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
-extern "C" {
-	extern char homePath[512];
-}
+extern "C" { extern char homePath[512]; }
 
 void initEngine(void)
 {
@@ -1151,11 +1124,10 @@ void initEngine(void)
 	strcat(definestPath, "DEFINES.ITD");
 
 	fHandle = fopen(definestPath, "rb");
-	if (!fHandle) {
-		fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
-	}
+	if (!fHandle) fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
 
-	///////////////////////////////////////////////
+	// NOTE: This seems odd, as this should be called after `OpenProgram` reads & initializes CVars.
+	// #region CVars: Change Endianess (?)
 	{
 		fread(&CVars[0], CVars.size(), 2, fHandle);
 		fclose(fHandle);
@@ -1164,7 +1136,7 @@ void initEngine(void)
 			CVars[i] = ((CVars[i] & 0xFF) << 8) | ((CVars[i] & 0xFF00) >> 8);
 		}
 	}
-	//////////////////////////////////////////////
+	// #endregion CVars: Change Endianess (?)
 
 	if (g_gameId == AITD1) {
 		CVars[getCVarsIdx(CHOOSE_PERSO)] = choosePersoBackup;
@@ -1241,7 +1213,7 @@ void initVars()
 void loadCamera(int cameraIdx)
 {
 	int useSpecial = -1;
-	
+
 	char name[16];
 	sprintf(name, "CAMERA%02d", g_currentFloor);
 	//strcat(name,".PAK");
@@ -1252,23 +1224,23 @@ void loadCamera(int cameraIdx)
 				case 6:
 				{
 					if (cameraIdx == 0) {
-						useSpecial = AITD1_CAM06000;
+						useSpecial = RESS1_CAM06000;
 					}
 					if (cameraIdx == 5) {
-						useSpecial = AITD1_CAM06005;
+						useSpecial = RESS1_CAM06005;
 					}
 					if (cameraIdx == 8) {
-						useSpecial = AITD1_CAM06008;
+						useSpecial = RESS1_CAM06008;
 					}
 					break;
 				}
 				case 7:
 				{
 					if (cameraIdx == 0) {
-						useSpecial = AITD1_CAM07000;
+						useSpecial = RESS1_CAM07000;
 					}
 					if (cameraIdx == 1) {
-						useSpecial = AITD1_CAM07001;
+						useSpecial = RESS1_CAM07001;
 					}
 					break;
 				}
@@ -3212,10 +3184,10 @@ void mainDraw(int flagFlip)
 			}
 #define __L_clamp(v, sign, to) if ((v) sign (to)) v = (to)
 #define _L_clamp(v, sign, to) __L_clamp(v, sign, to)
-			_L_clamp(BBox3D1, <, 0);
-			_L_clamp(BBox3D3, >, _SCREEN_INTERNAL_WIDTH - 1);
-			_L_clamp(BBox3D2, <, 0);
-			_L_clamp(BBox3D4, >, _SCREEN_INTERNAL_HEIGHT - 1);
+			_L_clamp(BBox3D1, < , 0);
+			_L_clamp(BBox3D3, > , _SCREEN_INTERNAL_WIDTH - 1);
+			_L_clamp(BBox3D2, < , 0);
+			_L_clamp(BBox3D4, > , _SCREEN_INTERNAL_HEIGHT - 1);
 
 			if (BBox3D1 <= _SCREEN_INTERNAL_WIDTH - 1 && BBox3D2 <= _SCREEN_INTERNAL_HEIGHT - 1 && BBox3D3 >= 0 && BBox3D4 >= 0) // is the character on screen ?
 			{
@@ -3438,7 +3410,7 @@ void take(int objIdx)
 
 	numObjInInventoryTable[currentInventory]++;
 
-	action = 0x800;
+	action = 0x800; // TODO: Convert magic number to bitflag constant
 
 	executeFoundLife(objIdx);
 
@@ -4299,6 +4271,8 @@ void configureHqrHero(hqrEntryStruct* hqrPtr, const char* name)
 	strncpy(hqrPtr->string, name, 8);
 }
 
+/// @brief 
+/// @details Called by `FitdInit` 
 void detectGame(void)
 {
 	if (fileExists("LISTBOD2.PAK")) {
@@ -4366,6 +4340,16 @@ extern "C" {
 	void setCurrentContext(void);
 }
 
+/// @brief 
+/// @param argc 
+/// @param argv 
+/// @return 
+/// @details 1. initBgfxGlue(argc, argv) (ifndef `AITD_UE4`)
+/// 2. `osystem_startOfFrame`
+/// 3. `OpenProgram`
+/// 4. `paletteFill(currentGamePalette, 0, 0, 0)`
+/// 5. `loadPalette`
+/// 6. Game-specific start function that eventually calls `startGame`
 int FitdMain(int argc, char* argv[])
 {
 #ifndef AITD_UE4
@@ -4399,7 +4383,7 @@ int FitdMain(int argc, char* argv[])
 			startGame(0, 5, 1);
 			break;
 		default:
-			FITD_throwFatal();
+			FITD_throwFatal(); // TODO: Improve error message
 			break;
 	}
 
@@ -4426,9 +4410,7 @@ void SetClip(int left, int top, int right, int bottom)
 	clipBottom = bottom;
 }
 
-extern "C" {
-	void Sound_Quit(void);
-}
+extern "C" { void Sound_Quit(void); }
 
 void cleanupAndExit(void)
 {
