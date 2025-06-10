@@ -21,8 +21,8 @@ email                : yaz0r@yaz0r.net
 #include <bx/platform.h>
 #include "shaders/embeddedShaders.h"
 #include "imguiBGFX.h"
-#include <array>
 #include <string>
+#include <array>
 
 unsigned int gameViewId = 1;
 bgfx::TextureHandle g_backgroundTexture = BGFX_INVALID_HANDLE;
@@ -200,14 +200,16 @@ void osystem_initGL(int screenWidth, int screenHeight)
 #endif
 }
 
-void osystem_setPalette(u8* palette)
+void osystem_setPalette(void* palette)
 {
 	memcpy(RGB_Pal, (u8*)palette, BYTES_IN_PALETTE);
 	bgfx::updateTexture2D(g_paletteTexture, 0, 0, 0, 0, BYTES_PER_PALETTE_COLOR, COLORS_IN_PALETTE, bgfx::copy(RGB_Pal, BYTES_IN_PALETTE));
 	// assert(comparePalettes(RGB_Pal, palette));
 }
 
-void osystem_getPalette(unsigned char* palette) { memcpy(palette, RGB_Pal, 256 * 3); }
+void osystem_getPalette(void* palette) { memcpy(palette, RGB_Pal, BYTES_IN_PALETTE); }
+// void osystem_getPalette(u8* palette) { memcpy(palette, RGB_Pal, BYTES_IN_PALETTE); }
+// void osystem_getPalette(PaletteColorRGB* palette) { memcpy(palette, RGB_Pal, BYTES_IN_PALETTE); }
 
 struct s_vertexData
 {
@@ -512,7 +514,7 @@ unsigned char physicalScreenRGB[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT
 /// @param right exclusive
 /// @param bottom exclusive
 /// @details * gets passed `logicalScreen`, `frontBuffer`, & `aux` as `videoBuffer`
-void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int right, int bottom)
+void osystem_CopyBlockPhys(u8* videoBuffer, int left, int top, int right, int bottom)
 {
 	unsigned char* out = physicalScreenRGB;
 	unsigned char* in = (unsigned char*)&videoBuffer[0] + left + top * _SCREEN_INTERNAL_WIDTH;

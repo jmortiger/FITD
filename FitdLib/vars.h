@@ -339,7 +339,60 @@ extern char* PtrFont;
 
 extern char* PtrCadre;
 
-extern unsigned char currentGamePalette[0x300];
+struct PaletteColorRGB {
+	// #region Fields
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+	// #endregion Fields
+	// #region Operator
+	bool operator==(const PaletteColorRGB& other) {
+		return (
+			r == other.r &&
+			g == other.g &&
+			b == other.b
+		);
+	}
+	bool operator==(unsigned char* other) {
+		return (
+			r == other[0] &&
+			g == other[1] &&
+			b == other[2]
+		);
+	}
+	bool operator!=(const PaletteColorRGB& other) { return !(*this == other); }
+	bool operator!=(unsigned char* other) { return !(*this == other); }
+	// #endregion Operator
+	// #region Update
+	void updateOther(unsigned char* rgb) {
+		rgb[0] = r;
+		rgb[1] = g;
+		rgb[2] = b;
+	}
+	void update(unsigned char* rgb) {
+		r = rgb[0];
+		g = rgb[1];
+		b = rgb[2];
+	}
+	void update(unsigned char r, unsigned char g, unsigned char b) {
+		this->r = r;
+		this->g = g;
+		this->b = b;
+	}
+	void update(PaletteColorRGB& color) {
+		r = color.r;
+		g = color.g;
+		b = color.b;
+	}
+	void update(PaletteColorRGB* color) {
+		r = color->r;
+		g = color->g;
+		b = color->b;
+	}
+	// #endregion Update
+}; typedef struct PaletteColorRGB PaletteColorRGB;
+
+extern PaletteColorRGB currentGamePalette[COLORS_IN_PALETTE];
 
 // #region Timers
 extern unsigned int timer;

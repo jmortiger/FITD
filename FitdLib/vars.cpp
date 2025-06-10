@@ -86,7 +86,12 @@ char* PtrFont;
 /// @brief Border Graphics (loaded from [`ITD_RESS.PAK` index 4](https://kb.speeddemosarchive.com/Alone_in_the_Dark_(1-3)/Game_Mechanics_and_Glitches#GAME_FILES))
 char* PtrCadre;
 
-unsigned char currentGamePalette[256 * 3];
+/**
+ * @brief The game's current color palette defined by 256 RGB byte triplets.
+ * @todo Convert to an array of color structs.
+ */
+PaletteColorRGB currentGamePalette[COLORS_IN_PALETTE];
+// unsigned char currentGamePalette[BYTES_IN_PALETTE];
 
 // #region Timers
 unsigned int timer;
@@ -139,11 +144,14 @@ char languageNameString[20] = "";
 textEntryStruct* tabTextes;
 /// @brief The raw text entries loaded from the language pak file.
 u8* systemTextes;
-// #endregion Text
 
 regularTextEntryStruct textTable[NUM_MAX_TEXT];
 
 int turnPageFlag;
+
+/// @brief The message queue; these are rendered across the bottom of the screen.
+messageStruct messageTable[NUM_MAX_MESSAGE];
+// #endregion Text
 
 int hqrKeyGen = 0;
 
@@ -183,21 +191,23 @@ s16* vars;
 int varSize;
 // #endregion VARS
 
-/// @brief The message queue; these are rendered across the bottom of the screen.
-messageStruct messageTable[NUM_MAX_MESSAGE];
-
-s16 currentMusic;
+/// @brief The current selected action (e.g. Fight, Open/Search, Jump) (I believe).
 int action;
+
+// #region Music & Sound
+s16 currentMusic;
 
 int nextSample;
 int nextMusic;
+int LastPriority;
+int LastSample;
+// #endregion Music & Sound
+
 s16 currentCameraTargetActor;
 /// @brief A flag indicating the player died; used to stop the main loop & transfer back to the start menu. Is (unnecessarily) included in save file (thus the s16).
 s16 fIsGameOver;
 s16 lightOff;
 int lightVar2;
-int LastPriority;
-int LastSample;
 s16 statusScreenAllowed;
 
 // #region Floor, Room, & Camera

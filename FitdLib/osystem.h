@@ -32,8 +32,13 @@ extern "C" {
 
 	void osystem_init();
 
-	extern int osystem_mouseRight;
-	extern int osystem_mouseLeft;
+	// TODO: Pull all input-related code, disabled & otherwise, into dedicated files (`input.h` & `input.cpp`?).
+	// Unused w/o even a comment-out reference anywhere beyond declaration & init, so disabled.
+	/* extern int osystem_mouseRight;
+	extern int osystem_mouseLeft; */
+	//    void getMouseStatus(mouseStatusStruct * mouseData);
+
+	void osystem_delay(int ms);
 
 	void osystem_drawBackground();
 	u32 osystem_startOfFrame();
@@ -41,41 +46,17 @@ extern "C" {
 
 	void osystem_initGL(int screenWidth, int screenHeight);
 
-	void osystem_delay(int time);
-	/// @todo Unimplemented; Remove?
-	void osystem_fadeBlackToWhite();
 	void osystem_updateImage();
 	void osystem_initBuffer();
-	/// @todo Unimplemented; Remove?
-	void osystem_initVideoBuffer(char* buffer, int width, int height);
-	/// @todo Unimplemented; Remove?
-	void osystem_putpixel(int x, int y, int pixel);
-	/// @todo Unimplemented; Remove?
-	void osystem_setColor(byte i, byte R, byte G, byte B);
-	/// @todo Unimplemented; Remove?
-	void osystem_setPalette(unsigned byte* palette);
-	/// @todo Unimplemented; Remove?
-	/// @todo Rename
-	void osystem_setPalette320x200(byte* palette);
-	void osystem_flip(unsigned char* videoBuffer);
-	/// @todo Unimplemented; Remove?
-	/// @todo Rename
-	void osystem_draw320x200BufferToScreen(unsigned char* videoBuffer);
-	void osystem_CopyBlockPhys(unsigned char* videoBuffer, int left, int top, int right, int bottom);
+	void osystem_getPalette(void* palette);
+	void osystem_setPalette(void* palette);
+	void osystem_flip(u8* videoBuffer);
+	void osystem_CopyBlockPhys(u8* videoBuffer, int left, int top, int right, int bottom);
 	void osystem_refreshFrontTextureBuffer();
 	/// @todo Unimplemented; Remove?
-	void osystem_drawText(int X, int Y, char* text);
-	/// @todo Unimplemented; Remove?
-	void osystem_drawTextColor(int X, int Y, char* string, unsigned char R, unsigned char G, unsigned char B);
-	/// @todo Unimplemented; Remove?
-	void osystem_drawLine(int X1, int X2, int Y1, int Y2, unsigned char color, unsigned char* palette);
-	void osystem_getPalette(unsigned char* palette);
-	/// @todo Unimplemented; Remove?
-	void osystem_playSampleFromName(char* sampleName);
-	void osystem_playSample(char* samplePtr, int size);
-	//    void getMouseStatus(mouseStatusStruct * mouseData);
+	void osystem_drawLine(int X1, int X2, int Y1, int Y2, u8 color, u8* palette);
 
-	void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT>& mask, int roomId, int maskId, unsigned char* refImage, int maskX1, int maskY1, int maskX2, int maskY2);
+	void osystem_createMask(const std::array<u8, _SCREEN_INTERNAL_PIXELS>& mask, int roomId, int maskId, u8* refImage, int maskX1, int maskY1, int maskX2, int maskY2);
 	void osystem_drawMask(int roomId, int maskId);
 
 	void osystem_startFrame();
@@ -97,14 +78,34 @@ extern "C" {
 	void osystem_drawPoint(float X, float Y, float Z, u8 color, u8 material, float size);
 	void osystem_flushPendingPrimitives();
 
-	/// @todo Unimplemented; Remove?
+	/* // #region Unused w/o even a comment-out reference anywhere beyond declaration, so disabled.
+	void osystem_fadeBlackToWhite();
+
+	void osystem_initVideoBuffer(char* buffer, int width, int height);
+	void osystem_putpixel(int x, int y, int pixel);
+	void osystem_setColor(byte i, byte R, byte G, byte B);
+	void osystem_setPalette320x200(byte* palette);
+	void osystem_draw320x200BufferToScreen(unsigned char* videoBuffer);
+	void osystem_drawText(int X, int Y, char* text);
+	void osystem_drawTextColor(int X, int Y, char* string, unsigned char R, unsigned char G, unsigned char B);
+
 	void osystem_startBgPoly();
-	/// @todo Unimplemented; Remove?
 	void osystem_endBgPoly();
 	void osystem_addBgPolyPoint(int x, int y);
+	// #endregion Unused w/o even a comment-out reference anywhere beyond declaration, so disabled. */
 
+	// #region Audio
+	/// @todo Move to AL?
+	void osystem_playSample(char* samplePtr, int size);
+	/// @todo Unimplemented; Remove/Implement?
+	/// @todo Move to AL?
+	void osystem_playSampleFromName(char* sampleName);
+
+	/// @todo Move to AL?
 	int osystem_playTrack(int trackId);
+	/// @todo Move to AL?
 	void osystem_playAdlib();
+	// #endregion Audio
 
 #ifdef __cplusplus
 }
