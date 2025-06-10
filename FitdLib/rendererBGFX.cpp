@@ -599,149 +599,73 @@ void osystem_startModelRender() {}
 
 void osystem_stopModelRender() { osystem_flushPendingPrimitives(); }
 
+void _os_fpp_standardVertexLayout(bgfx::VertexLayout& layout)
+{
+	layout
+		.begin()
+		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
+		.end();
+}
+void _os_fpp_sphereVertexLayout(bgfx::VertexLayout& layout)
+{
+	layout
+		.begin()
+		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::TexCoord1, 4, bgfx::AttribType::Float)
+		.end();
+}
+
+void _os_fpp_body(
+	int numUsed,
+	void* vertices,
+	bgfx::ProgramHandle shader(),
+	void setupVertexLayout(bgfx::VertexLayout&) = _os_fpp_standardVertexLayout,
+	size_t vertexStructSize = sizeof(polyVertex))
+{
+	// if (!numUsed) return;
+	bgfx::VertexLayout layout;
+	setupVertexLayout(layout);
+	bgfx::TransientVertexBuffer transientBuffer;
+	bgfx::allocTransientVertexBuffer(&transientBuffer, numUsed, layout);
+	memcpy(transientBuffer.data, vertices, vertexStructSize * numUsed);
+
+	bgfx::setState(0
+		| BGFX_STATE_WRITE_RGB
+		| BGFX_STATE_WRITE_A
+		| BGFX_STATE_WRITE_Z
+		| BGFX_STATE_DEPTH_TEST_LEQUAL
+		| BGFX_STATE_MSAA
+		| BGFX_STATE_BLEND_ALPHA // TODO: Fix the blend mode
+	);
+
+	static bgfx::UniformHandle paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
+	bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
+
+	bgfx::setVertexBuffer(0, &transientBuffer);
+	bgfx::submit(gameViewId, shader());
+}
+
 void osystem_flushPendingPrimitives()
 {
-	if (numUsedFlatVertices) {
-		bgfx::VertexLayout layout;
-		layout
-			.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
-			.end();
+	if (numUsedFlatVertices)
+		_os_fpp_body(numUsedFlatVertices, &flatVertices[0], getFlatShader);
 
-		bgfx::TransientVertexBuffer transientBuffer;
-		bgfx::allocTransientVertexBuffer(&transientBuffer, numUsedFlatVertices, layout);
+	if (numUsedNoiseVertices)
+		_os_fpp_body(numUsedNoiseVertices, &noiseVertices[0], getNoiseShader);
 
-		memcpy(transientBuffer.data, &flatVertices[0], sizeof(polyVertex) * numUsedFlatVertices);
+	if (numUsedRampVertices)
+		_os_fpp_body(numUsedRampVertices, &rampVertices[0], getRampShader);
 
-		bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-			| BGFX_STATE_WRITE_A
-			| BGFX_STATE_WRITE_Z
-			| BGFX_STATE_DEPTH_TEST_LEQUAL
-			| BGFX_STATE_MSAA
-		);
+	if (numUsedSpheres)
+		_os_fpp_body(numUsedSpheres, &sphereVertices[0], getSphereShader, _os_fpp_sphereVertexLayout, sizeof(sphereVertex));
 
-		static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
-		if (!bgfx::isValid(paletteTextureUniform)) {
-			paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
-		}
+	if (numUsedTransparentVertices)
+		_os_fpp_body(numUsedTransparentVertices, &transparentVertices[0], getFlatShader);
 
-		bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
-
-		bgfx::setVertexBuffer(0, &transientBuffer);
-		bgfx::submit(gameViewId, getFlatShader());
-	}
-
-	if (numUsedNoiseVertices) {
-		bgfx::VertexLayout layout;
-		layout
-			.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
-			.end();
-
-		bgfx::TransientVertexBuffer transientBuffer;
-		bgfx::allocTransientVertexBuffer(&transientBuffer, numUsedNoiseVertices, layout);
-
-		memcpy(transientBuffer.data, &noiseVertices[0], sizeof(polyVertex) * numUsedNoiseVertices);
-
-		bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-			| BGFX_STATE_WRITE_A
-			| BGFX_STATE_WRITE_Z
-			| BGFX_STATE_DEPTH_TEST_LEQUAL
-			| BGFX_STATE_MSAA
-		);
-
-		static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
-		if (!bgfx::isValid(paletteTextureUniform)) {
-			paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
-		}
-
-		bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
-
-		bgfx::setVertexBuffer(0, &transientBuffer);
-		bgfx::submit(gameViewId, getNoiseShader());
-	}
-
-	if (numUsedRampVertices) {
-		bgfx::VertexLayout layout;
-		layout
-			.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8)
-			.end();
-
-		bgfx::TransientVertexBuffer transientBuffer;
-		bgfx::allocTransientVertexBuffer(&transientBuffer, numUsedRampVertices, layout);
-
-		memcpy(transientBuffer.data, &rampVertices[0], sizeof(polyVertex) * numUsedRampVertices);
-
-		bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-			| BGFX_STATE_WRITE_A
-			| BGFX_STATE_WRITE_Z
-			| BGFX_STATE_DEPTH_TEST_LEQUAL
-			| BGFX_STATE_MSAA
-		);
-
-		static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
-		if (!bgfx::isValid(paletteTextureUniform)) {
-			paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
-		}
-
-		bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
-		bgfx::setVertexBuffer(0, &transientBuffer);
-		bgfx::submit(gameViewId, getRampShader());
-	}
-
-	if (numUsedSpheres) {
-		bgfx::VertexLayout layout;
-		layout
-			.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord1, 4, bgfx::AttribType::Float)
-			.end();
-
-		bgfx::TransientVertexBuffer transientBuffer;
-		bgfx::allocTransientVertexBuffer(&transientBuffer, numUsedSpheres, layout);
-
-		memcpy(transientBuffer.data, &sphereVertices[0], sizeof(sphereVertex) * numUsedSpheres);
-
-		bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-			| BGFX_STATE_WRITE_A
-			| BGFX_STATE_WRITE_Z
-			| BGFX_STATE_DEPTH_TEST_LEQUAL
-			| BGFX_STATE_MSAA
-		);
-
-		static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
-		if (!bgfx::isValid(paletteTextureUniform)) {
-			paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
-		}
-
-		bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
-		bgfx::setVertexBuffer(0, &transientBuffer);
-		bgfx::submit(gameViewId, getSphereShader());
-	}
-#if 0
-	if (numUsedTransparentVertices) {
-		/*
-		glEnable(GL_BLEND); checkGL();
-		glVertexPointer(3, GL_FLOAT, sizeof(polyVertex), &transparentVertices->X); checkGL();
-		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(polyVertex), &transparentVertices->R); checkGL();
-		glDrawArrays(GL_TRIANGLES, 0, numUsedTransparentVertices); checkGL();
-		glDisable(GL_BLEND); checkGL();
-		*/
-	}
-#endif
-	numUsedFlatVertices = 0;
-	numUsedNoiseVertices = 0;
-	numUsedRampVertices = 0;
-	numUsedSpheres = 0;
-	numUsedTransparentVertices = 0;
+	numUsedFlatVertices = numUsedNoiseVertices = numUsedRampVertices = numUsedSpheres = numUsedTransparentVertices = 0;
 }
 
 /// @brief 
@@ -861,10 +785,20 @@ void osystem_fillPoly(float* buffer, int numPoint, unsigned char color, u8 polyT
 				pVertex->Y = buffer[i * 3 + 1];
 				pVertex->Z = buffer[i * 3 + 2];
 
+				int bank = (color & 0xF0) >> 4;
+				int startColor = color & 0xF;
+				pVertex->U = startColor / 15.f;
+				pVertex->V = bank / 15.f;
+
+				// pVertex->R = (float)(RGB_Pal[color * 3]) / 255.f;
 				pVertex->R = RGB_Pal[color * 3];
+				// pVertex->G = (float)(RGB_Pal[color * 3 + 1]) / 255.f;
 				pVertex->G = RGB_Pal[color * 3 + 1];
+				// pVertex->B = (float)(RGB_Pal[color * 3 + 2]) / 255.f;
 				pVertex->B = RGB_Pal[color * 3 + 2];
+				// pVertex->A = (float)(128) / 255.f;
 				pVertex->A = 128;
+				// printf("%f %f %f %f", pVertex->R, pVertex->G, pVertex->B, pVertex->A);
 				pVertex++;
 			}
 			break;

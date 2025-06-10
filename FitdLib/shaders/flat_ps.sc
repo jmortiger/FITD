@@ -1,4 +1,4 @@
-$input v_texcoord0
+$input v_texcoord0, v_color0
 
 #include "bgfx_shader.sh"
 
@@ -14,5 +14,5 @@ void main()
     gl_FragColor.r = (texelFetch(s_paletteTexture, ivec2(0, colorOffset), 0) / 255.f).r;
     gl_FragColor.g = (texelFetch(s_paletteTexture, ivec2(1, colorOffset), 0) / 255.f).r;
     gl_FragColor.b = (texelFetch(s_paletteTexture, ivec2(2, colorOffset), 0) / 255.f).r;
-    gl_FragColor.w = 1;
+    gl_FragColor.a = v_color0.a / 255.f;
 }
