@@ -118,11 +118,9 @@ char RGB_Pal[COLORS_IN_PALETTE * 4];
 
 unsigned int backTexture;
 
-int g_screenWidth = 0;
-int g_screenHeight = 0;
-
-void osystem_preinigGL() {}
-
+/// @brief Currently disabled
+/// @param screenWidth 
+/// @param screenHeight 
 void osystem_initGL(int screenWidth, int screenHeight)
 {
 #if 0
@@ -130,8 +128,8 @@ void osystem_initGL(int screenWidth, int screenHeight)
 	gl3wInit();
 #endif
 
-	g_screenWidth = screenWidth;
-	g_screenHeight = screenHeight;
+	gameResolution.x = screenWidth;
+	gameResolution.y = screenHeight;
 
 	//glEnable(GL_TEXTURE_2D);
 	//glEnable(GL_CULL_FACE);
@@ -147,7 +145,7 @@ void osystem_initGL(int screenWidth, int screenHeight)
 	//glDepthFunc(GL_LEQUAL);
 	glDepthFunc(GL_LESS);
 
-	glViewport(0, 0, g_screenWidth, g_screenHeight);
+	glViewport(0, 0, screenWidth, screenHeight);
 	checkGL();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Black Background
