@@ -44,30 +44,19 @@ void afficheSprite(int left, int top, int index, char* gfxData)
 	if (g_gameId >= AITD3)
 		return;
 
-	char* outPtr;
-	char* inPtr;
-
-	int width;
-	int height;
-
-	int offset;
-
-	int i;
-	int j;
-
-	outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
-	inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe
+	char* outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
+	char* inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe
 
 	inPtr += 4;
 
-	width = READ_LE_U16(inPtr); // alignement unsafe
+	int width = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
-	height = READ_LE_U16(inPtr); // alignement unsafe
+	int height = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
 
-	offset = _SCREEN_INTERNAL_WIDTH - width;
+	int offset = _SCREEN_INTERNAL_WIDTH - width;
 
-	for (i = 0; i < height; i++) {
+	for (uint i = 0, j; i < height; i++) {
 		for (j = 0; j < width; j++) {
 			*(outPtr++) = *(inPtr++);
 		}
@@ -85,38 +74,25 @@ void afficheSprite(int left, int top, int index, char* gfxData)
 /// @remark [Legacy name](<https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D298>)
 void AffSpfI(int left, int top, int index, char* gfxData)
 {
-	char* outPtr;
-	char* inPtr;
-
-	int width;
-	int height;
-
-	int offset;
-
-	int i;
-	int j;
-
 	if (g_gameId >= AITD3)
 		return;
 
-	outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
-	inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe
+	char* outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
+	char* inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); // alignement unsafe
 
 	inPtr += 4;
 
-	width = READ_LE_U16(inPtr); // alignement unsafe
+	int width = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
-	height = READ_LE_U16(inPtr); // alignement unsafe
+	int height = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
 
-	offset = _SCREEN_INTERNAL_WIDTH - width;
+	int offset = _SCREEN_INTERNAL_WIDTH - width;
 
-	for (i = 0; i < height; i++) {
+	for (uint i = 0, j; i < height; i++) {
 		for (j = 0; j < width; j++) {
 			char color = *(inPtr++);
-			if (color) {
-				*(outPtr) = color;
-			}
+			if (color) *(outPtr) = color;
 			outPtr++;
 		}
 

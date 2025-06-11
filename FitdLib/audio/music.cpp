@@ -662,8 +662,6 @@ int musicLoad(void* ptr)
 
 int initialize(void* dummy)
 {
-	int i;
-
 	//OPLBuildTables(FMOPL_ENV_BITS_HQ, FMOPL_EG_ENT_HQ);
 
 	YM3812Init(1, OPL_INTERNAL_FREQ, 44100);
@@ -672,7 +670,7 @@ int initialize(void* dummy)
 	if(!virtualOpl)
 	return 0; */
 
-	for (i = 0; i < 11; i++) {
+	for (int i = 0; i < 11; i++) {
 		channelTable2[i].var4 |= 0x20;
 		channelTable2[i].var2->var4 |= 0x20;
 
@@ -694,24 +692,20 @@ void command0(channelTable2Element* entry, int param, u8* ptr)
 {
 	entry->var4 |= 2;
 
-	if (entry->var4 & 0x20) {
+	if (entry->var4 & 0x20)
 		return;
-	}
 
 	entry->var4 |= 0x40;
 
-	if (!(entry->var4 & 0x8000)) {
+	if (!(entry->var4 & 0x8000))
 		return;
-	}
 
 	entry->var2->var4 &= 0xFFFB;
 }
 
 void command1(channelTable2Element* entry, int param, u8* ptr)
 {
-	u16 ax;
-
-	ax = READ_LE_U16(ptr - 1);
+	u16 ax = READ_LE_U16(ptr - 1);
 
 	entry->var10 = entry->varE = ax + entry->var13;
 
@@ -757,9 +751,8 @@ void executeMusicCommand(channelTable2Element* entry)
 		entry->var4 &= 0xFFFD;
 		entry->var18 = 0;
 	} else {
-		if (entry->var1A != entry->var1D) {
+		if (entry->var1A != entry->var1D)
 			FITD_throwFatal();
-		}
 
 		entry->varE--; // voice delay
 
@@ -790,8 +783,6 @@ void applyDirectFrequency(int index, int param1, int param2, int param3)
 		setupChannelFrequency(index, param1, param2, param3);
 		return;
 	} else {
-		int ah;
-
 		if (index < 6) {
 			setupChannelFrequency(index, param1, param2, param3);
 			return;
@@ -828,7 +819,7 @@ void applyDirectFrequency(int index, int param1, int param2, int param3)
 				index = indexBackup;
 			}
 
-		ah = (~(smallTable[index - 6])) & regBDConf;
+		int ah = (~(smallTable[index - 6])) & regBDConf;
 
 		sendAdlib(0xBD, ah);
 
@@ -870,9 +861,8 @@ unsigned char smallData2[] = {
 
 void configChannel(u8 value, u8* data)
 {
-	if (smallData2[value] != 0xFF) {
+	if (smallData2[value] != 0xFF)
 		sendAdlib(0xC0 + smallData2[value], data[2]);
-	}
 
 	sendAdlib(0x60 + value, data[4]); // Attack Rate  Decay Rate
 	sendAdlib(0x80 + value, data[5]); // Sustain Level  Release Rate
@@ -905,10 +895,6 @@ void changeOuputLevel(u8 value, u8* data, int bp)
 
 void applyMusicCommandToOPL(channelTable2Element* element2, channelTableElement* element)
 {
-	char al;
-	u16 dx;
-	u16 bp;
-
 	u8 operator1;
 	u8 operator2;
 
@@ -945,51 +931,46 @@ void applyMusicCommandToOPL(channelTable2Element* element2, channelTableElement*
 
 		configChannel(operator1, (currentMusicPtr2 + 0xD * element2->var12) + 1);
 
-		if (operator2 != 0xFF) {
+		if (operator2 != 0xFF)
 			configChannel(operator2, (currentMusicPtr2 + 0xD * element2->var12) + 7);
-		}
 
 		element->var5 = 0xFF;
 	}
 
 	// Ouput level handling
 
-	al = element2->var1D - element2->var1E;
+	/// register char al
+	char al = element2->var1D - element2->var1E;
 
-	if (al < 0)
-		al = 0;
+	if (al < 0) al = 0;
 
 	if (element->var5 != al) {
-		int dx;
-
 		element->var5 = al;
 
-		dx = element2->var1D;
+		int dx = element2->var1D;
 
-		if (operator2 == 0xFF) {
-			dx = element->var5;
-		}
+		if (operator2 == 0xFF) dx = element->var5;
 
 		changeOuputLevel(operator1, currentMusicPtr2 + 0xD * element2->var12, dx);
 
-		if (operator2 != 0xFF) {
+		if (operator2 != 0xFF)
 			changeOuputLevel(operator2, (currentMusicPtr2 + 0xD * element2->var12) + 6, element->var5);
-		}
 	}
 
 	////
 
-	bp = dx = element2->var17;
+	/// register u16 dx
+	/// register u16 bp
+	// u16 bp = u16 dx = element2->var17;
+	u16 bp = element2->var17;
 
 	if (element2->var17 != element->var7) {
 		element->var7 = element2->var17;
 
-		if (element2->var15 == element->var0) {
-			bp |= 0x8000;
-		}
-	} else {
 		if (element2->var15 == element->var0)
-			return;
+			bp |= 0x8000;
+	} else if (element2->var15 == element->var0) {
+		return;
 	}
 
 	element->var0 = element2->var15 = element2->var15 | 0x8000;
@@ -999,9 +980,9 @@ void applyMusicCommandToOPL(channelTable2Element* element2, channelTableElement*
 
 int update(void* dummy)
 {
-	if (generalVolume & 0xFF) {
+	// NOTE: If this always returns 0, why return a value?
+	if (generalVolume & 0xFF)
 		return 0;
-	}
 
 	channelTable2Element* si;
 	for (int i = 0; i < 11; i++) {
@@ -1041,14 +1022,12 @@ int musicFade(void* param)
 		//  if((bp&i))
 		{
 			if (channelTable2[i].dataPtr) {
-				if (dx & 0x100) {
+				if (dx & 0x100)
 					FITD_throwFatal();
-				}
 
-				if (dx & 0x40) {
-					if (!(channelTable2[i].var4 & 0x40))
-						channelTable2[i].var4 |= 0x40;
-				}
+				if (dx & 0x40 &&
+					!(channelTable2[i].var4 & 0x40))
+					channelTable2[i].var4 |= 0x40;
 
 				if (dx & 0x80) // start all
 				{
@@ -1065,33 +1044,27 @@ int musicFade(void* param)
 					channelTable2[i].var4 = 2;
 				}
 
-				if (dx & 0x20) {
+				if (dx & 0x20)
 					FITD_throwFatal();
-				}
 
-				if (dx & 0x2000) {
+				if (dx & 0x2000)
 					FITD_throwFatal();
-				}
 
-				if (dx & 0x8000) {
+				if (dx & 0x8000)
 					channelTable2[i].var1A = cx;
-				}
 
-				if (dx & 0x1000) {
+				if (dx & 0x1000)
 					FITD_throwFatal();
-				}
 
-				if (dx & 0x10) // still running ?
+				// If still running...
+				if (dx & 0x10) 
 				{
 					if (!(dx & 0x2000)) {
-						if (!(channelTable2[i].var4 & 0x40)) {
-							if (si < channelTable2[i].var18)
-								si = channelTable2[i].var18;
-						}
-					} else {
-						if (channelTable2[i].var1D != cx) {
-							si = 0;
-						}
+						if (!(channelTable2[i].var4 & 0x40) &&
+							si < channelTable2[i].var18)
+							si = channelTable2[i].var18;
+					} else if (channelTable2[i].var1D != cx) {
+						si = 0;
 					}
 				}
 			}
@@ -1131,7 +1104,6 @@ int callMusicDrv(int commandArg, void* ptr)
 int initMusicDriver(void)
 {
 	callMusicDrv(1, NULL);
-
 	return callMusicDrv(8, NULL);
 }
 
@@ -1154,17 +1126,17 @@ int fadeMusic(int param1, int param2, int param3)
 
 void playMusic(int musicNumber)
 {
-	if (currentMusic == musicNumber)
-		return;
+	// If already playing, exit
+	if (currentMusic == musicNumber) return;
 
 	currentMusic = musicNumber;
 
 	int trackNumber = musicNumber;
 
-	if (g_gameId == AITD2) {
+	if (g_gameId == AITD2)
 		trackNumber = AITD2MusicToTrackMapping[musicNumber];
-	}
 
+	// If successfully loaded from file, exit
 	if (osystem_playTrack(trackNumber))
 		return;
 
@@ -1172,14 +1144,12 @@ void playMusic(int musicNumber)
 	{
 		//if(currentMusic != musicNumber)
 		{
-			char* musicPtr;
-
 			currentMusic = musicNumber;
 
 			if (musicNumber >= 0) {
 				fadeMusic(0, 0, 0x40);
 
-				musicPtr = HQR_Get(listMus, musicNumber);
+				char* musicPtr = HQR_Get(listMus, musicNumber);
 
 				if (musicPtr) {
 					loadMusic(0, musicPtr);
@@ -1198,11 +1168,6 @@ int updateLoop = 0;
 
 int oldTimer = 0;
 
-void callMusicUpdate(void)
-{
-	if (OPLinitialized) {
-		callMusicDrv(0, NULL);
-	}
-}
+void callMusicUpdate(void) { if (OPLinitialized) callMusicDrv(0, NULL); }
 
 void destroyMusicDriver(void) { YM3812Shutdown(); }
