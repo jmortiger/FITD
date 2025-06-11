@@ -157,6 +157,8 @@ void FastCopyScreen(void* source, void* dest) { memcpy(dest, source, 64000); }
 /// @brief 
 /// @param step 
 /// @param start ALWAYS ZERO; UNUSED
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D171)
+/// @todo Move to module AMBIANCE?
 void FadeInPhys(int step, int start)
 {
 	unsigned char localPalette[BYTES_IN_PALETTE];
@@ -182,6 +184,8 @@ void FadeInPhys(int step, int start)
 /// @brief 
 /// @param step 
 /// @param start ALWAYS ZERO; UNUSED
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D172)
+/// @todo Move to module AMBIANCE?
 void FadeOutPhys(int step, int start)
 {
 	unsigned char localPalette[BYTES_IN_PALETTE];

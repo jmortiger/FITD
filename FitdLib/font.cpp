@@ -153,6 +153,13 @@ void renderText(int x, int y, char* surface, u8* string)
 	}
 }
 
+/// @brief Draw given text message at given location with a drop-shadow
+/// @param x 
+/// @param y 
+/// @param index 
+/// @param color1 
+/// @param color2 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D257)
 void SelectedMessage(int x, int y, int index, int color1, int color2)
 {
 	textEntryStruct* entryPtr = getTextFromIdx(index);
@@ -170,6 +177,12 @@ void SelectedMessage(int x, int y, int index, int color1, int color2)
 	renderText(x, y, logicalScreen, textPtr);
 }
 
+/// @brief Draw given text message at given location
+/// @param x 
+/// @param y 
+/// @param index 
+/// @param color 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D256)
 void SimpleMessage(int x, int y, int index, int color)
 {
 	textEntryStruct* entryPtr = getTextFromIdx(index);

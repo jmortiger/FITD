@@ -139,7 +139,7 @@ void osystemAL_update() { gSoloud->setGlobalVolume(gVolume); }
 SoLoud::DiskFile* pFile = NULL;
 SoLoud::WavStream* pWavStream = NULL;
 
-/// @brief 
+/// @brief Plays music samples from a file (not adlib)
 /// @param trackId 
 /// @return 0 always??
 int osystem_playTrack(int trackId)

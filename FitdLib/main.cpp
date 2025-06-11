@@ -378,6 +378,7 @@ void readBook(int index, int type)
 /// @param fontColor 
 /// @param shadow 
 /// @return 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D265)
 int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int fontColor, int shadow)
 {
 	bool lastPageReached = false;
@@ -796,6 +797,8 @@ void makeMessage(int messageIdx)
 }
 // #endregion Text: Rendering, Reading, On-Screen Messages
 
+/// @brief 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D119)
 void OpenProgram(void)
 {
 	// time_t localTime;
@@ -987,10 +990,13 @@ void loadPalette(void)
 /// @brief UNIMPLEMENTED
 /// @todo IMPLEMENT
 /// @todo Document
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D244)
 void HQ_Free_Malloc(hqrEntryStruct* hqrPtr, int index) {}
 
 extern "C" { extern char homePath[512]; }
 
+/// @brief 
+/// @remark Possibly from original game; Legacy name possibly [InitGame](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D123)? 
 void initEngine(void)
 {
 	u8* pObjectData;
@@ -2392,6 +2398,13 @@ s16 computeDistanceToPoint(int x1, int z1, int x2, int z2)
 	}
 }
 
+/// @brief 
+/// @param beta 
+/// @param newBeta 
+/// @param param 
+/// @param rotatePtr 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D354)
+/// @todo Move to rotate module?
 void InitRealValue(s16 beta, s16 newBeta, s16 param, interpolatedValue* rotatePtr)
 {
 	rotatePtr->oldAngle = beta;
@@ -3687,6 +3700,7 @@ void handleCollision(ZVStruct* startZv, ZVStruct* zvPtr2, ZVStruct* zvPtr3)
 /// @param zvPtr 
 /// @param pRoomData 
 /// @return The number of entries now in `pRoomData->hardColTable`.
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D289)
 int AsmCheckListCol(ZVStruct* zvPtr, roomDataStruct* pRoomData)
 {
 #ifdef FITD_DEBUGGER
@@ -4234,6 +4248,7 @@ void throwStoppedAt(int x, int z)
 /// @param startupFloor 
 /// @param startupRoom 
 /// @param allowSystemMenu 
+/// @remark Possibly from original game; Legacy name possibly [InitGame](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D123)?
 void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 {
 	initEngine();

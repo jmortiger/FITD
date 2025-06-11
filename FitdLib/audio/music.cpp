@@ -1,5 +1,7 @@
 #include "common.h"
 
+// https://www.flipcode.com/documents/cdromfaq.txt
+
 bool g_gameUseCDA = false;
 
 int musicVolume = 0x7F;

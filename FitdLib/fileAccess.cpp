@@ -47,6 +47,7 @@ char* loadFromItd(const char* name)
 /// @param name 
 /// @param index 
 /// @return 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D247)
 char* CheckLoadMallocPak(const char* name, int index)
 {
 	char* ptr;
