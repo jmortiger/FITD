@@ -1,6 +1,7 @@
 #include "common.h"
 #include "math.h"
 
+// TODO: Convert to enum
 #define	TL_INIT_COOR	0
 #define	TL_GOTO			1
 #define	TL_END			2
@@ -23,10 +24,7 @@
 #define	TL_ANGLE		19
 #define	TL_CLOSE		20
 
-int makeProportional(int x1, int x2, int y1, int y2)
-{
-	return x1 + ((x2 - x1) * y2) / y1;
-}
+int makeProportional(int x1, int x2, int y1, int y2) { return x1 + ((x2 - x1) * y2) / y1; }
 
 int computeangleModifiericatorToPositionSub1(int ax)
 {
@@ -40,105 +38,79 @@ int computeangleModifiericatorToPositionSub1(int ax)
 
 	yOut -= xOut;
 
-	if (yOut == 0)
-		return(0);
-
-	if (yOut > 0)
-		return(1);
-	else
-		return(-1);
+	if (yOut == 0) 		return 0;
+	else if (yOut > 0) 	return 1;
+	else 				return -1;
 }
 
 int computeangleModifiericatorToPosition(int x1, int z1, int beta, int x2, int z2)
 {
-	int resultMin;
-	int resultMax;
-
 	angleCompX = x2 - x1;
 	angleCompZ = z2 - z1;
 	angleCompBeta = beta;
 
-	resultMin = computeangleModifiericatorToPositionSub1(beta - 4);
-	resultMax = computeangleModifiericatorToPositionSub1(beta + 4);
+	int resultMin = computeangleModifiericatorToPositionSub1(beta - 4);
+	int resultMax = computeangleModifiericatorToPositionSub1(beta + 4);
 
-	if (resultMax == -1 && resultMin == 1) // in the middle
-	{
+	// If in the middle...
+	if (resultMax == -1 && resultMin == 1)
 		return(computeangleModifiericatorToPositionSub1(beta));
-	} else {
+	else
 		return(((resultMax + resultMin) + 1) >> 1);
-	}
 }
 
+/// @brief Player rotation
+/// @param param Desired angular displacement
+/// @remark * Turn speed is halved when stationary.
 void GereManualRot(int param)
 {
 	if (localJoyD & 4) {
-		if (currentProcessedActorPtr->direction != 1) {
+		if (currentProcessedActorPtr->direction != 1)
 			currentProcessedActorPtr->rotate.param = 0;
-		}
 
 		currentProcessedActorPtr->direction = 1;
 
 		if (currentProcessedActorPtr->rotate.param == 0) {
 			int oldBeta = currentProcessedActorPtr->beta;
-
-			if (currentProcessedActorPtr->speed == 0) {
-				InitRealValue(oldBeta, oldBeta + 0x100, param / 2, &currentProcessedActorPtr->rotate);
-			} else {
-				InitRealValue(oldBeta, oldBeta + 0x100, param, &currentProcessedActorPtr->rotate);
-			}
+			/// @todo Magic number for turn speed (256)?
+			InitRealValue(oldBeta, oldBeta + 0x100, (currentProcessedActorPtr->speed == 0) ? (param / 2) : param, &currentProcessedActorPtr->rotate);
 		}
 
 		currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 	}
 	if (localJoyD & 8) {
-		if (currentProcessedActorPtr->direction != -1) {
+		if (currentProcessedActorPtr->direction != -1)
 			currentProcessedActorPtr->rotate.param = 0;
-		}
 
 		currentProcessedActorPtr->direction = -1;
 
 		if (currentProcessedActorPtr->rotate.param == 0) {
 			int oldBeta = currentProcessedActorPtr->beta;
-
-			if (currentProcessedActorPtr->speed == 0) {
-				InitRealValue(oldBeta, oldBeta - 0x100, param / 2, &currentProcessedActorPtr->rotate);
-			} else {
-				InitRealValue(oldBeta, oldBeta - 0x100, param, &currentProcessedActorPtr->rotate);
-			}
+			/// @todo Magic number for turn speed (256)?
+			InitRealValue(oldBeta, oldBeta - 0x100, (currentProcessedActorPtr->speed == 0) ? (param / 2) : param, &currentProcessedActorPtr->rotate);
 		}
 
 		currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 	}
-	if (!(localJoyD & 0xC)) {
-		currentProcessedActorPtr->direction = 0;
-		currentProcessedActorPtr->rotate.param = 0;
-	}
+	if (!(localJoyD & 0xC))
+		currentProcessedActorPtr->direction = currentProcessedActorPtr->rotate.param = 0;
 }
-
-#define DISTANCE_TO_POINT_THRESHOLD 400
-
-unsigned int lastTimeForward = 0;
 
 char* getRoomLink(unsigned int room1, unsigned int room2)
 {
-	int i;
-	s16 numOfZones;
 	char* zoneData = (char*)getRoomData(room1);
-	char* bestZone;
-
 	zoneData += *(s16*)(zoneData);
-	numOfZones = *(s16*)zoneData;
+	s16 numOfZones = *(s16*)zoneData;
 	zoneData += 2;
+	
+	char* bestZone = zoneData;
 
-	bestZone = zoneData;
-
-	for (i = 0; i < numOfZones; i++) {
+	for (int i = 0; i < numOfZones; i++) {
 		if (*(s16*)(zoneData + 14) == 4) {
 			bestZone = zoneData;
 
-			if (*(s16*)(zoneData + 12) == room2) {
+			if (*(s16*)(zoneData + 12) == room2)
 				return bestZone;
-			}
 		}
 
 		zoneData += 16;
@@ -147,7 +119,25 @@ char* getRoomLink(unsigned int room1, unsigned int room2)
 	return bestZone;
 }
 
+#define DISTANCE_TO_POINT_THRESHOLD 400
+
+/// @brief Speed when player is running forwards
+#define RUNNING_SPEED 5
+/// @brief Speed when player is walking forwards
+#define WALKING_SPEED 4
+/// @brief Speed when player is walking backwards
+#define RETREAT_SPEED -1
+/// @brief Time between presses to trigger running
+#define TIME_BETWEEN_PRESSES 10
+
+/// @brief Last time the forward button was down; used by `processTrack` & `processTrack2` to trigger running.
+unsigned int lastTimeForward = 0;
+
 /// @brief AITD1 process track from life script
+/// @remark This is where running is handled I believe.
+/// Running is jank b/c you need to press the run button twice within 10 frames.
+/// @todo Add run button
+/// @todo Minimize overlap w/ `processTrack2`
 void processTrack(void)
 {
 	switch (currentProcessedActorPtr->trackMode) {
@@ -156,34 +146,31 @@ void processTrack(void)
 			GereManualRot(60);
 			// forward
 			if (localJoyD & 1) {
-				// start running ?
-				if (timer - lastTimeForward < 10 && currentProcessedActorPtr->speed != 4) {
-					currentProcessedActorPtr->speed = 5;
-				} else {
-					if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed == -1) {
-						currentProcessedActorPtr->speed = 4;
-					}
-				}
+				// Start running if the 
+				if (timer - lastTimeForward < TIME_BETWEEN_PRESSES && currentProcessedActorPtr->speed != WALKING_SPEED)
+					currentProcessedActorPtr->speed = RUNNING_SPEED;
+				else if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed == RETREAT_SPEED)
+					currentProcessedActorPtr->speed = WALKING_SPEED;
 
 				// if(currentProcessedActorPtr->speed>0 && currentProcessedActorPtr->speed<4)
 				// 	currentProcessedActorPtr->speed = 5;
 
-
 				lastTimeForward = timer;
-			} else {
-				if ((currentProcessedActorPtr->speed > 0) && (currentProcessedActorPtr->speed <= 4)) {
-					currentProcessedActorPtr->speed--;
-				} else {
-					currentProcessedActorPtr->speed = 0;
-				}
-			}
+			} else if ((currentProcessedActorPtr->speed > 0) && (currentProcessedActorPtr->speed <= WALKING_SPEED))
+				currentProcessedActorPtr->speed--;
+			else
+				currentProcessedActorPtr->speed = 0;
 
 			// backward
 			if (localJoyD & 2) {
-				if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed >= 4)
-					currentProcessedActorPtr->speed = -1;
+				if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed >= WALKING_SPEED)
+					currentProcessedActorPtr->speed = RETREAT_SPEED;
 
-				if (currentProcessedActorPtr->speed == 5)
+				// NOTE: This should never actually happen, b/c RUNNING_SPEED > WALKING_SPEED, so the last condition would be true.
+				// It is interesting, because it appears that there was an intention
+				// for running to require an extra frame before switching to retreating,
+				// slowing you down. Would fall in line w/ Raynal's GDC talk.
+				if (currentProcessedActorPtr->speed == RUNNING_SPEED)
 					currentProcessedActorPtr->speed = 0;
 			}
 
@@ -203,7 +190,6 @@ void processTrack(void)
 				int x = followedActorPtr->roomX;
 				int y = followedActorPtr->roomY;
 				int z = followedActorPtr->roomZ;
-				int angleModifier;
 
 				if (currentProcessedActorPtr->room != roomNumber) {
 					char* link = getRoomLink(currentProcessedActorPtr->room, roomNumber);
@@ -213,21 +199,19 @@ void processTrack(void)
 					z = *(s16*)(link + 8) + (((*(s16*)(link + 10)) - (*(s16*)(link + 8))) / 2);
 				}
 
-				angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+				int angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 					currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 					currentProcessedActorPtr->beta, x, z);
 
-				if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModifier) {
+				if (currentProcessedActorPtr->rotate.param == 0 || currentProcessedActorPtr->direction != angleModifier)
 					InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
-				}
 
 				currentProcessedActorPtr->direction = angleModifier;
 
-				if (currentProcessedActorPtr->direction == 0) {
+				if (currentProcessedActorPtr->direction == 0)
 					currentProcessedActorPtr->rotate.param = 0;
-				} else {
+				else
 					currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
-				}
 
 				currentProcessedActorPtr->speed = 4;
 			}
@@ -236,13 +220,13 @@ void processTrack(void)
 		case 3: // track
 		{
 			char* trackPtr = HQR_Get(listTrack, currentProcessedActorPtr->trackNumber);
-			s16 trackMacro;
 
 			trackPtr += currentProcessedActorPtr->positionInTrack * 2;
 
-			trackMacro = *(s16*)trackPtr;
+			s16 trackMacro = *(s16*)trackPtr;
 			trackPtr += 2;
 
+			// TODO: Add debug line
 			// printf("Track macro %X\n",trackMacro);
 
 			switch (trackMacro) {
@@ -295,17 +279,13 @@ void processTrack(void)
 				case TL_GOTO: // goToPosition
 				{
 					int roomNumber = *(s16*)(trackPtr);
-					int x;
-					int y;
-					int z;
-					unsigned int distanceToPoint;
 
 					trackPtr += 2;
 
-					x = *(s16*)(trackPtr);
+					int x = *(s16*)(trackPtr);
 					trackPtr += 2;
-					y = 0;
-					z = *(s16*)(trackPtr);
+					int y = 0;
+					int z = *(s16*)(trackPtr);
 					trackPtr += 2;
 
 					if (roomNumber != currentProcessedActorPtr->room) {
@@ -314,7 +294,8 @@ void processTrack(void)
 						z += (roomDataTable[currentProcessedActorPtr->room].worldZ - roomDataTable[roomNumber].worldZ) * 10;
 					}
 
-					distanceToPoint = computeDistanceToPoint(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+					uint distanceToPoint = computeDistanceToPoint(
+						currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 						currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
 						x, z);
 
@@ -326,19 +307,16 @@ void processTrack(void)
 							currentProcessedActorPtr->beta,
 							x, z);
 
-						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModifier)) {
+						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModifier))
 							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier * 64), 15, &currentProcessedActorPtr->rotate);
-						}
 
 						currentProcessedActorPtr->direction = angleModifier;
 
-						if (!angleModifier) {
+						if (!angleModifier)
 							currentProcessedActorPtr->rotate.param = 0;
-						} else {
+						else
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
-						}
-					} else // reached position
-					{
+					} else { // reached position
 						currentProcessedActorPtr->positionInTrack += 4;
 					}
 
@@ -347,18 +325,15 @@ void processTrack(void)
 				case TL_GOTO_3D: // goToPosition
 				{
 					int roomNumber = *(s16*)(trackPtr);
-					int x;
-					int y;
-					int z;
 					unsigned int distanceToPoint;
 
 					trackPtr += 2;
 
-					x = *(s16*)(trackPtr);
+					int x = *(s16*)(trackPtr);
 					trackPtr += 2;
-					y = *(s16*)(trackPtr);
+					int y = *(s16*)(trackPtr);
 					trackPtr += 2;
-					z = *(s16*)(trackPtr);
+					int z = *(s16*)(trackPtr);
 					trackPtr += 2;
 					int time = *(s16*)(trackPtr);
 					trackPtr += 2;
@@ -377,24 +352,21 @@ void processTrack(void)
 						int angleModifier = computeangleModifiericatorToPosition(
 							currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
-							currentProcessedActorPtr->beta,
-							x, z);
+							currentProcessedActorPtr->beta, x, z);
 
-						if (currentProcessedActorPtr->YHandler.param == 0) {
+						if (currentProcessedActorPtr->YHandler.param == 0)
 							InitRealValue(0, y - (currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY), time, &currentProcessedActorPtr->YHandler);
-						}
 
-						if ((currentProcessedActorPtr->rotate.param == 0) || (currentProcessedActorPtr->direction != angleModifier)) {
+						if ((currentProcessedActorPtr->rotate.param == 0) ||
+							(currentProcessedActorPtr->direction != angleModifier))
 							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier * 256), 60, &currentProcessedActorPtr->rotate);
-						}
 
 						currentProcessedActorPtr->direction = angleModifier;
 
-						if (!angleModifier) {
+						if (!angleModifier)
 							currentProcessedActorPtr->rotate.param = 0;
-						} else {
+						else
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
-						}
 					}
 
 					break;
@@ -441,21 +413,18 @@ void processTrack(void)
 					int betaDif = *(s16*)(trackPtr);
 					trackPtr += 2;
 
-					if (((currentProcessedActorPtr->beta - betaDif) & 1023) > 512) {
+					if (((currentProcessedActorPtr->beta - betaDif) & 0x3FF) > 0x200)
 						currentProcessedActorPtr->direction = 1; // left
-					} else {
+					else
 						currentProcessedActorPtr->direction = -1; // right
-					}
 
-					if (!currentProcessedActorPtr->rotate.param) {
+					if (!currentProcessedActorPtr->rotate.param)
 						InitRealValue(currentProcessedActorPtr->beta, betaDif, 120, &currentProcessedActorPtr->rotate);
-					}
 
 					currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 
 					if (currentProcessedActorPtr->beta == betaDif) {
 						currentProcessedActorPtr->direction = 0;
-
 						currentProcessedActorPtr->positionInTrack += 2;
 					}
 
@@ -475,13 +444,13 @@ void processTrack(void)
 				}
 				case TL_DEC_OFF: // background collision off
 				{
-					currentProcessedActorPtr->_flags &= ~AF_TRIGGER;
+					currentProcessedActorPtr->_flags &= (u16)(~AF_TRIGGER); // 0xFFBF;
 					currentProcessedActorPtr->positionInTrack++;
 					break;
 				}
 				case TL_DEC_ON: // background collision on
 				{
-					currentProcessedActorPtr->_flags |= AF_TRIGGER;
+					currentProcessedActorPtr->_flags |= AF_TRIGGER; // 0x40;
 					currentProcessedActorPtr->positionInTrack++;
 					break;
 				}
@@ -499,53 +468,44 @@ void processTrack(void)
 				}
 				case TL_GOTO_3DX: // walk up/down stairs on X
 				{
-					int x;
-					int y;
-					int z;
-					int objX;
-					int objY;
-					int objZ;
 
-					x = *(s16*)(trackPtr);
+					int x = *(s16*)(trackPtr);
 					trackPtr += 2;
-					y = *(s16*)(trackPtr);
+					int y = *(s16*)(trackPtr);
 					trackPtr += 2;
-					z = *(s16*)(trackPtr);
+					int z = *(s16*)(trackPtr);
 					trackPtr += 2;
 
-					objX = ListWorldObjets[currentProcessedActorPtr->indexInWorld].x;
-					objY = ListWorldObjets[currentProcessedActorPtr->indexInWorld].y;
-					objZ = ListWorldObjets[currentProcessedActorPtr->indexInWorld].z;
+					int objX = ListWorldObjets[currentProcessedActorPtr->indexInWorld].x;
+					int objY = ListWorldObjets[currentProcessedActorPtr->indexInWorld].y;
+					int objZ = ListWorldObjets[currentProcessedActorPtr->indexInWorld].z;
 
-					if (currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY < y - 100
-						|| currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY > y + 100) {
+					if (currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY < y - 100 ||
+						currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY > y + 100) {
 						int propX = makeProportional(objY, y, x - objX, (currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX) - objX);
 
 						int difY = propX - currentProcessedActorPtr->worldY;
-						int angleModifier;
 
 						currentProcessedActorPtr->worldY += difY;
 						currentProcessedActorPtr->roomY += difY;
 						currentProcessedActorPtr->zv.ZVY1 += difY;
 						currentProcessedActorPtr->zv.ZVY2 += difY;
 
-						angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+						int angleModifier = computeangleModifiericatorToPosition(
+							currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
-							currentProcessedActorPtr->beta,
-							x, z);
+							currentProcessedActorPtr->beta, x, z);
 
-						if (!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->direction != angleModifier) {
+						if (!currentProcessedActorPtr->rotate.param ||
+							currentProcessedActorPtr->direction != angleModifier)
 							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
-						}
 
 						currentProcessedActorPtr->direction = angleModifier;
 
-						if (angleModifier) {
+						if (angleModifier)
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
-						} else {
+						else
 							currentProcessedActorPtr->rotate.param = 0;
-						}
-
 					} else {
 						int difY = y - currentProcessedActorPtr->worldY;
 
@@ -562,53 +522,46 @@ void processTrack(void)
 				}
 				case TL_GOTO_3DZ: // walk up/down stairs on Z
 				{
-					int x;
-					int y;
-					int z;
-					int objX;
-					int objY;
-					int objZ;
-
-					x = *(s16*)(trackPtr);
+					int x = *(s16*)(trackPtr);
 					trackPtr += 2;
-					y = *(s16*)(trackPtr);
+					int y = *(s16*)(trackPtr);
 					trackPtr += 2;
-					z = *(s16*)(trackPtr);
+					int z = *(s16*)(trackPtr);
 					trackPtr += 2;
 
-					objX = ListWorldObjets[currentProcessedActorPtr->indexInWorld].x;
-					objY = ListWorldObjets[currentProcessedActorPtr->indexInWorld].y;
-					objZ = ListWorldObjets[currentProcessedActorPtr->indexInWorld].z;
+					int objX = ListWorldObjets[currentProcessedActorPtr->indexInWorld].x;
+					int objY = ListWorldObjets[currentProcessedActorPtr->indexInWorld].y;
+					int objZ = ListWorldObjets[currentProcessedActorPtr->indexInWorld].z;
 
-					if (currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY < y - 100
-						|| currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY > y + 100) {
+					if (currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY < y - 100 ||
+						currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY > y + 100) {
 						int propZ = makeProportional(objY, y, z - objZ, (currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ) - objZ);
 
 						int difY = propZ - currentProcessedActorPtr->worldY;
-
-						int angleModifier;
 
 						currentProcessedActorPtr->worldY += difY;
 						currentProcessedActorPtr->roomY += difY;
 						currentProcessedActorPtr->zv.ZVY1 += difY;
 						currentProcessedActorPtr->zv.ZVY2 += difY;
 
-						angleModifier = computeangleModifiericatorToPosition(currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
+						int angleModifier = computeangleModifiericatorToPosition(
+							currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX,
 							currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ,
-							currentProcessedActorPtr->beta,
-							x, z);
+							currentProcessedActorPtr->beta, x, z);
 
-						if (!currentProcessedActorPtr->rotate.param || currentProcessedActorPtr->direction != angleModifier) {
-							InitRealValue(currentProcessedActorPtr->beta, currentProcessedActorPtr->beta - (angleModifier << 8), 60, &currentProcessedActorPtr->rotate);
-						}
+						if (!currentProcessedActorPtr->rotate.param ||
+							currentProcessedActorPtr->direction != angleModifier)
+							InitRealValue(
+								currentProcessedActorPtr->beta,
+								currentProcessedActorPtr->beta - (angleModifier << 8),
+								60, &currentProcessedActorPtr->rotate);
 
 						currentProcessedActorPtr->direction = angleModifier;
 
-						if (angleModifier) {
+						if (angleModifier)
 							currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
-						} else {
+						else
 							currentProcessedActorPtr->rotate.param = 0;
-						}
 
 					} else {
 						int difY = y - currentProcessedActorPtr->worldY;
@@ -642,7 +595,7 @@ void processTrack(void)
 				default:
 				{
 					printf("Unknown track macro %X\n", trackMacro);
-					FITD_throwFatal(); // assert(0);
+					FITD_throwFatal();
 					break;
 				}
 			}
@@ -661,33 +614,37 @@ void processTrack2(void)
 		case 1: // manual
 		{
 			GereManualRot(60);
-			if (localJoyD & 1) // forward
-			{
-				if (timer - lastTimeForward < 10 && currentProcessedActorPtr->speed != 4)
-					currentProcessedActorPtr->speed = 5;
+			// forward
+			if (localJoyD & 1) {
+				if (timer - lastTimeForward < TIME_BETWEEN_PRESSES &&
+					currentProcessedActorPtr->speed != WALKING_SPEED)
+					currentProcessedActorPtr->speed = RUNNING_SPEED;
 				else
-					if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed == -1)
-						currentProcessedActorPtr->speed = 4;
+					if (currentProcessedActorPtr->speed == 0 ||
+						currentProcessedActorPtr->speed == RETREAT_SPEED)
+						currentProcessedActorPtr->speed = WALKING_SPEED;
 
-				/*        if(currentProcessedActorPtr->speed>0 && currentProcessedActorPtr->speed<4)
+				/* if(currentProcessedActorPtr->speed > 0 && currentProcessedActorPtr->speed < 4)
 				currentProcessedActorPtr->speed = 5; */
 
-
 				lastTimeForward = timer;
-			} else {
-				if (currentProcessedActorPtr->speed > 0 && currentProcessedActorPtr->speed <= 4) {
-					currentProcessedActorPtr->speed--;
-				} else {
-					currentProcessedActorPtr->speed = 0;
-				}
-			}
+			} else if (currentProcessedActorPtr->speed > 0 &&
+				currentProcessedActorPtr->speed <= WALKING_SPEED)
+				currentProcessedActorPtr->speed--;
+			else
+				currentProcessedActorPtr->speed = 0;
 
-			if (localJoyD & 2) // backward
-			{
-				if (currentProcessedActorPtr->speed == 0 || currentProcessedActorPtr->speed >= 4)
-					currentProcessedActorPtr->speed = -1;
+			// backward
+			if (localJoyD & 2) {
+				if (currentProcessedActorPtr->speed == 0 ||
+					currentProcessedActorPtr->speed >= WALKING_SPEED)
+					currentProcessedActorPtr->speed = RETREAT_SPEED;
 
-				if (currentProcessedActorPtr->speed == 5)
+				// NOTE: This should never actually happen, b/c RUNNING_SPEED > WALKING_SPEED, so the last condition would be true.
+				// It is interesting, because it appears that there was an intention
+				// for running to require an extra frame before switching to retreating,
+				// slowing you down. Would fall in line w/ Raynal's GDC talk.
+				if (currentProcessedActorPtr->speed == RUNNING_SPEED)
 					currentProcessedActorPtr->speed = 0;
 			}
 
@@ -751,7 +708,7 @@ void processTrack2(void)
 			//printf("Track macro %X\n",trackMacro);
 
 			switch (trackMacro) {
-				case 0: // warp
+				case TL_INIT_COOR:// 0: // warp
 				{
 					int roomNumber = *(s16*)(trackPtr);
 					trackPtr += 2;
@@ -797,7 +754,7 @@ void processTrack2(void)
 
 					break;
 				}
-				case 1: // goToPosition
+				case TL_GOTO:// 1: // goToPosition
 				{
 					int roomNumber = *(s16*)(trackPtr);
 					int x;
@@ -848,75 +805,74 @@ void processTrack2(void)
 
 					break;
 				}
-				case 2: // stop
+				case TL_END:// 2: // stop
 				{
 					currentProcessedActorPtr->speed = 0;
 					currentProcessedActorPtr->trackNumber = -1;
 					setMoveMode(0, 0);
 					break;
 				}
-				case 3:
+				case TL_REPEAT:// 3:
 				{
 					currentProcessedActorPtr->positionInTrack = 0;
 					break;
 				}
-				case 4: // MARK
+				case TL_MARK:// 4: // MARK
 				{
 					currentProcessedActorPtr->MARK = *(s16*)(trackPtr);
 					trackPtr += 2;
 					currentProcessedActorPtr->positionInTrack += 2;
 					break;
 				}
-				case 5:
-				{
-					break;
-				}
-				case 0x6:
+				case 5: break; // TL_WALK:// 5:
+				/// @todo should be TL_SET_ANGLE
+				case 6:// TL_RUN:// 6:
 				{
 					int betaDif = *(s16*)(trackPtr);
 					trackPtr += 2;
 
-					if (((currentProcessedActorPtr->beta - betaDif) & 0x3FF) > 0x200) {
-						currentProcessedActorPtr->direction = 1;
-					} else {
-						currentProcessedActorPtr->direction = -1;
-					}
+					if (((currentProcessedActorPtr->beta - betaDif) & 0x3FF) > 0x200)
+						currentProcessedActorPtr->direction = 1; // left
+					else
+						currentProcessedActorPtr->direction = -1; // right
 
-					if (!currentProcessedActorPtr->rotate.param) {
+					if (!currentProcessedActorPtr->rotate.param)
 						InitRealValue(currentProcessedActorPtr->beta, betaDif, 120, &currentProcessedActorPtr->rotate);
-					}
 
 					currentProcessedActorPtr->beta = updateActorRotation(&currentProcessedActorPtr->rotate);
 
 					if (currentProcessedActorPtr->beta == betaDif) {
 						currentProcessedActorPtr->direction = 0;
-
 						currentProcessedActorPtr->positionInTrack += 2;
 					}
 
 					break;
 				}
-				case 0x7:
+				/// @todo should be TL_COL_OFF
+				case 7:// TL_STOP:// 7:
 				{
 					currentProcessedActorPtr->dynFlags &= 0xFFFE;
 					currentProcessedActorPtr->positionInTrack++;
 					break;
 				}
-				case 0x8:
+				/// @todo should be TL_COL_ON
+				case 8:
 				{
 					currentProcessedActorPtr->dynFlags |= 1;
 					currentProcessedActorPtr->positionInTrack++;
 					break;
 				}
-				case 0xA:
+				/// @todo should be TL_DEC_OFF
+				case 0xA: // background collision off
 				{
-					currentProcessedActorPtr->_flags &= 0xFFBF;
+					currentProcessedActorPtr->_flags &= (u16)(~AF_TRIGGER); // 0xFFBF;
 					currentProcessedActorPtr->positionInTrack++;
 					break;
 				}
-				case 0xB:
+				/// @todo should be TL_DEC_ON
+				case 0xB: // background collision on
 				{
-					currentProcessedActorPtr->_flags |= 0x40;
+					currentProcessedActorPtr->_flags |= AF_TRIGGER; // 0x40;
 					currentProcessedActorPtr->positionInTrack++;
 					break;
 				}/*
@@ -1102,3 +1058,11 @@ void processTrack2(void)
 
 	currentProcessedActorPtr->beta &= 0x3FF;
 }
+
+// #region Undef constants
+#undef DISTANCE_TO_POINT_THRESHOLD
+#undef RUNNING_SPEED
+#undef WALKING_SPEED
+#undef RETREAT_SPEED
+#undef TIME_BETWEEN_PRESSES
+// #endregion Undef constants
