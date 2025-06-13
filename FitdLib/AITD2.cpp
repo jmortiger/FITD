@@ -2,8 +2,7 @@
 
 char* pAITD2InventorySprite = NULL;
 
-int AITD2KnownCVars[] =
-{
+int AITD2KnownCVars[] = {
 	SAMPLE_PAGE,
 	BODY_FLAMME,
 	MAX_WEIGHT_LOADABLE,
@@ -24,8 +23,7 @@ int AITD2KnownCVars[] =
 	-1
 };
 
-enumLifeMacro AITD2LifeMacroTable[] =
-{
+enumLifeMacro AITD2LifeMacroTable[] = {
 	LM_DO_MOVE,         //0        
 	LM_ANIM_ONCE,
 	LM_ANIM_ALL_ONCE,
@@ -150,27 +148,9 @@ enumLifeMacro AITD2LifeMacroTable[] =
 };
 
 int AITD2MusicToTrackMapping[21] = {
-	21,
-	9,
-	7,
-	5,
-	4,
-	18,
-	8,
-	10,
-	14,
-	11,
-	12,
-	6,
-	13,
-	20,
-	15,
-	2,
-	3,
-	16,
-	17,
-	19,
-	22
+	21,  9,  7,  5,  4, 18,  8,
+	10, 14, 11, 12,  6, 13, 20,
+	15,  2,  3, 16, 17, 19, 22,
 };
 
 void startAITD2()
@@ -183,46 +163,37 @@ void startAITD2()
 	startGame(8, 0, 0); // intro
 
 	while (1) {
-		int startupMenuResult = processStartupMenu();
-
-		switch (startupMenuResult) {
-			case -1: // timeout
-				break;
+		switch (processStartupMenu()) {
+			case -1: break; // timeout
 			case 0: // new game
 			{
 				startGame(8, 7, 1);
-
 				break;
 			}
 			case 1: // continue
 			{
 				if (restoreSave(12, 0)) {
-					//          updateShaking();
-
+					//updateShaking();
 					flagInitView = 2;
-
 					setupCamera();
-
 					mainLoop(1, 1);
-
-					//          freeScene();
-
+					//freeScene();
 					FadeOutPhys(8, 0);
 				}
-
 				break;
 			}
 			case 2: // exit
 			{
 				freeAll();
 				exit(-1);
-
 				break;
 			}
 		}
 	}
 }
 
+/// @brief 
+/// @note This is actually identical to `drawInventoryAITD3`; unify?
 void drawInventoryAITD2()
 {
 	switch (CVars[getCVarsIdx(TYPE_INVENTAIRE)]) {
@@ -238,16 +209,19 @@ void drawInventoryAITD2()
 		default: FITD_throwFatal(); // TODO: Improve error message
 	}
 
-	statusLeft = 27;
-	statusTop = 100;
-	statusRight = 159;
-	statusBottom = 174;
+	statusLeft = AITD2_STATUS_LEFT;
+	statusTop = AITD2_STATUS_TOP;
+	statusRight = AITD2_STATUS_RIGHT;
+	statusBottom = AITD2_STATUS_BOTTOM;
 
-	setupCameraProjection(((statusRight - statusLeft) / 2) + statusLeft, ((statusBottom - statusTop) / 2) + statusTop, 128, 400, 390);
+	setupCameraProjection(
+		((statusRight - statusLeft) / 2) + statusLeft,
+		((statusBottom - statusTop) / 2) + statusTop,
+		AITD2_INVENTORY_CAM_X, AITD2_INVENTORY_CAM_Y, AITD2_INVENTORY_CAM_Z);
 }
 
-int	TabXSprite[3] = { 127,118,124 };
-int	TabYSprite[3] = { 136,104,131 };
+int	TabXSprite[3] = { 127, 118, 124 };
+int	TabYSprite[3] = { 136, 104, 131 };
 
 void redrawInventorySpriteAITD2()
 {

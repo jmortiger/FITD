@@ -40,9 +40,7 @@ void startAITD3()
 	//startGame(1,0,0);
 
 	while (1) {
-		int startupMenuResult = processStartupMenu();
-
-		switch (startupMenuResult) {
+		switch (processStartupMenu()) {
 			case -1: // timeout
 			{
 				startGame(1, 0, 0);
@@ -56,32 +54,27 @@ void startAITD3()
 			case 1: // continue
 			{
 				if (restoreSave(12, 0)) {
-					//          updateShaking();
-
+					//updateShaking();
 					flagInitView = 2;
-
 					setupCamera();
-
 					mainLoop(1, 1);
-
-					//          freeScene();
-
+					//freeScene();
 					FadeOutPhys(8, 0);
 				}
-
 				break;
 			}
 			case 2: // exit
 			{
 				freeAll();
 				exit(-1);
-
 				break;
 			}
 		}
 	}
 }
 
+/// @brief 
+/// @note This is actually identical to `drawInventoryAITD2`; unify?
 void drawInventoryAITD3()
 {
 	switch (CVars[getCVarsIdx(TYPE_INVENTAIRE)]) {
@@ -94,14 +87,16 @@ void drawInventoryAITD3()
 		case 2:
 			loadPakTo("ITD_RESS", AITD3_INVENTAIRE_COUGUAR, logicalScreen);
 			break;
-		default:
-			FITD_throwFatal(); // assert(0);
+		default: FITD_throwFatal(); // TODO: Improve error message
 	}
 
-	statusLeft = 27;
-	statusTop = 100;
-	statusRight = 159;
-	statusBottom = 174;
+	statusLeft = AITD2_STATUS_LEFT;
+	statusTop = AITD2_STATUS_TOP;
+	statusRight = AITD2_STATUS_RIGHT;
+	statusBottom = AITD2_STATUS_BOTTOM;
 
-	setupCameraProjection(((statusRight - statusLeft) / 2) + statusLeft, ((statusBottom - statusTop) / 2) + statusTop, 128, 400, 390);
+	setupCameraProjection(
+		((statusRight - statusLeft) / 2) + statusLeft,
+		((statusBottom - statusTop) / 2) + statusTop,
+		AITD2_INVENTORY_CAM_X, AITD2_INVENTORY_CAM_Y, AITD2_INVENTORY_CAM_Z);
 }

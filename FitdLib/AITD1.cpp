@@ -279,9 +279,7 @@ int ChoosePerso(void)
 		}
 
 		// TODO: What's up with this? Shouldn't this be a bitwise operation instead of a logical one?
-		if (localKey && 0b1'1100)
-			choiceMade = true;
-
+		if (localKey && 0b1'1100) choiceMade = true;
 	}
 
 	FadeOutPhys(64, 0);
@@ -348,27 +346,19 @@ void startAITD1()
 				/// @todo: make variable for persisting a selected save slot in-between frames
 				if (restoreSave(12, 0)) {
 					// original would quit here if protection flag was false
-
 					// updateShaking();
-
 					flagInitView = 2;
-
 					setupCamera();
-
 					mainLoop(1, 1);
-
 					// freeScene();
-
 					FadeOutPhys(8, 0);
 				}
-
 				break;
 			}
 			case StartupMenuOptionsAITD1::SMO1_EXIT:
 			{
 				freeAll();
 				exit(-1);
-
 				break;
 			}
 		}
