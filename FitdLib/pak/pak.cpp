@@ -213,7 +213,7 @@ int getPakSize(const char* name, int index, bool getCompressedSize)
 
 	fclose(fileHandle);
 
-	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "%s is %i bytes (%scompressed)", bufferName, size, getCompressedSize ? "" : "un");
+	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "%s[%i] is %i bytes (%scompressed)", bufferName, index, size, getCompressedSize ? "" : "un");
 	DebugEndSection();
 	return size;
 #endif

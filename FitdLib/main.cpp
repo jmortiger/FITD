@@ -17,9 +17,7 @@
 #include <array>
 #include <filesystem>
 
-extern "C" {
-	extern char homePath[512];
-}
+extern "C" { extern char homePath[512]; }
 
 FILE* Open(const char* filename, const char* mode)
 {
@@ -27,6 +25,8 @@ FILE* Open(const char* filename, const char* mode)
 	return fopen(path.string().c_str(), mode);
 }
 
+/// @todo What is this?
+/// @brief * Used as a flag in `foundObject`
 int input5;
 
 // #region CVars
@@ -246,6 +246,7 @@ void allocTextes(void)
 	}
 
 	// Setup languageNameString
+	// NOTE: The Steam version of AITD3 DOESN'T use a `TEXTES` file; it seems to use a `ENGLISH.PAK` file like the other games.
 	if (g_gameId == AITD3) {
 		strcpy(languageNameString, "TEXTES");
 	} else {
@@ -1173,6 +1174,11 @@ void initEngine(void)
 	}
 }
 
+/// @brief * Clears `fIsGameOver` (game over flag)
+/// * Initializes inventory
+///    * sets `currentInventory` to 0
+///    * sets all entries in `numObjInInventoryTable` to 0
+///    * sets all entries in `inHandTable` to -1
 void initVars()
 {
 	fIsGameOver = 0;
@@ -1224,48 +1230,43 @@ void loadCamera(int cameraIdx)
 	sprintf(name, "CAMERA%02d", g_currentFloor);
 	//strcat(name,".PAK");
 
+	// Handle special cameras that are unlocked after Pregzt is killed (to disable them in the intro?)
 	if (g_gameId == AITD1) {
 		if (CVars[getCVarsIdx(KILLED_SORCERER)] == 1) {
 			switch (g_currentFloor) {
 				case 6:
 				{
-					if (cameraIdx == 0) {
+					if (cameraIdx == 0)
 						useSpecial = RESS1_CAM06000;
-					}
-					if (cameraIdx == 5) {
+					if (cameraIdx == 5)
 						useSpecial = RESS1_CAM06005;
-					}
-					if (cameraIdx == 8) {
+					if (cameraIdx == 8)
 						useSpecial = RESS1_CAM06008;
-					}
 					break;
 				}
 				case 7:
 				{
-					if (cameraIdx == 0) {
+					if (cameraIdx == 0)
 						useSpecial = RESS1_CAM07000;
-					}
-					if (cameraIdx == 1) {
+					if (cameraIdx == 1)
 						useSpecial = RESS1_CAM07001;
-					}
 					break;
 				}
 			}
 		}
 
+		// If using a special camera, load from `ITD_RESS` instead of the relevant pak.
 		if (useSpecial != -1) {
 			strcpy(name, "ITD_RESS");
 			cameraIdx = useSpecial;
 		}
 	}
 
-	if (!loadPakTo(name, cameraIdx, aux)) {
+	if (!loadPakTo(name, cameraIdx, aux))
 		fatalError(0, name); // TODO: Improve error message
-	}
 
-	if (g_gameId == AITD3) {
+	if (g_gameId == AITD3)
 		memmove(aux, aux + 4, 64000 + 0x300);
-	}
 
 	if (g_gameId >= JACK) {
 		copyPalette((unsigned char*)aux + 64000, currentGamePalette);
@@ -1303,8 +1304,8 @@ void loadMask(int cameraIdx)
 	char name[16];
 	sprintf(name, "MASK%02d", g_currentFloor);
 
-	if (g_MaskPtr)
-		free(g_MaskPtr);
+	/// Free currently allocated mask PAK
+	if (g_MaskPtr) free(g_MaskPtr);
 
 	g_MaskPtr = (unsigned char*)loadPak(name, cameraIdx);
 
@@ -1583,7 +1584,7 @@ void DeleteObjet(int index)
 {
 	tObject* actorPtr = &objectTable[index];
 
-	// flow
+	// If it's a flow actor
 	if (actorPtr->indexInWorld == -2) {
 		actorPtr->indexInWorld = -1;
 
@@ -1612,8 +1613,7 @@ void DeleteObjet(int index)
 			if (objectPtr->trackMode) {
 				objectPtr->trackNumber = actorPtr->trackNumber;
 				objectPtr->positionInTrack = actorPtr->positionInTrack;
-				if (g_gameId != AITD1)
-					objectPtr->mark = actorPtr->MARK;
+				if (g_gameId != AITD1) objectPtr->mark = actorPtr->MARK;
 			}
 
 			objectPtr->x = actorPtr->roomX + actorPtr->stepX;
@@ -1633,6 +1633,7 @@ void DeleteObjet(int index)
 }
 
 // #region Point Rotation
+// #region Original
 bool pointRotateEnable = true;
 
 int pointRotateCosX;
@@ -1689,8 +1690,10 @@ void pointRotate(int x, int y, int z, int* destX, int* destY, int* destZ)
 	*destY = y;
 	*destZ = z;
 }
+// #endregion Original
 
-#ifdef FITD_DEBUGGER // De-globalized
+/* // #region De-globalized
+#ifdef FITD_DEBUGGER
 struct PointRotationData
 {
 	bool enabled = true;
@@ -1721,12 +1724,12 @@ struct PointRotationData
 	}
 
 	/// @brief Equivalent to `pointRotate`.
-	/// @param x 
-	/// @param y 
-	/// @param z 
-	/// @param destX 
-	/// @param destY 
-	/// @param destZ 
+	/// @param x
+	/// @param y
+	/// @param z
+	/// @param destX
+	/// @param destY
+	/// @param destZ
 	/// @details * Rotates around z, then y, then x (I believe)
 	void applyPointRotate(int x, int y, int z, int* destX, int* destY, int* destZ)
 	{
@@ -1756,13 +1759,13 @@ struct PointRotationData
 };
 
 /// @brief Equivalent to `pointRotate`.
-/// @param rotData 
-/// @param x 
-/// @param y 
-/// @param z 
-/// @param destX 
-/// @param destY 
-/// @param destZ 
+/// @param rotData
+/// @param x
+/// @param y
+/// @param z
+/// @param destX
+/// @param destY
+/// @param destZ
 /// @details * Rotates around z, then y, then x (I believe)
 void applyPointRotate(PointRotationData rotData, int x, int y, int z, int* destX, int* destY, int* destZ)
 {
@@ -1791,13 +1794,13 @@ void applyPointRotate(PointRotationData rotData, int x, int y, int z, int* destX
 }
 
 /// @brief Equivalent to `pointRotate`.
-/// @param rotData 
-/// @param x 
-/// @param y 
-/// @param z 
-/// @param destX 
-/// @param destY 
-/// @param destZ 
+/// @param rotData
+/// @param x
+/// @param y
+/// @param z
+/// @param destX
+/// @param destY
+/// @param destZ
 /// @details * Rotates around z, then y, then x (I believe)
 void applyPointRotate(PointRotationData* rotData, int x, int y, int z, int* destX, int* destY, int* destZ)
 {
@@ -1825,6 +1828,7 @@ void applyPointRotate(PointRotationData* rotData, int x, int y, int z, int* dest
 	*destZ = z;
 }
 #endif
+// #endregion De-globalized */
 // #endregion Point Rotation
 
 void zvRotSub(int X, int Y, int Z, int alpha, int beta, int gamma)
@@ -2328,11 +2332,10 @@ void setupCamera()
 	assert(startGameVar1 < roomDataTable[currentRoom].numCameraInRoom);
 
 	loadCamera(roomDataTable[currentRoom].cameraIdxTable[startGameVar1]);
-	if (g_gameId >= JACK) {
-		loadMask(roomDataTable[currentRoom].cameraIdxTable[startGameVar1]);
-	} else {
+	if (g_gameId == AITD1)
 		createAITD1Mask();
-	}
+	else
+		loadMask(roomDataTable[currentRoom].cameraIdxTable[startGameVar1]);
 	cameraBackgroundChanged = true;
 
 	cameraDataStruct* pCamera = cameraDataTable[currentCamera];
@@ -2340,8 +2343,7 @@ void setupCamera()
 	SetAngleCamera(pCamera->alpha, pCamera->beta, pCamera->gamma);
 
 #ifdef FITD_DEBUGGER
-	if (debuggerVar_topCamera)
-		SetAngleCamera(0x100, 0, 0);
+	if (debuggerVar_topCamera) SetAngleCamera(0x100, 0, 0);
 #endif
 
 	int x = (pCamera->x - roomDataTable[currentRoom].worldX) * 10;
@@ -2372,11 +2374,10 @@ void setupCamera()
 	// setupCameraSub3();
 	setupCameraSub4();
 	// setupCameraSub5();
-	if (flagInitView == 2) {
+	if (flagInitView == 2)
 		flagRedraw = 2;
-	} else if (flagRedraw != 2) {
+	else if (flagRedraw != 2)
 		flagRedraw = 1;
-	}
 
 	flagInitView = 0;
 	unfreezeTime();
@@ -2391,11 +2392,10 @@ s16 computeDistanceToPoint(int x1, int z1, int x2, int z2)
 	z1 -= z2;
 	if ((s16)z1 < 0) z1 = -(s16)z1;
 
-	if ((x1 + z1) > 0xFFFF) {
+	if ((x1 + z1) > 0xFFFF)
 		return(0x7D00);
-	} else {
+	else
 		return(x1 + z1);
-	}
 }
 
 /// @brief 
@@ -2415,8 +2415,7 @@ void InitRealValue(s16 beta, s16 newBeta, s16 param, interpolatedValue* rotatePt
 
 s16 updateActorRotation(interpolatedValue* rotatePtr)
 {
-	if (!rotatePtr->param)
-		return(rotatePtr->newAngle);
+	if (!rotatePtr->param) return(rotatePtr->newAngle);
 
 	int timeDif = timer - rotatePtr->timeOfRotate;
 
@@ -2473,9 +2472,11 @@ int findObjectInInventory(int objIdx)
 void DeleteInventoryObjet(int objIdx)
 {
 	int inventoryIdx = findObjectInInventory(objIdx);
-
 	if (inventoryIdx != -1) {
-		memmove(&inventoryTable[currentInventory][inventoryIdx], &inventoryTable[currentInventory][inventoryIdx + 1], (30 - inventoryIdx - 1) * 2);
+		memmove(
+			&inventoryTable[currentInventory][inventoryIdx],
+			&inventoryTable[currentInventory][inventoryIdx + 1],
+			(30 - inventoryIdx - 1) * 2);
 
 		numObjInInventoryTable[currentInventory]--;
 	}
@@ -2485,23 +2486,18 @@ void DeleteInventoryObjet(int objIdx)
 
 void deleteObject(int objIdx)
 {
-	tWorldObject* objPtr;
-	int actorIdx;
-	tObject* actorPtr;
-
-	objPtr = &ListWorldObjets[objIdx];
-	actorIdx = objPtr->objIndex;
+	tWorldObject* objPtr = &ListWorldObjets[objIdx];
+	int actorIdx = objPtr->objIndex;
 
 	if (actorIdx != -1) {
-		actorPtr = &objectTable[actorIdx];
+		tObject* actorPtr = &objectTable[actorIdx];
 
 		actorPtr->room = -1;
 		actorPtr->stage = -1;
 
 		// FlagGenereActiveList = 1;
 
-		if (actorPtr->_flags & AF_BOXIFY)
-			removeFromBGIncrust(actorIdx);
+		if (actorPtr->_flags & AF_BOXIFY) removeFromBGIncrust(actorIdx);
 	}
 
 	objPtr->room = -1;
@@ -3250,10 +3246,7 @@ void mainDraw(int flagFlip)
 	flagRedraw = 0;
 }
 
-void walkStep(int angle1, int angle2, int angle3)
-{
-	Rotate(angle3, angle1, angle2, &animMoveZ, &animMoveX);
-}
+void walkStep(int angle1, int angle2, int angle3) { Rotate(angle3, angle1, angle2, &animMoveZ, &animMoveX); }
 
 void addActorToBgInscrust(int actorIdx)
 {
@@ -3346,7 +3339,7 @@ int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr)
 }
 
 // #region cleanClip
-/// @brief Clears `logicalScreen` in the rectangle defined by clipTop, Bottom, Left, & Right.
+/// @brief Clears `logicalScreen` in the rectangle defined by `clipTop`, `clipBottom`, `clipLeft`, & `clipRight`.
 void cleanClip()
 {
 	for (int x = clipLeft; x < clipRight; x++) {
@@ -3361,7 +3354,7 @@ void cleanClip()
 /// @param maxX `clipRight`
 /// @param minY `clipTop`
 /// @param maxY `clipBottom`
-/// @param fillColor The raw color to fill the area with (NOT USING A PALETTE)
+/// @param fillColor The color to fill the area with (NOT USING A PALETTE)
 void cleanClip(int minX, int maxX, int minY, int maxY, char fillColor = 0)
 {
 	for (int x = minX; x < maxX; x++) {
@@ -3372,6 +3365,11 @@ void cleanClip(int minX, int maxX, int minY, int maxY, char fillColor = 0)
 }
 // #endregion cleanClip
 
+/// @brief Draws the pop-up screen when you run into an item.
+/// @param menuState The menu variant to draw; 0 to highlight `Leave` as selected, 1 to highlight `Take` as selected, 2 to show the full inventory menu.
+/// @param objectName The id of the object's name in the text entries.
+/// @param zoomFactor How zoomed in the camera is. This is how the object 
+/// appears to get bigger & smaller in the menu (rather than scaling the object).
 void drawFoundObject(int menuState, int objectName, int zoomFactor)
 {
 	cleanClip();
@@ -3385,19 +3383,19 @@ void drawFoundObject(int menuState, int objectName, int zoomFactor)
 	SimpleMessage(160, WindowY1 + 16, objectName, 1);
 
 	switch (menuState) {
-		case 0:
+		case 0: // Leave selected
 		{
 			SelectedMessage(130, WindowY2 - 16, 21, 1, 4);
 			SimpleMessage(190, WindowY2 - 16, 22, 4);
 			break;
 		}
-		case 1:
+		case 1: // Take selected
 		{
 			SimpleMessage(130, WindowY2 - 16, 21, 4);
 			SelectedMessage(190, WindowY2 - 16, 22, 1, 4);
 			break;
 		}
-		case 2:
+		case 2: // Full inventory
 		{
 			SelectedMessage(160, WindowY2 - 16, 10, 1, 4);
 			break;
@@ -3405,6 +3403,10 @@ void drawFoundObject(int menuState, int objectName, int zoomFactor)
 	}
 }
 
+/// @brief Add the given object to the inventory.
+/// @param objIdx 
+/// @note Doesn't perform upper bounds checking nor weight checking. Should be handled by `foundObject`.
+/// @remark If empty, places object in first position of `currentInventory`. Otherwise, slides all items except for index 0 down 1 slot.
 void take(int objIdx)
 {
 	tWorldObject* objPtr = &ListWorldObjets[objIdx];
@@ -3412,9 +3414,7 @@ void take(int objIdx)
 	if (numObjInInventoryTable[currentInventory] == 0) {
 		inventoryTable[currentInventory][0] = objIdx;
 	} else {
-		int i;
-
-		for (i = numObjInInventoryTable[currentInventory]; i > 0; i--) {
+		for (int i = numObjInInventoryTable[currentInventory]; i > 0; i--) {
 			inventoryTable[currentInventory][i + 1] = inventoryTable[currentInventory][i];
 		}
 
@@ -3427,9 +3427,7 @@ void take(int objIdx)
 
 	executeFoundLife(objIdx);
 
-	if (objPtr->objIndex != -1) {
-		DeleteObjet(objPtr->objIndex);
-	}
+	if (objPtr->objIndex != -1) DeleteObjet(objPtr->objIndex);
 
 	objPtr->flags2 &= 0xBFFF;
 	objPtr->flags2 |= 0x8000;
@@ -3559,18 +3557,14 @@ void foundObject(int objIdx, int param)
 		objPtr->trackNumber = timer;
 	}
 
-	while (key && Click) {
-		process_events();
-	}
+	while (key && Click) { process_events(); }
 
 	localJoyD = 0;
 	localKey = 0;
 	localClick = 0;
 
-	//  if(mainLoopVar1 != 0)
-	{
+	//if(mainLoopVar1 != 0)
 		//setupShaking(-600);
-	}
 
 	flagInitView = 1;
 }
@@ -3948,8 +3942,7 @@ void processActor2()
 						if (currentProcessedActorIdx == currentCameraTargetActor) {
 							needChangeRoom = 1;
 							newRoom = (short)pCurrentZone->parameter;
-							if (g_gameId > AITD1)
-								loadRoom(newRoom);
+							if (g_gameId > AITD1) loadRoom(newRoom);
 						} else {
 							actorTurnedToObj = 1;
 						}
@@ -3961,16 +3954,14 @@ void processActor2()
 					case 8:
 					{
 						assert(g_gameId != AITD1);
-						if (g_gameId != AITD1) {
+						if (g_gameId != AITD1)
 							currentProcessedActorPtr->hardMat = (short)pCurrentZone->parameter;
-						}
 						break;
 					}
 					case 9: // Scenar
 					{
-						if ((g_gameId == AITD1) || !flagFloorChange) {
+						if ((g_gameId == AITD1) || !flagFloorChange)
 							currentProcessedActorPtr->HARD_DEC = (short)pCurrentZone->parameter;
-						}
 						break;
 					}
 					case 10: // stage

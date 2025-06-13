@@ -60,17 +60,14 @@ int getNumberOfRoom()
 
 void loadRoom(int roomNumber)
 {
-	int i;
-	int cameraVar0;
-	int cameraVar1;
-	int cameraVar2;
-	int oldCameraIdx;
-	roomDefStruct* roomDataPtr;
-
 	freezeTime();
 
 	ASSERT(roomNumber >= 0);
 
+	int cameraVar0;
+	int cameraVar1;
+	int cameraVar2;
+	int oldCameraIdx;
 	if (currentCamera == -1) {
 		oldCameraIdx = -1;
 	} else {
@@ -81,6 +78,7 @@ void loadRoom(int roomNumber)
 		oldCameraIdx = roomDataTable[currentRoom].cameraIdxTable[currentCamera];
 	}
 
+	roomDefStruct* roomDataPtr;
 	if (g_gameId < AITD3) {
 		cameraPtr = (char*)getRoomData(roomNumber); // TODO: obsolete
 		roomDataPtr = getRoomData(roomNumber);
@@ -105,13 +103,15 @@ void loadRoom(int roomNumber)
 	roomZoneData = var_20;*/
 
 	ASSERT(numCameraInRoom < NUM_MAX_CAMERA_IN_ROOM);
+	if (numCameraInRoom >= NUM_MAX_CAMERA_IN_ROOM) FITD_throwFatal();
 
 	int newNumCamera = 0;
 	int newAbsCamera = -1;
 
+	int i;
 	// load the new camera table and try to keep the same camera (except if changing floor)
 	for (i = 0; i < numCameraInRoom; i++) {
-		unsigned int currentCameraIdx = roomDataTable[currentRoom].cameraIdxTable[i]; // indexes are between the roomDefStruct and the first zone data
+		uint currentCameraIdx = roomDataTable[currentRoom].cameraIdxTable[i]; // indexes are between the roomDefStruct and the first zone data
 
 		ASSERT(currentCameraIdx <= g_currentFloorNumCamera);
 
@@ -120,9 +120,8 @@ void loadRoom(int roomNumber)
 			newAbsCamera = currentCameraIdx;
 		}
 
-		if (g_gameId < AITD3) {
+		if (g_gameId < AITD3)
 			room_PtrCamera[i] = g_currentFloorCameraRawData + READ_LE_U32(g_currentFloorCameraRawData + currentCameraIdx * 4);
-		}
 
 		cameraDataTable[i] = &(g_currentFloorCameraData[currentCameraIdx]);
 

@@ -23,9 +23,8 @@ void throwObj(int animThrow, int frameThrow, int arg_4, int objToThrowIdx, int t
 		currentProcessedActorPtr->animActionParam = objToThrowIdx;
 		currentProcessedActorPtr->hitForce = throwForce;
 
-		if (!throwRotated) {
+		if (!throwRotated)
 			ListWorldObjets[objToThrowIdx].gamma -= 0x100;
-		}
 
 		ListWorldObjets[objToThrowIdx].flags2 |= 0x1000;
 	}
@@ -131,11 +130,8 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 	}
 
 	switch (mode) {
-		case 0: // evaporate
+		case 0: // Evaporate (Bubbles)
 		{
-			char* flowPtr;
-			int j;
-
 			actorZvPtr->ZVX1 -= X;
 			actorZvPtr->ZVX2 -= X;
 			actorZvPtr->ZVY1 -= Y;
@@ -145,7 +141,7 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 
 			currentActorPtr->FRAME = HQ_Malloc(HQ_Memory, 304);
 
-			flowPtr = HQ_PtrMalloc(HQ_Memory, currentActorPtr->FRAME);
+			char* flowPtr = HQ_PtrMalloc(HQ_Memory, currentActorPtr->FRAME);
 
 			if (!flowPtr) {
 				DebugPrintfLn(debugLevelEnum::DBO_L_WARN, "Failed to allocate memory for flow actor of type (%i), aborting.", mode);
@@ -160,7 +156,7 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 			*(s16*)flowPtr = 30; // num of points
 			flowPtr += 2;
 
-
+			int j;
 			for (j = 0; j < 30; j++) {
 				*(s16*)flowPtr = randRange(actorZvPtr->ZVX1, actorZvPtr->ZVX2); //X
 				flowPtr += 2;
@@ -229,15 +225,13 @@ void getHardClip()
 {
 	ZVStruct* zvPtr = &currentProcessedActorPtr->zv;
 	char* etageData = (char*)getRoomData(currentProcessedActorPtr->room);
-	s16 numEntry;
-	int i;
 
 	etageData += *(s16*)etageData;
 
-	numEntry = *(s16*)etageData;
+	s16 numEntry = *(s16*)etageData;
 	etageData += 2;
 
-	for (i = 0; i < numEntry; i++) {
+	for (int i = 0; i < numEntry; i++) {
 		ZVStruct zvCol;
 
 		zvCol.ZVX1 = READ_LE_S16(etageData + 0x00);
@@ -294,21 +288,14 @@ void animMove(int animStand, int animWalk, int animRun, int animStop, int animBa
 		if ((currentProcessedActorPtr->ANIM == animWalk) || (currentProcessedActorPtr->ANIM == animRun)) {
 			InitAnim(animStop, 0, animStand);
 		} else {
-			if (currentProcessedActorPtr->direction == 0) {
+			if (currentProcessedActorPtr->direction == 0)
 				InitAnim(animStand, 1, -1);
-			}
 			if (currentProcessedActorPtr->direction == 1) // left
-			{
 				InitAnim(animTurnLeft, 0, animStand);
-			}
 			if (currentProcessedActorPtr->direction == -1) // right
-			{
 				InitAnim(animTurnRight, 0, animStand);
-			}
 		}
 	}
-
-
 }
 
 void setStage(int newStage, int newRoomLocal, int X, int Y, int Z)

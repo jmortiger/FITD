@@ -116,6 +116,7 @@ int WindowY2;
 // #region Input Fields
 char JoyD = 0;
 char Click = 0;
+/// @details * 1 is Select in the object found menu
 char key = 0;
 char localKey;
 char localJoyD;
@@ -125,7 +126,7 @@ char localClick;
 // #region Text
 // #region Languages
 /// @brief The filenames of supported languages.
-/// @todo Earlier entries take priority over later entries; change order with system locale or something.
+/// @todo Earlier entries take priority over later entries; change order with system locale, command line flag, or something.
 const std::vector<std::string> languageNameTable =
 {
 	"ENGLISH",
@@ -231,7 +232,7 @@ s16 currentRoom;
 /// 2: Cam/Background image changed (update BG1)
 /// @todo Determine & describe specific difference with `flagRedraw`
 int flagInitView;
-/// @brief 
+/// @brief FlagRedraw is set to 0 most of the time, to 1 shortly during a camera switch, and to 2 after exiting the inventory/main menu, during the fade-in/fade-out.
 /// @details Not a true flag, but a mode switch.
 /// 0: No BG change
 /// 1: Static actors changed (update BG2)

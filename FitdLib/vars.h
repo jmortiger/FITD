@@ -264,7 +264,7 @@ struct tWorldObject
 	s16 animInfo;
 	s16 trackMode;
 	s16 trackNumber;
-	s16 positionInTrack;
+	s16 positionInTrack; // Also used for found item weight?
 
 	// AITD2
 	s16 mark;
