@@ -378,9 +378,15 @@ debugCategoryEnum categoryStack[10];
 
 debugLevelEnum defaultLevels = (debugLevelEnum)(debugLevelEnum::DBO_L_ERROR | debugLevelEnum::DBO_L_WARN | debugLevelEnum::DBO_L_INFO);
 debugOutputConfig outputConfig;
-// #define __DEBUG_parseDebugParam__ // Uncomment to turn on `parseDebugParam` output
+#define __DEBUG_parseDebugParam__ // Uncomment to turn on `parseDebugParam` output
 void parseDebugParam(int argc, char* argv[])
 {
+#ifdef __PRINT_DIR__
+	// printf("%s", std::filesystem::current_path().c_str());
+	char theCwd[256] = {};
+	getcwd(theCwd, 256);
+	printf("%s", theCwd);
+#endif
 #ifdef __DEBUG_parseDebugParam__
 	printf("Count: %i\n", argc);
 	printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum)); // printf("sizeof(debugCategoryEnum): %zi\n", sizeof(debugCategoryEnum::DBO_NONE));
@@ -701,10 +707,10 @@ char* catLabels[] = {
 	lifeLabel,
 };
 
-char* buildCategoryLabel(char* dest, debugCategoryEnum value) {
+char* buildCategoryLabel(char* dest, debugCategoryEnum value)
+{
 	uint currFlagIndex = 0;
-	while (value != 0)
-	{
+	while (value != 0) {
 		currFlagIndex = getBitFlagIndex(value, -1);
 		value ^= getBitFlagFromIndex<u8>(currFlagIndex);
 		strcat(dest, catLabels[currFlagIndex + 1]);
@@ -762,10 +768,10 @@ char* levLabels[] = {
 	errorLabel,
 };
 
-char* buildLevelLabel(char* dest, debugLevelEnum value) {
+char* buildLevelLabel(char* dest, debugLevelEnum value)
+{
 	uint currFlagIndex = 0;
-	while (value != 0)
-	{
+	while (value != 0) {
 		currFlagIndex = getBitFlagIndex(value, -1);
 		value ^= getBitFlagFromIndex<u8>(currFlagIndex);
 		strcat(dest, levLabels[currFlagIndex + 1]);

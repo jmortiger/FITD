@@ -83,6 +83,10 @@ typedef unsigned long int u64;
 #include <string.h>
 #ifdef WIN32
 #include <search.h>
+#else
+#ifdef __PRINT_DIR__
+#include <unistd.h> // NOTE: Might not work on Mac Os X (getcwd)
+#endif
 #endif
 
 #ifdef _WIN32
