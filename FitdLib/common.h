@@ -55,7 +55,7 @@ enum enumCVars
 	SAMPLE_CHOC = 9, // Hit SFX
 	SAMPLE_PLOUF = 10, // Splash SFX
 	REVERSE_OBJECT = 11, // revert lantern object id
-	KILLED_SORCERER = 12, // Pregtz dead
+	KILLED_SORCERER = 12, // Pregzt dead
 	LIGHT_OBJECT = 13,
 	FOG_FLAG = 14, // ashtray smoke flag
 	DEAD_PERSO = 15, // Game over flag

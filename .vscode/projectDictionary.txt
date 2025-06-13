@@ -31,6 +31,7 @@ MSVC
 OPENGL
 OPENGLES
 osystem
+Pregzt
 reimplementation
 roboto
 Samplerate
