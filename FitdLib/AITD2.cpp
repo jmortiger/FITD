@@ -163,7 +163,7 @@ void startAITD2()
 	startGame(8, 0, 0); // intro
 
 	while (1) {
-		switch (processStartupMenu()) {
+		switch (MainMenu()) {
 			case -1: break; // timeout
 			case 0: // new game
 			{

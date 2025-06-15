@@ -300,7 +300,7 @@ void startAITD1()
 
 	while (1) {
 #ifndef AITD_UE4
-		int startupMenuResult = processStartupMenu();
+		int startupMenuResult = MainMenu();
 #else
 		int startupMenuResult = 0;
 #endif

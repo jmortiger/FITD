@@ -22,7 +22,7 @@ void drawStartupMenu(int selectedEntry)
 	}
 }
 
-int processStartupMenu(void)
+int MainMenu(void)
 {
 	flushScreen();
 

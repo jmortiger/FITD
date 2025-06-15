@@ -40,7 +40,7 @@ void startAITD3()
 	//startGame(1,0,0);
 
 	while (1) {
-		switch (processStartupMenu()) {
+		switch (MainMenu()) {
 			case -1: // timeout
 			{
 				startGame(1, 0, 0);
