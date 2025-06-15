@@ -723,11 +723,14 @@ char* buildCategoryLabel(char* dest, debugCategoryEnum value)
 }
 // #endregion Categories
 
-char debugLabel[] = FormatDleLabel(DLE_C_DEBUG, DBG);	// 0b0000'0001
-char logLabel[] = FormatDleLabel(DLE_C_LOG, LOG);		// 0b0000'0010
-char infoLabel[] = FormatDleLabel(DLE_C_INFO, INFO);		// 0b0000'0100
-char warnLabel[] = FormatDleLabel(DLE_C_WARN, WARN);		// 0b0000'1000
-char errorLabel[] = FormatDleLabel(DLE_C_ERROR, ERROR);	// 0b0001'0000
+char debugLabel[] = FormatDleLabel(DLE_C_DEBUG, DBG);
+char log2Label[] = FormatDleLabel(DLE_C_LOG, LOG2);
+char logLabel[] = FormatDleLabel(DLE_C_LOG, LOG);
+char info2Label[] = FormatDleLabel(DLE_C_INFO, INFO2);
+char info1Label[] = FormatDleLabel(DLE_C_INFO, INFO1);
+char infoLabel[] = FormatDleLabel(DLE_C_INFO, INFO);
+char warnLabel[] = FormatDleLabel(DLE_C_WARN, WARN);
+char errorLabel[] = FormatDleLabel(DLE_C_ERROR, ERROR);
 char* debugLevelLabels[] = {
 	noneLabel,	// 0b0000'0000
 	debugLabel,	// 0b0000'0001
@@ -764,9 +767,17 @@ char* debugLevelLabels[] = {
 };
 
 char* levLabels[] = {
-	noneLabel,
+	// noneLabel,
+	// debugLabel,
+	// logLabel,
+	// infoLabel,
+	// warnLabel,
+	// errorLabel,
 	debugLabel,
+	log2Label,
 	logLabel,
+	info2Label,
+	info1Label,
 	infoLabel,
 	warnLabel,
 	errorLabel,
@@ -774,15 +785,18 @@ char* levLabels[] = {
 
 char* buildLevelLabel(char* dest, debugLevelEnum value)
 {
-	uint currFlagIndex = 0;
-	while (value != 0) {
-		currFlagIndex = getBitFlagIndex(value, -1);
-		value ^= getBitFlagFromIndex<u8>(currFlagIndex);
-		strcat(dest, levLabels[currFlagIndex + 1]);
-		if (value != 0) strcat(dest, " & ");
-	}
+	// uint currFlagIndex = 0;
+	// while (value != 0) {
+	// 	currFlagIndex = getBitFlagIndex(value, -1);
+	// 	value ^= getBitFlagFromIndex<u8>(currFlagIndex);
+	// 	strcat(dest, levLabels[currFlagIndex + 1]);
+	// 	if (value != 0) strcat(dest, " & ");
+	// }
+	// return dest;
+	strcat(dest, levLabels[getBitFlagIndex(value, 0)]);
 	return dest;
 }
+char* getLevelLabel(debugLevelEnum value) { return levLabels[getBitFlagIndex(value, -1)]; }
 // #endregion LABELS
 
 // #region Temp disable output
@@ -890,7 +904,8 @@ bool DebugPrintfLn(debugLevelEnum level, const char* format, ...)
 
 		char b2[128] = {};
 		// char bL[128] = {};
-		printf("[%s]\t[%s]: %s%s\n", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buff);
+		// printf("[%s]\t[%s]: %s%s\n", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buff);
+		printf("[%s]\t[%s]: %s%s\n", getLevelLabel(level)/* debugLevelLabels[level] */, buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buff);
 		return true;
 	}
 	return false;
@@ -914,7 +929,8 @@ void DebugPrintfLnCategory(debugLevelEnum level, debugCategoryEnum category, con
 
 		char b2[128] = {};
 		// char bL[128] = {};
-		printf("[%s]\t[%s]: %s%s\n", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, t)/* debugCategoryLabels[t] */, indent, buff);
+		// printf("[%s]\t[%s]: %s%s\n", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, t)/* debugCategoryLabels[t] */, indent, buff);
+		printf("[%s]\t[%s]: %s%s\n", getLevelLabel(level)/* debugLevelLabels[level] */, buildCategoryLabel(b2, t)/* debugCategoryLabels[t] */, indent, buff);
 	}
 }
 char buffer[256];
@@ -936,7 +952,8 @@ void DebugBPrintf(debugLevelEnum level, const char* format, ...)
 
 		char b2[128] = {};
 		// char bL[128] = {};
-		printf("[%s]\t[%s]: %s%s", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buffer);
+		// printf("[%s]\t[%s]: %s%s", /* buildLevelLabel(bL, level) */debugLevelLabels[level], buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buffer);
+		printf("[%s]\t[%s]: %s%s", getLevelLabel(level)/* debugLevelLabels[level] */, buildCategoryLabel(b2, resultantCategory)/* debugCategoryLabels[resultantCategory] */, indent, buffer);
 	}
 }
 void DebugBFlushLn()

@@ -46,12 +46,22 @@ ENUM_CLASS_FLAGS(debugCategoryEnum)
 enum debugLevelEnum : unsigned char {
 	DBO_L_NONE	= 0b0000'0000,
 	DBO_L_DEBUG	= 0b0000'0001,
-	DBO_L_LOG	= 0b0000'0010,
-	DBO_L_INFO	= 0b0000'0100,
-	DBO_L_WARN	= 0b0000'1000,
-	DBO_L_ERROR	= 0b0001'0000,
+	DBO_L_LOG2	= 0b0000'0010,
+	DBO_L_LOG	= 0b0000'0100,
+	DBO_L_INFO2	= 0b0000'1000,
+	DBO_L_INFO1	= 0b0001'0000,
+	DBO_L_INFO	= 0b0010'0000,
+	DBO_L_WARN	= 0b0100'0000,
+	DBO_L_ERROR	= 0b1000'0000,
+	// DBO_L_NONE	= 0b0000'0000,
+	// DBO_L_DEBUG	= 0b0000'0001,
+	// DBO_L_LOG	= 0b0000'0010,
+	// DBO_L_INFO	= 0b0000'0100,
+	// DBO_L_WARN	= 0b0000'1000,
+	// DBO_L_ERROR	= 0b0001'0000,
 };
-#define DBO_L_ALL 0b0001'1111
+#define DBO_L_ALL 0b1111'1111
+// #define DBO_L_ALL 0b0001'1111
 
 typedef enum debugLevelEnum debugLevelEnum;
 ENUM_CLASS_FLAGS(debugLevelEnum)
@@ -144,7 +154,7 @@ bool DebugBeginSection(debugCategoryEnum category); // bool DebugBeginSection(de
 bool DebugEndSection();
 bool DebugPrintfLn(debugLevelEnum level, const char* format, ...);
 void DebugPrintfLnCategory(debugLevelEnum level, debugCategoryEnum category, const char* format, ...);
-/// @brief For usage w/ `PF_LE_S8` & such
+/// @brief Automates adding corrected & uncorrected endian representations to the output; For usage w/ `PF_LE_S8` & such
 /// @tparam T 
 /// @param level 
 /// @param typeSpecifier 
