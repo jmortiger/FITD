@@ -263,24 +263,19 @@ void getHardClip()
 
 void animMove(int animStand, int animWalk, int animRun, int animStop, int animBackward, int animTurnRight, int animTurnLeft)
 {
-	if (currentProcessedActorPtr->speed == 5) {
+	if (currentProcessedActorPtr->speed == RUNNING_SPEED)
 		InitAnim(animRun, 1, -1);
-	}
 
-	if (currentProcessedActorPtr->speed == 4) {
+	if (currentProcessedActorPtr->speed == WALKING_SPEED)
 		InitAnim(animWalk, 1, -1);
-	}
 
-	if (currentProcessedActorPtr->speed == -1) // backward
-	{
-		if (currentProcessedActorPtr->ANIM == animWalk) {
+	if (currentProcessedActorPtr->speed == RETREAT_SPEED) {
+		if (currentProcessedActorPtr->ANIM == animWalk)
 			InitAnim(animStand, 0, animBackward);
-		} else
-			if (currentProcessedActorPtr->ANIM == animRun) {
-				InitAnim(animStop, 0, animStand);
-			} else {
-				InitAnim(animBackward, 1, -1); // walk backward
-			}
+		else if (currentProcessedActorPtr->ANIM == animRun)
+			InitAnim(animStop, 0, animStand);
+		else
+			InitAnim(animBackward, 1, -1); // walk backward
 	}
 	if (currentProcessedActorPtr->speed == 0) {
 		if ((currentProcessedActorPtr->ANIM == animWalk) || (currentProcessedActorPtr->ANIM == animRun)) {
@@ -298,10 +293,6 @@ void animMove(int animStand, int animWalk, int animRun, int animStop, int animBa
 
 void setStage(int newStage, int newRoomLocal, int X, int Y, int Z)
 {
-	int animX;
-	int animY;
-	int animZ;
-
 	currentProcessedActorPtr->stage = newStage;
 	currentProcessedActorPtr->room = newRoomLocal;
 

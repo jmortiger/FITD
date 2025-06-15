@@ -121,12 +121,13 @@ char* getRoomLink(unsigned int room1, unsigned int room2)
 
 #define DISTANCE_TO_POINT_THRESHOLD 400
 
-/// @brief Speed when player is running forwards
-#define RUNNING_SPEED 5
-/// @brief Speed when player is walking forwards
-#define WALKING_SPEED 4
-/// @brief Speed when player is walking backwards
-#define RETREAT_SPEED -1
+// /// @brief Speed when player is running forwards
+// #define RUNNING_SPEED 5
+// /// @brief Speed when player is walking forwards
+// #define WALKING_SPEED 4
+// /// @brief Speed when player is walking backwards
+// #define RETREAT_SPEED -1
+
 /// @brief Time between presses to trigger running
 #define TIME_BETWEEN_PRESSES 10
 
@@ -1061,8 +1062,8 @@ void processTrack2(void)
 
 // #region Undef constants
 #undef DISTANCE_TO_POINT_THRESHOLD
-#undef RUNNING_SPEED
-#undef WALKING_SPEED
-#undef RETREAT_SPEED
+// #undef RUNNING_SPEED
+// #undef WALKING_SPEED
+// #undef RETREAT_SPEED
 #undef TIME_BETWEEN_PRESSES
 // #endregion Undef constants
