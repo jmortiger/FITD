@@ -222,6 +222,7 @@ void osystem_endOfFrame()
 /// @param name 
 /// @return 
 /// @todo convert to bool
+/// @todo Move to pak
 int fileExists(const char* name)
 {
 	FILE* fHandle = fopen(name, "rb");

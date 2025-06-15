@@ -330,7 +330,8 @@ bool masterEnableSound = true;
 
 /// @brief Finds the index of the most-significant bit flag.
 /// @param flag The flag to find the index of.
-/// @return -1 if more than 1 bit is set
+/// @param startingAt The offset added to the output.
+/// @return 
 int getBitFlagIndex(unsigned char flag, int startingAt = 0)
 {
 	int iter = startingAt;
@@ -501,6 +502,8 @@ void parseDebugParam(int argc, char* argv[])
 }
 
 // #region LABELS
+
+// #region Categories
 char noneLabel[] = "NONE";												// 0b0000'0000
 char pakLabel[] = "PAK";												// 0b0000'0001
 char floorLabel[] = "FLOOR";												// 0b0000'0010
@@ -718,6 +721,7 @@ char* buildCategoryLabel(char* dest, debugCategoryEnum value)
 	}
 	return dest;
 }
+// #endregion Categories
 
 char debugLabel[] = FormatDleLabel(DLE_C_DEBUG, DBG);	// 0b0000'0001
 char logLabel[] = FormatDleLabel(DLE_C_LOG, LOG);		// 0b0000'0010

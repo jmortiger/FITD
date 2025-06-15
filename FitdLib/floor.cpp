@@ -9,12 +9,10 @@ std::vector<cameraDataStruct> g_currentFloorCameraData;
 
 /// @brief Loads all the data for the specified floor into the appropiate global variables.
 /// @param floorNumber 
-///
-/// 
 void loadFloor(int floorNumber)
 {
-	DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "loadFloor(%i)", floorNumber);
-	DebugBeginSection(debugCategoryEnum::DBO_FLOOR);
+	DebugPrintfLn(DBO_L_INFO, "loadFloor(%i)", floorNumber);
+	DebugBeginSection(DBO_FLOOR);
 
 	int i;
 	int expectedNumberOfRoom;
@@ -54,6 +52,7 @@ void loadFloor(int floorNumber)
 
 	//////////////////////////////////
 
+	// Free prior room data table
 	if (roomDataTable) {
 		DebugPrintfLn(debugLevelEnum::DBO_L_DEBUG, "Freeing prior room data table from address %lx...", roomDataTable);
 		free(roomDataTable);
@@ -72,11 +71,10 @@ void loadFloor(int floorNumber)
 		u8* sceZoneData;
 		roomDataStruct* currentRoomDataPtr;
 
-		if (roomDataTable) {
+		if (roomDataTable)
 			roomDataTable = (roomDataStruct*)realloc(roomDataTable, sizeof(roomDataStruct) * (i + 1));
-		} else {
+		else
 			roomDataTable = (roomDataStruct*)malloc(sizeof(roomDataStruct));
-		}
 
 		if (g_gameId >= AITD3) {
 			char buffer[256];
@@ -108,20 +106,26 @@ void loadFloor(int floorNumber)
 		currentRoomDataPtr->worldY = READ_LE_S16(roomData + 6);
 		currentRoomDataPtr->worldZ = READ_LE_S16(roomData + 8);
 
-		// DebugPrintfLnWithRaw<u16>(debugLevelEnum::DBO_L_DEBUG, PF_LE_U16(roomData + 0xA), "numCameraInRoom: ");
 		DebugBPrintf(DBO_L_DEBUG, "numCameraInRoom: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xA)); DebugBFlushLn();
 		currentRoomDataPtr->numCameraInRoom = READ_LE_U16(roomData + 0xA);
 
 		currentRoomDataPtr->cameraIdxTable = (u16*)malloc(currentRoomDataPtr->numCameraInRoom * sizeof(u16));
 
-		// TODO: Add Debug Lines
+		DebugPrintfLn(DBO_L_LOG, "cameraIdxTable (length: %u)", currentRoomDataPtr->numCameraInRoom);
+		DebugBeginSection(DBO_FLOOR);
 		for (j = 0; j < currentRoomDataPtr->numCameraInRoom; j++) {
+			DebugBPrintf(DBO_L_DEBUG, "%i: ", j); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xC + 2 * j)); DebugBFlushLn();
 			currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData + 0xC + 2 * j);
 		}
+		DebugEndSection();
 
-		// hard col read
+		// IDEA: hard col read & sce zone read are almost identical; combine?
 
+		DebugDisableOutput();
+		// #region hard col read
+		DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", READ_LE_U16(roomData));
 		hardColData = roomData + READ_LE_U16(roomData);
+		DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(hardColData));
 		currentRoomDataPtr->numHardCol = READ_LE_U16(hardColData);
 		hardColData += 2;
 
@@ -188,11 +192,7 @@ void loadFloor(int floorNumber)
 	if (g_gameId >= AITD3) {
 		char buffer[256];
 
-		if (g_gameId == AITD3) {
-			sprintf(buffer, "CAM%02d", floorNumber);
-		} else {
-			sprintf(buffer, "CAMSAL%02d", floorNumber);
-		}
+		sprintf(buffer, g_gameId == AITD3 ? "CAM%02d" : "CAMSAL%02d", floorNumber);
 
 		expectedNumberOfCamera = PAK_getNumFiles(buffer);
 	} else {
@@ -204,22 +204,22 @@ void loadFloor(int floorNumber)
 
 		for (int i = 0; i < maxExpectedNumberOfCamera; i++) {
 			int offset = READ_LE_U32(g_currentFloorCameraRawData + i * 4);
-			if (offset > minOffset) {
-				minOffset = offset;
-				expectedNumberOfCamera++;
-			} else {
-				break;
-			}
+			if (offset <= minOffset) break;
+			minOffset = offset;
+			expectedNumberOfCamera++;
 		}
 	}
 
 	g_currentFloorCameraData.clear();
 	g_currentFloorCameraData.resize(expectedNumberOfCamera);
 
+	DebugPrintfLn(DBO_L_LOG, "Loading the %i expected cameras...", expectedNumberOfCamera);
 	for (i = 0; i < expectedNumberOfCamera; i++) {
+		DebugPrintfLn(DBO_L_DEBUG, "Camera %i:", i);
+		DebugBeginSection(DBO_FLOOR);
 		int k;
-		unsigned int offset;
-		unsigned char* currentCameraData;
+		uint offset;
+		u8* currentCameraData;
 
 		if (g_gameId >= AITD3) {
 			char buffer[256];
@@ -373,6 +373,7 @@ void loadFloor(int floorNumber)
 		} else {
 			break;
 		}
+		DebugEndSection();
 	}
 
 	g_currentFloorNumCamera = i - 1;

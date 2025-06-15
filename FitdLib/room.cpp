@@ -30,9 +30,6 @@ roomDefStruct* getRoomData(int roomNumber)
  **/
 int getNumberOfRoom()
 {
-	int i;
-	int j = 0;
-
 	if (g_gameId >= AITD3) {
 		char buffer[256];
 
@@ -44,18 +41,17 @@ int getNumberOfRoom()
 
 		return PAK_getNumFiles(buffer);
 	} else {
-
 		int numMax = (((READ_LE_U32(g_currentFloorRoomRawData)) / 4));
+		int j = 0;
 
-		for (i = 0; i < numMax; i++) {
-			if (g_currentFloorRoomRawDataSize >= READ_LE_U32(g_currentFloorRoomRawData + i * 4)) {
+		for (int i = 0; i < numMax; i++) {
+			if (g_currentFloorRoomRawDataSize >= READ_LE_U32(g_currentFloorRoomRawData + i * 4))
 				j++;
-			} else {
+			else
 				return j;
-			}
 		}
+		return j;
 	}
-	return j;
 }
 
 void loadRoom(int roomNumber)

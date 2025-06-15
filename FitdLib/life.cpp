@@ -79,7 +79,6 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 	// TODO: Implement remaining types.
 	s16 localSpecialTable[4];
 	tObject* currentActorPtr;
-	int i;
 	ZVStruct* actorZvPtr;
 
 	memcpy(localSpecialTable, specialTable, 8);
@@ -87,10 +86,9 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 	currentActorPtr = objectTable;
 
 	// Count the number of active actors
-	for (i = 0; i < NUM_MAX_OBJECT; i++) {
-		if (currentActorPtr->indexInWorld == -1)
-			break;
-		currentActorPtr++;
+	int i;
+	for (i = 0; i < NUM_MAX_OBJECT; i++, currentActorPtr++) {
+		if (currentActorPtr->indexInWorld == -1) break;
 	}
 
 	// If there's no free actor entry, abort
@@ -307,13 +305,12 @@ void setStage(int newStage, int newRoomLocal, int X, int Y, int Z)
 	currentProcessedActorPtr->stage = newStage;
 	currentProcessedActorPtr->room = newRoomLocal;
 
-	if (g_gameId != AITD1) {
+	if (g_gameId != AITD1)
 		currentProcessedActorPtr->hardMat = -1;
-	}
 
-	animX = currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX;
-	animY = currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY;
-	animZ = currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ;
+	int animX = currentProcessedActorPtr->roomX + currentProcessedActorPtr->stepX;
+	int animY = currentProcessedActorPtr->roomY + currentProcessedActorPtr->stepY;
+	int animZ = currentProcessedActorPtr->roomZ + currentProcessedActorPtr->stepZ;
 
 	currentProcessedActorPtr->zv.ZVX1 += X - animX;
 	currentProcessedActorPtr->zv.ZVX2 += X - animX;
@@ -341,11 +338,9 @@ void setStage(int newStage, int newRoomLocal, int X, int Y, int Z)
 			changeFloor = 1;
 			newFloor = newStage;
 			newRoom = newRoomLocal;
-		} else {
-			if (currentRoom != newRoomLocal) {
-				needChangeRoom = 1;
-				newRoom = newRoomLocal;
-			}
+		} else if (currentRoom != newRoomLocal) {
+			needChangeRoom = 1;
+			newRoom = newRoomLocal;
 		}
 	} else {
 		if (currentRoom != newRoomLocal) {
@@ -354,15 +349,12 @@ void setStage(int newStage, int newRoomLocal, int X, int Y, int Z)
 			currentProcessedActorPtr->worldZ += (s16)((roomDataTable[currentRoom].worldZ - roomDataTable[newRoomLocal].worldZ) * 10);
 		}
 
-		//    FlagGenereActiveList = 1;
+		//FlagGenereActiveList = 1;
 	}
 }
 
 void setupRealZv(ZVStruct* zvPtr)
 {
-	int i;
-	s16* ptr = pointBuffer;
-
 	zvPtr->ZVX1 = 32000;
 	zvPtr->ZVY1 = 32000;
 	zvPtr->ZVZ1 = 32000;
@@ -370,44 +362,33 @@ void setupRealZv(ZVStruct* zvPtr)
 	zvPtr->ZVY2 = -32000;
 	zvPtr->ZVZ2 = -32000;
 
-	for (i = 0; i < numOfPoints; i++) {
-		if (zvPtr->ZVX1 > (*ptr)) {
+	s16* ptr = pointBuffer;
+	for (int i = 0; i < numOfPoints; i++) {
+		if (zvPtr->ZVX1 > (*ptr))
 			zvPtr->ZVX1 = *(ptr);
-		} else {
-			if (zvPtr->ZVX2 < (*ptr)) {
-				zvPtr->ZVX2 = *(ptr);
-			}
-		}
+		else if (zvPtr->ZVX2 < (*ptr))
+			zvPtr->ZVX2 = *(ptr);
 		ptr++;
 
-		if (zvPtr->ZVY1 > (*ptr)) {
+		if (zvPtr->ZVY1 > (*ptr))
 			zvPtr->ZVY1 = *(ptr);
-		} else {
-			if (zvPtr->ZVY2 < (*ptr)) {
-				zvPtr->ZVY2 = *(ptr);
-			}
-		}
+		else if (zvPtr->ZVY2 < (*ptr))
+			zvPtr->ZVY2 = *(ptr);
 		ptr++;
 
-		if (zvPtr->ZVZ1 > (*ptr)) {
+		if (zvPtr->ZVZ1 > (*ptr))
 			zvPtr->ZVZ1 = *(ptr);
-		} else {
-			if (zvPtr->ZVZ2 < (*ptr)) {
-				zvPtr->ZVZ2 = *(ptr);
-			}
-		}
+		else if (zvPtr->ZVZ2 < (*ptr))
+			zvPtr->ZVZ2 = *(ptr);
 		ptr++;
-
 	}
 }
 
 void doRealZv(tObject* actorPtr)
 {
-	ZVStruct* zvPtr;
-
 	computeScreenBox(0, 0, 0, actorPtr->alpha, actorPtr->beta, actorPtr->gamma, HQR_Get(listBody, actorPtr->bodyNum));
 
-	zvPtr = &actorPtr->zv;
+	ZVStruct* zvPtr = &actorPtr->zv;
 
 	setupRealZv(zvPtr);
 
@@ -424,14 +405,11 @@ char currentDebugLifeLine[1024 * 1024];
 
 void appendFormatted(const char* format, ...)
 {
-	if (numLoggedLifeScripts <= 0) {
+	if (numLoggedLifeScripts <= 0)
 		goto doContinue;
-	}
-	for (int i = 0; i < numLoggedLifeScripts; i++)
-	{
-		if (loggedLifeScripts[i] == currentLifeNum) {
+	for (int i = 0; i < numLoggedLifeScripts; i++) {
+		if (loggedLifeScripts[i] == currentLifeNum)
 			goto doContinue;
-		}
 	}
 	return;
 doContinue:
@@ -1867,60 +1845,51 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					if (g_gameId > AITD1) {
 						FadeOutPhys(0x10, 0);
-						unsigned char lpalette[0x300];
-						copyPalette((unsigned char*)aux + _SCREEN_INTERNAL_PIXELS, lpalette);
-						convertPaletteIfRequired(lpalette);
-						copyPalette(lpalette, currentGamePalette);
-						setPalette(lpalette);
+						u8 lPalette[BYTES_IN_PALETTE];
+						copyPalette((u8*)aux + _SCREEN_INTERNAL_PIXELS, lPalette);
+						convertPaletteIfRequired(lPalette);
+						copyPalette(lPalette, currentGamePalette);
+						setPalette(lPalette);
 					}
 
 					FastCopyScreen(aux, frontBuffer);
-					osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+					osystem_CopyBlockPhys((u8*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 					osystem_drawBackground();
 
-					unsigned int chrono;
+					uint chrono;
 					startChrono(&chrono);
 
 					playSound(sampleId);
 
-
 					//soundFunc(0);
 
 					do {
-						unsigned int time;
 						process_events();
-
-						time = evalChrono(&chrono);
-
-						if (time > (unsigned int)delay)
-							break;
-					} while (!key && !Click);
+					} while (
+						!key && !Click &&
+						(uint)evalChrono(&chrono) <= (uint)delay);
 
 					unfreezeTime();
 
 					flagInitView = 1;
 
-					if (g_gameId > AITD1) {
+					if (g_gameId > AITD1)
 						FadeOutPhys(0x10, 0);
-					}
 					break;
 				}
 				case LM_PLAY_SEQUENCE: // sequence
 				{
 					appendFormatted("LM_PLAY_SEQUENCE ");
-					u16 sequenceIdx;
-					u16 fadeEntry;
-					u16 fadeOut;
 
 					freezeTime();
 
-					sequenceIdx = *(u16*)(currentLifePtr);
+					u16 sequenceIdx = *(u16*)(currentLifePtr);
 					currentLifePtr += 2;
 
-					fadeEntry = *(u16*)(currentLifePtr);
+					u16 fadeEntry = *(u16*)(currentLifePtr);
 					currentLifePtr += 2;
 
-					fadeOut = *(u16*)(currentLifePtr);
+					u16 fadeOut = *(u16*)(currentLifePtr);
 					currentLifePtr += 2;
 
 					playSequence(sequenceIdx, fadeEntry, fadeOut);
@@ -1932,15 +1901,12 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_DEF_SEQUENCE_SAMPLE:
 				{
 					appendFormatted("LM_DEF_SEQUENCE_SAMPLE ");
-					u16 numParams;
-					int i;
-
-					numParams = *(s16*)(currentLifePtr);
+					u16 numParams = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
 
 					ASSERT(numParams <= NUM_MAX_SEQUENCE_PARAM);
 
-					for (i = 0; i < numParams; i++) {
+					for (int i = 0; i < numParams; i++) {
 						sequenceParams[i].frame = READ_LE_U16(currentLifePtr);
 						currentLifePtr += 2;
 						sequenceParams[i].sample = READ_LE_U16(currentLifePtr);
@@ -1968,7 +1934,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					break;
 				}
 				case LM_SET_INVENTORY:
-				{
+				{// TODO: LM_SET_INVENTORY?
 					appendFormatted("LM_SET_INVENTORY ");
 					//int inventoryIndex = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
@@ -2022,7 +1988,7 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_END_SEQUENCE: // ENDING
 				{
 					appendFormatted("LM_END_SEQUENCE ");
-					// TODO!
+					// TODO: ENDING
 					printf("LM_END_SEQUENCE\n");
 					break;
 				}
@@ -2216,16 +2182,14 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_MULTI_CASE: // MULTI_CASE
 				{
 					appendFormatted("LM_MULTI_CASE ");
-					int i;
 					lifeTempVar1 = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
 
 					lifeTempVar2 = 0;
 
-					for (i = 0; i < lifeTempVar1; i++) {
-						if (*(s16*)(currentLifePtr) == switchVal) {
+					for (int i = 0; i < lifeTempVar1; i++) {
+						if (*(s16*)(currentLifePtr) == switchVal)
 							lifeTempVar2 = 1;
-						}
 						currentLifePtr += 2;
 					}
 
@@ -2309,9 +2273,8 @@ void processLife(int lifeNum, bool callFoundLife)
 				default:
 				{
 #ifdef DEBUG
-					if (strlen(currentDebugLifeLine)) {
+					if (strlen(currentDebugLifeLine))
 						printf("%s\n", currentDebugLifeLine);
-					}
 #endif
 					DebugPrintfLn(debugLevelEnum::DBO_L_ERROR, "Unknown opcode %X (%i) in processLife\n", currentOpcode & 0x7FFF, opcodeLocated);
 					FITD_throwFatal(); // assert(0);
@@ -2320,9 +2283,8 @@ void processLife(int lifeNum, bool callFoundLife)
 		}
 
 #ifdef DEBUG
-		if (strlen(currentDebugLifeLine)) {
+		if (strlen(currentDebugLifeLine))
 			printf("%s\n", currentDebugLifeLine);
-		}
 #endif
 
 		if (var_6 != -1) {

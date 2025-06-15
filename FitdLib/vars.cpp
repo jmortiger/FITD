@@ -220,7 +220,11 @@ s16 currentCamera;
 s16 g_currentFloor;
 int needChangeRoom;
 
+/// @brief Seemingly redundant?
+/// @todo Investigate refactoring
 char* cameraPtr;
+/// @brief Unused (correctly updated in `room/loadRoom`, never accessed).
+/// @todo Remove?
 roomDefStruct* pCurrentRoomData;
 
 s16 currentRoom;

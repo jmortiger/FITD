@@ -5,10 +5,8 @@
 void convertPaletteIfRequired(unsigned char* lPalette)
 {
 	if (g_gameId >= JACK && g_gameId < AITD3) {
-		int i;
 		unsigned char* ptr2 = lPalette;
-		for (i = 0; i < 256; i++) {
-			int j;
+		for (int i = 0, j; i < 256; i++) {
 			for (j = 0; j < 3; j++) {
 				unsigned int component = *(ptr2);
 				component *= 255;
@@ -115,16 +113,15 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 	int frames = 0;
 
 	int var_4 = 1;
-	int quitPlayback = 0;
+	bool quitPlayback = false;
 	int nextFrame = 1;
-	u8 localPalette[0x300];//BYTES_IN_PALETTE
+	u8 localPalette[BYTES_IN_PALETTE];
 
 	char buffer[256];
-	if (g_gameId == AITD2) {
+	if (g_gameId == AITD2)
 		strcpy(buffer, sequenceListAITD2[sequenceIdx]);
-	} else if (g_gameId == AITD3) {
+	else if (g_gameId == AITD3)
 		sprintf(buffer, "AN%d", sequenceIdx);
-	}
 
 	int numMaxFrames = PAK_getNumFiles(buffer);
 
@@ -138,13 +135,12 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 			timer = timeGlobal;
 
 			if (currentFrameId >= numMaxFrames) {
-				quitPlayback = 1;
+				quitPlayback = true;
 				break;
 			}
 
-			if (!loadPakTo(buffer, currentFrameId, logicalScreen)) {
+			if (!loadPakTo(buffer, currentFrameId, logicalScreen))
 				fatalError(0, buffer); // TODO: Improve error message
-			}
 
 			// If it's the first frame...
 			if (!currentFrameId) {
@@ -173,17 +169,15 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 				u32 frameSize = READ_LE_U32(logicalScreen);
 
 				// key frame
-				if (frameSize < 64000) {
+				if (frameSize < 64000)
 					unpackSequenceFrame((unsigned char*)logicalScreen + 4, (unsigned char*)aux);
-				} else { // delta frame
+				else // delta frame
 					FastCopyScreen(logicalScreen, aux);
-				}
 			}
 
 			for (sequenceParamIdx = 0; sequenceParamIdx < numSequenceParam; sequenceParamIdx++) {
-				if (sequenceParams[sequenceParamIdx].frame == currentFrameId) {
+				if (sequenceParams[sequenceParamIdx].frame == currentFrameId)
 					playSound(sequenceParams[sequenceParamIdx].sample);
-				}
 			}
 
 			// TODO: here, timing management
@@ -196,13 +190,11 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 			currentFrameId++;
 
 			// display the frame 5 times (original seems to wait 5 sync)
-			for (int i = 0; i < 5; i++) {
-				process_events();
-			}
+			for (int i = 0; i < 5; i++) { process_events(); }
 
 			if (key) {
 				//stopSample();
-				quitPlayback = 1;
+				quitPlayback = true;
 				break;
 			}
 
@@ -210,9 +202,7 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 
 		fadeOutVar--;
 
-		if (fadeOutVar == 0) {
-			quitPlayback = 1;
-		}
+		if (fadeOutVar == 0) quitPlayback = true;
 	}
 
 	flagInitView = 2;

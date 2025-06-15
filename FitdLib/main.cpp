@@ -871,8 +871,10 @@ void OpenProgram(void)
 			break;
 		}
 		case TIMEGATE:
+		{
 			PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
 			break;
+		}
 		default: FITD_throwFatal(); // TODO: Improve error message
 	}
 
@@ -894,6 +896,7 @@ void OpenProgram(void)
 			PtrCadre = CheckLoadMallocPak("ITD_RESS", RESS1_CADRE_SPF);
 			break;
 		}
+		case TIMEGATE: break; // TODO: Should Time Gate have something here?
 	}
 
 	PtrPrioritySample = loadFromItd("PRIORITY.ITD");
@@ -901,9 +904,7 @@ void OpenProgram(void)
 	// read cvars definitions
 	{
 		fHandle = Open("DEFINES.ITD", "rb");
-		if (!fHandle) {
-			fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
-		}
+		if (!fHandle) fatalError(0, "DEFINES.ITD"); // TODO: Improve error message
 		for (int i = 0; i < CVars.size(); i++) {
 			s16 cvarValue = 0;
 			fread(&cvarValue, 2, 1, fHandle);
@@ -975,12 +976,11 @@ void fillBox(int x1, int y1, int x2, int y2, char color) // fast recode. No RE
 
 void loadPalette(void)
 {
-	unsigned char localPalette[BYTES_IN_PALETTE];
+	u8 localPalette[BYTES_IN_PALETTE];
 
-	if (g_gameId != AITD2) {
-		loadPakTo("ITD_RESS", 3, aux);
-	} /* else loadPakToPtr("ITD_RESS", 59, aux); */
-	copyPalette((unsigned char*)aux, currentGamePalette);
+	if (g_gameId != AITD2) loadPakTo("ITD_RESS", 3, aux);
+	//else loadPakToPtr("ITD_RESS", 59, aux);
+	copyPalette((u8*)aux, currentGamePalette);
 
 	copyPalette(currentGamePalette, localPalette);
 	// fadeInSub1(localPalette);
@@ -1633,6 +1633,7 @@ void DeleteObjet(int index)
 }
 
 // #region Point Rotation
+
 // #region Original
 bool pointRotateEnable = true;
 
@@ -1692,8 +1693,8 @@ void pointRotate(int x, int y, int z, int* destX, int* destY, int* destZ)
 }
 // #endregion Original
 
-/* // #region De-globalized
-#ifdef FITD_DEBUGGER
+// #region De-globalized
+/* #ifdef FITD_DEBUGGER
 struct PointRotationData
 {
 	bool enabled = true;
@@ -1706,9 +1707,9 @@ struct PointRotationData
 	int sinZ;
 
 	/// @brief Equivalent to `setupPointRotate`.
-	/// @param alpha 
-	/// @param beta 
-	/// @param gamma 
+	/// @param alpha
+	/// @param beta
+	/// @param gamma
 	void init(int alpha, int beta, int gamma)
 	{
 		enabled = true;
@@ -1827,8 +1828,9 @@ void applyPointRotate(PointRotationData* rotData, int x, int y, int z, int* dest
 	*destY = y;
 	*destZ = z;
 }
-#endif
-// #endregion De-globalized */
+#endif */
+// #endregion De-globalized
+
 // #endregion Point Rotation
 
 void zvRotSub(int X, int Y, int Z, int alpha, int beta, int gamma)
@@ -2351,12 +2353,10 @@ void setupCamera()
 	int z = (roomDataTable[currentRoom].worldZ - pCamera->z) * 10;
 
 #ifdef FITD_DEBUGGER
-	if (debuggerVar_topCamera) {
-		if (currentCameraTargetActor != -1) {
-			x = objectTable[currentCameraTargetActor].worldX + objectTable[currentCameraTargetActor].stepX;
-			y = debufferVar_topCameraZoom;
-			z = objectTable[currentCameraTargetActor].worldZ + objectTable[currentCameraTargetActor].stepZ;
-		}
+	if (debuggerVar_topCamera && currentCameraTargetActor != -1) {
+		x = objectTable[currentCameraTargetActor].worldX + objectTable[currentCameraTargetActor].stepX;
+		y = debufferVar_topCameraZoom;
+		z = objectTable[currentCameraTargetActor].worldZ + objectTable[currentCameraTargetActor].stepZ;
 	}
 #endif
 	SetPosCamera(x, y, z); // setup camera position
@@ -2364,8 +2364,7 @@ void setupCamera()
 	setupCameraProjection(160, 100, pCamera->focal1, pCamera->focal2, pCamera->focal3); // setup focale
 
 #ifdef FITD_DEBUGGER
-	if (debuggerVar_topCamera)
-		setupCameraProjection(160, 100, 1000, 100, 100); // setup focale
+	if (debuggerVar_topCamera) setupCameraProjection(160, 100, 1000, 100, 100); // setup focale
 #endif
 
 	setupCameraSub1();
@@ -2393,9 +2392,9 @@ s16 computeDistanceToPoint(int x1, int z1, int x2, int z2)
 	if ((s16)z1 < 0) z1 = -(s16)z1;
 
 	if ((x1 + z1) > 0xFFFF)
-		return(0x7D00);
+		return 0x7D00;
 	else
-		return(x1 + z1);
+		return x1 + z1;
 }
 
 /// @brief 
@@ -2463,10 +2462,10 @@ int findObjectInInventory(int objIdx)
 {
 	for (int i = 0; i < numObjInInventoryTable[currentInventory]; i++) {
 		if (inventoryTable[currentInventory][i] == objIdx)
-			return(i);
+			return i;
 	}
 
-	return(-1);
+	return -1;
 }
 
 void DeleteInventoryObjet(int objIdx)
@@ -2937,25 +2936,25 @@ void drawHardCol(int roomNumber)
 }
 #endif
 
-int isBgOverlayRequired(int X1, int X2, int Z1, int Z2, char* data, int param)
+int isBgOverlayRequired(int x1, int x2, int z1, int z2, char* data, int param)
 {
 	for (int i = 0; i < param; i++) {
 		////////////////////////////////////// DEBUG
 		//  drawOverlayZone(data, 80);
 		/////////////////////////////////////
 
-		int zoneX1 = *(s16*)(data);
+		int zoneX1 = *(s16*)(data + 0);
 		int zoneZ1 = *(s16*)(data + 2);
 		int zoneX2 = *(s16*)(data + 4);
 		int zoneZ2 = *(s16*)(data + 6);
 
-		if (X1 >= zoneX1 && Z1 >= zoneZ1 && X2 <= zoneX2 && Z2 <= zoneZ2)
-			return(1);
+		if (x1 >= zoneX1 && z1 >= zoneZ1 && x2 <= zoneX2 && z2 <= zoneZ2)
+			return 1;
 
-		data += 0x8;
+		data += 8;
 	}
 
-	return(0);
+	return 0;
 }
 
 /// @brief Draw foreground cutouts over the given actor.
@@ -3043,7 +3042,10 @@ void drawBgOverlay(tObject* actorPtr)
 				int actorZ1 = actorPtr->zv.ZVZ1 / 10;
 				int actorZ2 = actorPtr->zv.ZVZ2 / 10;
 
-				if (actorX1 >= pRect->zoneX1 && actorZ1 >= pRect->zoneZ1 && actorX2 <= pRect->zoneX2 && actorZ2 <= pRect->zoneZ2) {
+				if (actorX1 >= pRect->zoneX1 &&
+					actorZ1 >= pRect->zoneZ1 &&
+					actorX2 <= pRect->zoneX2 &&
+					actorZ2 <= pRect->zoneZ2) {
 					osystem_setClip(clipLeft, clipTop, clipRight, clipBottom);
 					osystem_drawMask(relativeCameraIndex, i);
 					osystem_clearClip();
@@ -3068,12 +3070,17 @@ void drawFlowActor(int actorIdx)
 	// TODO: finish
 }
 
+/// @brief 
+/// @param hotPointIdx 
+/// @param bodyPtr 
+/// @param hotPoint 
+/// @todo Move to animations?
 void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 {
 	s16 flag = *(s16*)bodyPtr;
 	bodyPtr += 2;
 
-	if (flag & 2) {
+	if (flag & 2) { // TODO: What flag is this?
 		bodyPtr += 12;
 
 		s16 offset = *(s16*)bodyPtr;
@@ -3091,34 +3098,24 @@ void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 		ASSERT(hotPointIdx < offset);
 
 		if (hotPointIdx < offset) {
-			int pointIdx;
-			s16* source;
+			bodyPtr += hotPointIdx * ((flag & INFO_OPTIMISE) ? 0x18 : 16);
 
-			if (flag & INFO_OPTIMISE) {
-				bodyPtr += hotPointIdx * 0x18;
-			} else {
-				bodyPtr += hotPointIdx * 16;
-			}
-
-			pointIdx = *(s16*)(bodyPtr + 4); // first point
+			int pointIdx = *(s16*)(bodyPtr + 4); // first point
 
 			//ASSERT(pointIdx > 0 && pointIdx < 1200);
 
-			source = (s16*)(((char*)pointBuffer) + pointIdx);
+			s16* source = (s16*)(((char*)pointBuffer) + pointIdx);
 
 			hotPoint->x = source[0];
 			hotPoint->y = source[1];
 			hotPoint->z = source[2];
-		} else {
-			hotPoint->x = 0;
-			hotPoint->y = 0;
-			hotPoint->z = 0;
+			return;
 		}
-	} else {
-		hotPoint->x = 0;
-		hotPoint->y = 0;
-		hotPoint->z = 0;
 	}
+
+	hotPoint->x = 0;
+	hotPoint->y = 0;
+	hotPoint->z = 0;
 }
 
 void mainDraw(int flagFlip)
@@ -3438,44 +3435,36 @@ void take(int objIdx)
 
 void foundObject(int objIdx, int param)
 {
-	tWorldObject* objPtr;
-	int var_C = 0;
-	int var_6 = 1;
-	int i;
-	int var_A = 15000;
-	int var_8 = -200;
+	if (objIdx < 0) return;
 
-	if (objIdx < 0)
+	if (param == 2) printf("foundObject with param == 2\n"); // TODO: Use proper debug output
+
+	tWorldObject* objPtr = &ListWorldObjets[objIdx];
+
+	// TODO: Document the purpose of this
+	if (param != 0 && (objPtr->flags2 & 0xC000))
 		return;
 
-	if (param == 2) {
-		printf("foundObject with param == 2\n");
-	}
-
-	objPtr = &ListWorldObjets[objIdx];
-
-	if (param != 0 && (objPtr->flags2 & 0xC000)) {
+	// prevent from reopening the window every frame
+	if (objPtr->trackNumber && timer - objPtr->trackNumber < 300)
 		return;
-	}
-
-	if (objPtr->trackNumber) {
-		if (timer - objPtr->trackNumber < 300) // prevent from reopening the window every frame
-			return;
-	}
 
 	objPtr->trackNumber = 0;
 
 	freezeTime();
-	//  setupShaking(1000); // probably to remove the shaking when in foundObject screen
+	//setupShaking(1000); // probably to remove the shaking when in foundObject screen
 
+	int i;
 	int weight = 0;
 	for (i = 0; i < numObjInInventoryTable[currentInventory]; i++) {
 		weight += ListWorldObjets[inventoryTable[currentInventory][i]].positionInTrack;
 	}
 
-	if (objPtr->positionInTrack + weight > CVars[getCVarsIdx(MAX_WEIGHT_LOADABLE)] || numObjInInventoryTable[currentInventory] + 1 == 30) {
-		var_6 = 3;
-	}
+	// Default to selected
+	int foundMenuState = 1;
+	if (objPtr->positionInTrack + weight > CVars[getCVarsIdx(MAX_WEIGHT_LOADABLE)] ||
+		numObjInInventoryTable[currentInventory] + 1 == 30)
+		foundMenuState = 3; // I think this was supposed to be 2. - J
 
 	currentFoundBodyIdx = objPtr->foundBody;
 	currentFoundBody = HQR_Get(listBody, currentFoundBodyIdx);
@@ -3489,12 +3478,16 @@ void foundObject(int objIdx, int param)
 
 	AffBigCadre(160, 100, 240, 120);
 
-	drawFoundObject(var_6, objPtr->foundName, var_A);
+	int var_A = 15000;
+	drawFoundObject(foundMenuState, objPtr->foundName, var_A);
 	osystem_flip(NULL);
 
 	input5 = 1;
 
-	while (!var_C) {
+	static constexpr int foundMenuZoomSpeed = 200;
+	int zoomDelta = -foundMenuZoomSpeed;
+	bool selectionMade = false;
+	while (!selectionMade) {
 		osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 		process_events();
@@ -3504,30 +3497,25 @@ void foundObject(int objIdx, int param)
 		localJoyD = JoyD;
 		localClick = Click;
 
-		if (!input5) {
+		if (!input5) { // I think this is changing between pickup & leave - J
 			if (localKey == 1) {
-				if (var_6 != 2) {
-					var_6 = 0;
-				}
+				if (foundMenuState != 2)
+					foundMenuState = 0;
 
-				var_C = 1;
+				selectionMade = true;
 			}
-			if (var_6 != 2) {
-				if (localJoyD & 4) {
-					var_6 = 0;
-				}
+			if (foundMenuState != 2) {
+				if (localJoyD & 4)
+					foundMenuState = 0;
 
-				if (localJoyD & 8) {
-					var_6 = 1;
-				}
+				if (localJoyD & 8)
+					foundMenuState = 1;
 			}
 
 			if (localKey == 28 || localClick != 0) {
-				while (key) {
-					process_events();
-				}
+				while (key) { process_events(); }
 
-				var_C = 1;
+				selectionMade = true;
 			}
 		} else {
 			if (!localKey && !localJoyD && !localClick)
@@ -3536,26 +3524,24 @@ void foundObject(int objIdx, int param)
 
 		statusVar1 -= 8;
 
-		var_A += var_8; // zoom / dezoom
+		var_A += zoomDelta; // zoom / dezoom
 
-		if (var_A > 8000) // zoom management
-			var_8 = -var_8;
+		// zoom management
+		if (var_A > 8000) zoomDelta = -zoomDelta;
 
-		if (var_A < 25000)
-			var_8 = -var_8;
+		if (var_A < 25000) zoomDelta = -zoomDelta;
 
-		drawFoundObject(var_6, objPtr->foundName, var_A);
+		drawFoundObject(foundMenuState, objPtr->foundName, var_A);
 
-		// menuWaitVSync();
+		//menuWaitVSync();
 	}
 
 	unfreezeTime();
 
-	if (var_6 == 1) {
+	if (foundMenuState == 1)
 		take(objIdx);
-	} else {
+	else
 		objPtr->trackNumber = timer;
-	}
 
 	while (key && Click) { process_events(); }
 
@@ -4147,27 +4133,19 @@ void PutAtObjet(int objIdx, int objIdxToPutAt)
 
 void throwStoppedAt(int x, int z)
 {
-	int x2;
-	int y2;
-	int z2;
-	int foundPosition;
-	int step;
+	u8* bodyPtr = (u8*)HQR_Get(listBody, currentProcessedActorPtr->bodyNum);
 
-	ZVStruct zvCopy;
 	ZVStruct zvLocal;
-	u8* bodyPtr;
-
-	bodyPtr = (u8*)HQR_Get(listBody, currentProcessedActorPtr->bodyNum);
-
 	GiveZVObjet((char*)bodyPtr, &zvLocal);
 
-	x2 = x;
-	y2 = (currentProcessedActorPtr->roomY / 2000) * 2000;
-	z2 = z;
+	int x2 = x;
+	int y2 = (currentProcessedActorPtr->roomY / 2000) * 2000;
+	int z2 = z;
 
-	foundPosition = 0;
-	step = 0;
+	int foundPosition = 0;
+	int step = 0;
 
+	ZVStruct zvCopy;
 	while (!foundPosition) {
 		walkStep(0, -step, currentProcessedActorPtr->beta + 0x200);
 		copyZv(&zvLocal, &zvCopy);

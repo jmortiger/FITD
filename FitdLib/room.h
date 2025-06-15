@@ -4,7 +4,7 @@
 struct hardColStruct;
 typedef struct hardColStruct hardColStruct;
 
-#include "vars.h" // temporary fix to cross include
+#include "vars.h" // HACK: temporary fix to cross include
 
 struct hardColStruct
 {
@@ -18,26 +18,20 @@ struct sceZoneStruct
 	ZVStruct zv;
 	u32 type;
 	u32 parameter;
-};
-
-typedef struct sceZoneStruct sceZoneStruct;
+}; typedef struct sceZoneStruct sceZoneStruct;
 
 struct cameraZonePointStruct
 {
 	s16 x;
 	s16 y;
-};
-
-typedef struct cameraZonePointStruct cameraZonePointStruct;
+}; typedef struct cameraZonePointStruct cameraZonePointStruct;
 
 struct cameraZoneEntryStruct
 {
 	u16 numPoints;
 
 	cameraZonePointStruct* pointTable;
-};
-
-typedef struct cameraZoneEntryStruct cameraZoneEntryStruct;
+}; typedef struct cameraZoneEntryStruct cameraZoneEntryStruct;
 
 struct rectTestStruct
 {
@@ -103,8 +97,7 @@ struct roomDataStruct
 	s32 worldZ;
 
 	u16* cameraIdxTable;
-};
-typedef struct roomDataStruct roomDataStruct;
+}; typedef struct roomDataStruct roomDataStruct;
 
 extern cameraDataStruct* cameraDataTable[NUM_MAX_CAMERA_IN_ROOM];
 extern cameraViewedRoomStruct* currentCameraZoneList[NUM_MAX_CAMERA_IN_ROOM];

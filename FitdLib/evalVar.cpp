@@ -391,7 +391,7 @@ int evalVar(const char* name)
 				{
 					return _printReturn(actorPtr->hitForce, "hitforce");
 				}
-				case 0x1B: // CAMERA (used in L469 for the spider)
+				case 0x1B: // CAMERA (used in AITD1 L(ife?) 469 for the spider)
 				{
 					return _printReturn(*(u16*)(((currentCamera + 6) * 2) + cameraPtr), "camera");
 				}
