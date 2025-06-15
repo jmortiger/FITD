@@ -3394,7 +3394,11 @@ void drawFoundObject(int menuState, int objectName, int zoomFactor)
 		}
 		case 2: // Full inventory
 		{
+#if 0 // NOTE: I think AITD1 didn't have it selected. Change to revert. - J
 			SelectedMessage(160, WindowY2 - 16, 10, 1, 4);
+#else
+			SimpleMessage(160, WindowY2 - 16, 10, 4);
+#endif
 			break;
 		}
 	}
@@ -3464,7 +3468,7 @@ void foundObject(int objIdx, int param)
 	int foundMenuState = 1;
 	if (objPtr->positionInTrack + weight > CVars[getCVarsIdx(MAX_WEIGHT_LOADABLE)] ||
 		numObjInInventoryTable[currentInventory] + 1 == 30)
-		foundMenuState = 3; // I think this was supposed to be 2. - J
+		foundMenuState = 2;// 3; // I think this was supposed to be 2. - J
 
 	currentFoundBodyIdx = objPtr->foundBody;
 	currentFoundBody = HQR_Get(listBody, currentFoundBodyIdx);
