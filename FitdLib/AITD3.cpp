@@ -63,6 +63,7 @@ void startAITD3()
 				}
 				break;
 			}
+			// TODO: For AITD3, option 2 is Difficulty level; Implement
 			case 2: // exit
 			{
 				freeAll();
@@ -99,4 +100,21 @@ void drawInventoryAITD3()
 		((statusRight - statusLeft) / 2) + statusLeft,
 		((statusBottom - statusTop) / 2) + statusTop,
 		AITD2_INVENTORY_CAM_X, AITD2_INVENTORY_CAM_Y, AITD2_INVENTORY_CAM_Z);
+}
+
+/// @brief Fills the given character buffer with the correct name of the
+/// requested stage/floor file for this version of the current game (correctly
+/// handles Steam AITD3).
+/// @param buffer A currently empty string buffer.
+/// @param floorNumber 
+/// @details The Steam version of AITD3 doesn't use `SAL` files; it seems to use
+/// `ETAGE` files like the other games.
+void getStageFile(char* buffer, int floorNumber)
+{
+	if (g_gameId == AITD3) {
+		char _temp[100] = "";
+		sprintf(_temp, "SAL%02d.PAK", floorNumber);
+		if (fileExists(_temp)) sprintf(buffer, "SAL%02d", floorNumber);
+		else sprintf(buffer, "ETAGE%02d", floorNumber);
+	} else sprintf(buffer, "ETAGE%02d", floorNumber);
 }

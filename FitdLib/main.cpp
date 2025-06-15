@@ -248,8 +248,13 @@ void allocTextes(void)
 	// Setup languageNameString
 	// NOTE: The Steam version of AITD3 DOESN'T use a `TEXTES` file; it seems to use a `ENGLISH.PAK` file like the other games.
 	if (g_gameId == AITD3) {
-		strcpy(languageNameString, "TEXTES");
-	} else {
+		if (fileExists("TEXTES"))
+			strcpy(languageNameString, "TEXTES");
+		else if (fileExists("TEXTES.PAK"))
+			strcpy(languageNameString, "TEXTES.PAK");
+	}
+	printf("%s", languageNameString);
+	if (languageNameString[0] == '\000') {
 		for (int i = 0; i < languageNameTable.size(); i++) {
 			char tempString[20];
 
@@ -841,17 +846,18 @@ void OpenProgram(void)
 	switch (g_gameId) {
 		case AITD3:
 		{
-#ifdef TARGET_OS_IPHONE
+			// #ifdef TARGET_OS_IPHONE
+			// 			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
+			// #else
+			// 			FILE* fHandle = fopen("font.bin", "rb");
+			// 			fseek(fHandle, 0, SEEK_END);
+			// 			int fontSize = ftell(fHandle);
+			// 			PtrFont = (char*)malloc(fontSize);
+			// 			fseek(fHandle, 0, SEEK_SET);
+			// 			fread(PtrFont, fontSize, 1, fHandle);
+			// 			fclose(fHandle);
+			// #endif
 			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
-#else
-			FILE* fHandle = fopen("font.bin", "rb");
-			fseek(fHandle, 0, SEEK_END);
-			int fontSize = ftell(fHandle);
-			PtrFont = (char*)malloc(fontSize);
-			fseek(fHandle, 0, SEEK_SET);
-			fread(PtrFont, fontSize, 1, fHandle);
-			fclose(fHandle);
-#endif
 			break;
 		}
 		case JACK:

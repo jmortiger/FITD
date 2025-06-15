@@ -30,14 +30,17 @@ roomDefStruct* getRoomData(int roomNumber)
  **/
 int getNumberOfRoom()
 {
-	if (g_gameId >= AITD3) {
+	// if (g_gameId >= AITD3) {
+	if (g_gameId > AITD3) {
 		char buffer[256];
 
-		if (g_gameId == AITD3) {
+		// NOTE: The Steam version of AITD3 DOESN'T use `SAL` files; it seems to use `ETAGE` files like the other games.
+		// IDEA: Use static flag instead of checking every time?
+		/* if (g_gameId == AITD3)
 			sprintf(buffer, "SAL%02d", g_currentFloor);
-		} else {
-			sprintf(buffer, "ETAGE%02d", g_currentFloor);
-		}
+		else
+			sprintf(buffer, "ETAGE%02d", g_currentFloor); */
+		getStageFile(buffer, g_currentFloor);
 
 		return PAK_getNumFiles(buffer);
 	} else {
@@ -75,7 +78,9 @@ void loadRoom(int roomNumber)
 	}
 
 	roomDefStruct* roomDataPtr;
-	if (g_gameId < AITD3) {
+	// TODO: Fix AITD3 case
+	// if (g_gameId < AITD3) {
+	if (g_gameId <= AITD3) {
 		cameraPtr = (char*)getRoomData(roomNumber); // TODO: obsolete
 		roomDataPtr = getRoomData(roomNumber);
 		pCurrentRoomData = getRoomData(roomNumber);
@@ -116,7 +121,8 @@ void loadRoom(int roomNumber)
 			newAbsCamera = currentCameraIdx;
 		}
 
-		if (g_gameId < AITD3)
+		// NOTE: This field seems to only be used in AITD1
+		if (g_gameId < AITD3) // TODO: Check if this should be changed to include AITD3
 			room_PtrCamera[i] = g_currentFloorCameraRawData + READ_LE_U32(g_currentFloorCameraRawData + currentCameraIdx * 4);
 
 		cameraDataTable[i] = &(g_currentFloorCameraData[currentCameraIdx]);
