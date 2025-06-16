@@ -52,3 +52,22 @@ char* CheckLoadMallocPak(const char* name, int index)
 	if (!ptr) fatalError(0, name); // TODO: Improve error message
 	return ptr;
 }
+
+/// @brief Simply a wrapper for `loadPak` that ensures the memory is allocated.
+/// @param name 
+/// @param index 
+/// @param ptr The variable to write the address the pak is loaded at to.
+/// @return 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D247)
+bool CheckLoadMallocPakSafe(const char* name, int index, char* &ptr)
+{
+	ptr = loadPak(name, index);
+	if (ptr) {
+		DebugPrintfLnCategory(DBO_L_LOW, DBO_PAK, "Successfully loaded %s.PAK[%02i] to address 0x%lX", name, index, (unsigned long)ptr);
+		return true;
+	} else {
+		DebugPrintfLnCategory(DBO_L_WARN, DBO_PAK, "Failed to load %s.PAK[%02i]", name, index);
+		return false;
+	}
+	// return !!ptr;
+}

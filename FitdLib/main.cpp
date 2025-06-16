@@ -860,18 +860,36 @@ void OpenProgram(void)
 			// 			fread(PtrFont, fontSize, 1, fHandle);
 			// 			fclose(fHandle);
 			// #endif
-			PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
+
+			// PtrFont = CheckLoadMallocPak("ITD_RESS", 1);
+			if (!CheckLoadMallocPakSafe("ITD_RESS", 1, PtrFont)) {
+				DebugPrintfLn(DBO_L_WARN, "Attempting to load font data from font.bin...");
+				FILE* fHandle = fopen("font.bin", "rb");
+				fseek(fHandle, 0, SEEK_END);
+				int fontSize = ftell(fHandle);
+				PtrFont = (char*)malloc(fontSize);
+				fseek(fHandle, 0, SEEK_SET);
+				fread(PtrFont, fontSize, 1, fHandle);
+				fclose(fHandle);
+			}
 			break;
 		}
 		case JACK:
 		case AITD2:
 		{
-			PtrFont = CheckLoadMallocPak("ITD_RESS", RESS2_ITDFONT);
+			// PtrFont = CheckLoadMallocPak("ITD_RESS", RESS2_ITDFONT);
 			/*
 			int fontSize = getPakSize("ITD_RESS", RESS2_ITDFONT);
 			FILE* fhandle = fopen("font.bin", "wb+");
 			fwrite(fontData, fontSize, 1, fhandle);
 			fclose(fhandle);*/
+			if (!CheckLoadMallocPakSafe("ITD_RESS", RESS2_ITDFONT, PtrFont)) {
+				DebugPrintfLn(DBO_L_WARN, "Attempting to load font data from font.bin...");
+				int fontSize = getPakSize("ITD_RESS", RESS2_ITDFONT);
+				FILE* fhandle = fopen("font.bin", "wb+");
+				fwrite(PtrFont, fontSize, 1, fhandle);
+				fclose(fhandle);
+			};
 			break;
 		}
 		case AITD1:
@@ -884,7 +902,7 @@ void OpenProgram(void)
 			PtrFont = CheckLoadMallocPak("ITD_RESS", 2);
 			break;
 		}
-		default: FITD_throwFatal(); // TODO: Improve error message
+		default: FITD_throwFatal("Unsupported game; can't load font data.");
 	}
 
 	ExtSetFont(PtrFont, 14);

@@ -6,4 +6,5 @@ void fatalError(int type, const char* name);
 int getLastFileSize();
 char* loadFromItd(const char* name);
 char* CheckLoadMallocPak(const char* name, int index);
+bool CheckLoadMallocPakSafe(const char* name, int index, char* &ptr);
 #endif
