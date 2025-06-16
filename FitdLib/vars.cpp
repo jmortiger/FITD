@@ -94,8 +94,8 @@ PaletteColorRGB currentGamePalette[COLORS_IN_PALETTE];
 // unsigned char currentGamePalette[BYTES_IN_PALETTE];
 
 // #region Timers
-unsigned int timer;
-unsigned int timeGlobal;
+uint timer;
+uint timeGlobal;
 // #endregion Timers
 
 // #region Window Coords
@@ -351,7 +351,7 @@ s16 newRoom;
 
 s16 shakeVar1;
 s16 shakingAmplitude;
-unsigned int timerFreeze1;
+uint timerFreeze1;
 
 hardColStruct* hardColTable[10];
 

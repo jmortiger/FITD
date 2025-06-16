@@ -2,15 +2,13 @@
 // seg 20
 void fatalError(int type, const char* name)
 {
-	//  freeScene();
+	//freeScene();
 	freeAll();
 	printf("Error: %s\n", name);
-	FITD_throwFatal(); // assert(0);
+	FITD_throwFatal();
 }
 
-extern "C" {
-	extern char homePath[512];
-}
+extern "C" { extern char homePath[512]; }
 
 /// @brief Used to avoid returning a tuple.
 int lastFileSize;
@@ -50,10 +48,7 @@ char* loadFromItd(const char* name)
 /// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D247)
 char* CheckLoadMallocPak(const char* name, int index)
 {
-	char* ptr;
-	ptr = loadPak(name, index);
-	if (!ptr) {
-		fatalError(0, name); // TODO: Improve error message
-	}
+	char* ptr = loadPak(name, index);
+	if (!ptr) fatalError(0, name); // TODO: Improve error message
 	return ptr;
 }

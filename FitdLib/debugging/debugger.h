@@ -53,14 +53,30 @@ enum debugLevelEnum : unsigned char {
 	DBO_L_INFO	= 0b0010'0000,
 	DBO_L_WARN	= 0b0100'0000,
 	DBO_L_ERROR	= 0b1000'0000,
-	// DBO_L_NONE	= 0b0000'0000,
-	// DBO_L_DEBUG	= 0b0000'0001,
-	// DBO_L_LOG	= 0b0000'0010,
-	// DBO_L_INFO	= 0b0000'0100,
-	// DBO_L_WARN	= 0b0000'1000,
-	// DBO_L_ERROR	= 0b0001'0000,
+
+	DBO_L_ALL	= 0b1111'1111,
+	DBO_L_MASK	= 0b1111'1111,
+
+	DBO_L_1	= 0b0000'0001,
+	DBO_L_2	= 0b0000'0010,
+	DBO_L_3	= 0b0000'0100,
+	DBO_L_4	= 0b0000'1000,
+	DBO_L_5	= 0b0001'0000,
+	DBO_L_6	= 0b0010'0000,
+	DBO_L_7	= 0b0100'0000,
+	DBO_L_8	= 0b1000'0000,
+
+	/// @brief The lowest possible priority.
+	DBO_L_LOW	= 0b0000'0001,
+
+	/* DBO_L_NONE	= 0b0000'0000,
+	DBO_L_DEBUG	= 0b0000'0001,
+	DBO_L_LOG	= 0b0000'0010,
+	DBO_L_INFO	= 0b0000'0100,
+	DBO_L_WARN	= 0b0000'1000,
+	DBO_L_ERROR	= 0b0001'0000, */
 };
-#define DBO_L_ALL 0b1111'1111
+// #define DBO_L_ALL 0b1111'1111
 // #define DBO_L_ALL 0b0001'1111
 
 typedef enum debugLevelEnum debugLevelEnum;

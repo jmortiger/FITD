@@ -222,7 +222,7 @@ int getPakSize(const char* name, int index, bool getCompressedSize)
 /// @brief 
 /// @param name 
 /// @param index 
-/// @return 
+/// @return `0`/`NULL` if failed, otherwise the address the specified file of the specified pak was written to.
 /// @details Uses `malloc`.
 char* loadPak(const char* name, int index)
 {
@@ -309,7 +309,7 @@ char* loadPak(const char* name, int index)
 
 		fread(nameBuffer, pakInfo.offset, 1, fileHandle);
 #ifdef FITD_DEBUGGER
-		/* printf( */ DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Loading %s/%s", name, nameBuffer + 2);
+		DebugPrintfLn(debugLevelEnum::DBO_L_INFO, "Loading %s/%s", name, nameBuffer + 2);
 #endif
 	} else { fseek(fileHandle, pakInfo.offset, SEEK_CUR); }
 
@@ -351,20 +351,15 @@ void dumpPak(const char* name)
 	unsigned int numEntries = PAK_getNumFiles(name);
 
 	for (unsigned int index = 0; index < numEntries; index++) {
-		char bufferName[512];
-		FILE* fileHandle;
 		u32 fileOffset;
 		u32 additionalDescriptorSize;
 		pakInfoStruct pakInfo;
 		char* ptr = 0;
 
+		char bufferName[512];
+		makeExtention(bufferName, name, ".PAK");
 
-		//makeExtention(bufferName, name, ".PAK");
-		strcpy(bufferName, homePath);
-		strcat(bufferName, name); // TODO: temporary until makeExtention is coded
-		strcat(bufferName, ".PAK");
-
-		fileHandle = fopen(bufferName, "rb");
+		FILE* fileHandle = fopen(bufferName, "rb");
 
 		if (fileHandle) // a bit stupid, should return NULL right away
 		{

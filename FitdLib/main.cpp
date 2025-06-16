@@ -162,11 +162,11 @@ void executeFoundLife(int objIdx)
 	int currentActorLifeNum = currentLifeNum;
 
 	int lifeOffset;
-	if (currentLifeNum != -1) {
+	if (currentLifeNum != -1)
 		lifeOffset = (currentLifePtr - HQR_Get(listLife, currentActorLifeNum)) / 2;
-	}
 
-	int var_2 = 0;
+	// TODO: What is this flag?
+	bool unkFlag = false;
 
 	int actorIdx = ListWorldObjets[objIdx].objIndex;
 
@@ -189,7 +189,7 @@ void executeFoundLife(int objIdx)
 		}
 
 		actorIdx = currentActorEntry;
-		var_2 = 1;
+		unkFlag = true;
 
 		currentProcessedActorPtr = &objectTable[actorIdx];
 		currentLifeActorPtr = &objectTable[actorIdx];
@@ -208,9 +208,8 @@ void executeFoundLife(int objIdx)
 
 	processLife(foundLife, true);
 
-	if (var_2) {
+	if (unkFlag)
 		currentProcessedActorPtr->indexInWorld = -1;
-	}
 
 	currentProcessedActorPtr = currentActorPtr;
 	currentProcessedActorIdx = currentActorIdx;
@@ -223,6 +222,9 @@ void executeFoundLife(int objIdx)
 	}
 }
 
+/// @brief 
+/// @param var0 value `screenSm1` & `screenSm2` are set to
+/// @param var1 value `screenSm3`, `screenSm4`, & `screenSm5` are set to.
 void InitCopyBox(char* var0, char* var1)
 {
 	screenSm1 = var0;
@@ -826,12 +828,13 @@ void OpenProgram(void)
 
 	// TODO: reverse sound init code
 
+	static constexpr int bufferSize = 65068;
 	// TODO: Check aux buffer sizes
-	aux = (char*)malloc(65068);
-	if (!aux) fatalError(1, "Aux"); // TODO: Improve error message
+	aux = (char*)malloc(bufferSize);
+	if (!aux) fatalError(1, "Aux: failed to allocate");
 
-	aux2 = (char*)malloc(65068);
-	if (!aux2) fatalError(1, "Aux2"); // TODO: Improve error message
+	aux2 = (char*)malloc(bufferSize);
+	if (!aux2) fatalError(1, "Aux2: failed to allocate");
 
 	InitCopyBox(aux2, logicalScreen);
 	/* InitCopyPlot(aux2);
@@ -1504,27 +1507,21 @@ void SetAngleCamera(int x, int y, int z)
 		transformXCos = cosTable[transformX];
 		transformXSin = cosTable[(transformX + 0x100) & 0x3FF];
 		transformUseX = true;
-	} else {
-		transformUseX = false;
-	}
+	} else transformUseX = false;
 
 	transformY = y & 0x3FF;
 	if (transformY) {
 		transformYCos = cosTable[transformY];
 		transformYSin = cosTable[(transformY + 0x100) & 0x3FF];
 		transformUseY = true;
-	} else {
-		transformUseY = false;
-	}
+	} else transformUseY = false;
 
 	transformZ = z & 0x3FF;
 	if (transformZ) {
 		transformZCos = cosTable[transformZ];
 		transformZSin = cosTable[(transformZ + 0x100) & 0x3FF];
 		transformUseZ = true;
-	} else {
-		transformUseZ = false;
-	}
+	} else transformUseZ = false;
 }
 
 void SetPosCamera(int x, int y, int z)
@@ -1544,18 +1541,19 @@ void setupCameraProjection(int centerX, int centerY, int x, int y, int z)
 	cameraFovY = z;
 }
 
+// TODO: Change to return bool
+/// @brief Used in `setupCameraSub1`
 int isInViewList(int value)
 {
 	char* ptr = currentCameraVisibilityList;
 	int var;
 
 	while ((var = *(ptr++)) != -1) {
-		if (value == var) {
-			return(1);
-		}
+		if (value == var)
+			return 1;
 	}
 
-	return(0);
+	return 0;
 }
 
 /// @brief setup visibility list
@@ -1564,9 +1562,8 @@ void setupCameraSub1()
 	char* dataTabPos = currentCameraVisibilityList;
 	*dataTabPos = -1;
 
-	int var_10;
 	// visibility list: add linked rooms
-	for (u32 i = 0; i < roomDataTable[currentRoom].numSceZone; i++) {
+	for (u32 i = 0, var_10; i < roomDataTable[currentRoom].numSceZone; i++) {
 		if (roomDataTable[currentRoom].sceZoneTable[i].type == 0) {
 			var_10 = roomDataTable[currentRoom].sceZoneTable[i].parameter;
 			if (!isInViewList(var_10)) {

@@ -14,14 +14,9 @@ void clearScreenTatou(void)
 /// @return 1 if the sequence was canceled, otherwise 0.
 int make3dTatou(void)
 {
-/// @brief The time before the 3d spinning armadillo pops up in AITD1's intro.
-#define AITD1_TIME_BEFORE_3D_TATOU 180
-	unsigned char paletteBackup[BYTES_IN_PALETTE];
-	unsigned int localChrono;
-	
 	char* tatou2d = CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_MCG);
 	char* tatou3d = CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_3DO);
-	unsigned char* tatouPal = (unsigned char*)CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_PAL);
+	u8* tatouPal = (u8*)CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_PAL);
 	
 	int time = 8920;
 	int deltaTime = 50;
@@ -30,6 +25,7 @@ int make3dTatou(void)
 
 	setupCameraProjection(160, 100, 128, 500, 490);
 
+	u8 paletteBackup[BYTES_IN_PALETTE];
 	copyPalette(currentGamePalette, paletteBackup);
 
 	paletteFill(currentGamePalette, 0, 0, 0);
@@ -44,6 +40,7 @@ int make3dTatou(void)
 
 	FadeInPhys(8, 0);
 
+	uint localChrono;
 	startChrono(&localChrono);
 
 	do {
@@ -52,11 +49,9 @@ int make3dTatou(void)
 		//timeGlobal++;
 		timer = timeGlobal;
 
-		// avant eclair (before lightning)
-		if (evalChrono(&localChrono) <= AITD1_TIME_BEFORE_3D_TATOU) {
-			if (key || Click || JoyD) {
-				break;
-			}
+		// If no more than 180 ticks have passed... (avant eclair/before lightning)
+		if (evalChrono(&localChrono) <= 180) {
+			if (key || Click || JoyD) break;
 		} else { // eclair (lightning)
 			/* LastSample = LastPriority = -1; */
 
@@ -75,13 +70,13 @@ int make3dTatou(void)
 			AffObjet(0, 0, 0, 0, 0, 0, tatou3d);
 
 			//blitScreenTatou();
-			osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+			osystem_CopyBlockPhys((u8*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 			process_events();
 
 			copyPalette(tatouPal, currentGamePalette);
 			setPalette(currentGamePalette);
-			osystem_CopyBlockPhys((unsigned char*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+			osystem_CopyBlockPhys((u8*)frontBuffer, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 
 			// boucle de rotation du tatou (armadillo rotation loop)
 			while (key == 0 && Click == 0 && JoyD == 0) {
@@ -119,15 +114,12 @@ int make3dTatou(void)
 		while (key) { process_events(); }
 
 		FadeOutPhys(32, 0);
-		copyPalette((unsigned char*)paletteBackup, currentGamePalette);
-		return(true);
+		copyPalette((u8*)paletteBackup, currentGamePalette);
+		return true;
 	} else {
 		// ...otherwise, fade out slower & don't skip it.
 		FadeOutPhys(16, 0);
-		copyPalette((unsigned char*)paletteBackup, currentGamePalette);
-		return(false);
+		copyPalette((u8*)paletteBackup, currentGamePalette);
+		return false;
 	}
-
-	return(false); // TODO: Redundant return?
-#undef AITD1_TIME_BEFORE_3D_TATOU
 }

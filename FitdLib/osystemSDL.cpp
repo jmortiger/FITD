@@ -84,7 +84,7 @@ int FitdInit(int argc, char* argv[])
 
 	osystem_init();
 
-	unsigned int flags = 0;
+	uint flags = 0;
 	flags |= SDL_WINDOW_RESIZABLE;
 	//flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
@@ -144,11 +144,10 @@ int FitdInit(int argc, char* argv[])
 		SDL_GL_MakeCurrent(NULL, NULL);
 
 		// Don't process events on first frame to avoid race condition with the init code
-		if (!bFirstFrame) {
+		if (!bFirstFrame)
 			readKeyboard();
-		} else {
+		else
 			bFirstFrame = false;
-		}
 
 		SDL_SignalSemaphore(startOfRender);
 
@@ -173,9 +172,9 @@ u32 osystem_startOfFrame()
 
 	static bool firstFrame = true;
 	if (firstFrame) {
-		// #ifdef USE_IMGUI
-		// 		ImGui_ImplSdlGL3_Init(sdl_window);
-		// #endif
+		//#ifdef USE_IMGUI
+		//		ImGui_ImplSdlGL3_Init(sdl_window);
+		//#endif
 		lastFrameTime = SDL_GetTicks();
 
 		firstFrame = false;
@@ -187,9 +186,9 @@ u32 osystem_startOfFrame()
 
 	lastFrameTime = SDL_GetTicks();
 
-	// #ifdef USE_IMGUI
-	// 	ImGui_ImplSdlGL3_NewFrame(sdl_window);
-	// #endif
+	//#ifdef USE_IMGUI
+	//	ImGui_ImplSdlGL3_NewFrame(sdl_window);
+	//#endif
 
 	return numFramesToAdvance;
 }
@@ -202,11 +201,11 @@ void osystem_endOfFrame()
 	debugger_draw();
 #endif
 
-	// #ifdef USE_IMGUI
-	// 	ImGui::Render();
-	// #endif
+	//#ifdef USE_IMGUI
+	//	ImGui::Render();
+	//#endif
 
-	// osystem_flip(NULL);
+	//osystem_flip(NULL);
 
 	renderGameWindow();
 
@@ -263,9 +262,9 @@ void osystem_init()
 		FITD_throwFatal();
 	}
 
-	// SDL_ShowCursor (SDL_DISABLE);
+	//SDL_ShowCursor (SDL_DISABLE);
 
-	// SDL_EnableUNICODE (SDL_ENABLE); // not much used in fact
+	//SDL_EnableUNICODE (SDL_ENABLE); // not much used in fact
 
 	SDL_PumpEvents();
 

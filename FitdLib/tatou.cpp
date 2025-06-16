@@ -18,20 +18,17 @@ void blitScreenTatou(void)
 // #region `comparePalettes`
 bool comparePalettes(unsigned char* source, unsigned char* dest)
 {
-	for (int i = 0; i < BYTES_IN_PALETTE; i++) {
-		if (dest[i] != source[i]) return false;
-	}
+	for (int i = 0; i < BYTES_IN_PALETTE; i++) { if (dest[i] != source[i]) return false; }
 	return true;
 }
-
 bool comparePalettes(PaletteColorRGB* source, PaletteColorRGB* dest)
 {
-	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
-		if (dest[i] != source[i]) return false;
-	}
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) { if (dest[i] != source[i]) return false; }
 	return true;
 }
-// !!!!
+bool comparePalettes(unsigned char* source, PaletteColorRGB* dest) { return comparePalettes((PaletteColorRGB*)source, dest); }
+bool comparePalettes(PaletteColorRGB* source, unsigned char* dest) { return comparePalettes(source, (PaletteColorRGB*)dest); }
+/* // !!!!
 bool comparePalettes(unsigned char* source, PaletteColorRGB* dest)
 {
 	for (int i = 0; i < BYTES_IN_PALETTE; i++) {
@@ -46,7 +43,7 @@ bool comparePalettes(PaletteColorRGB* source, unsigned char* dest)
 		if (((PaletteColorRGB*)dest)[i] != source[i]) return false;
 	}
 	return true;//{ ((PaletteColorRGB*)dest)[i] = source[i]; }
-}
+} */
 // #endregion `comparePalettes`
 // #region `copyPalette`
 void copyPalette(unsigned char* source, unsigned char* dest)
@@ -57,10 +54,11 @@ void copyPalette(unsigned char* source, unsigned char* dest)
 void copyPalette(PaletteColorRGB* source, PaletteColorRGB* dest)
 {
 	for (int i = 0; i < COLORS_IN_PALETTE; i++) { dest[i] = source[i]; }
-	// assert(comparePalettes(source, dest));
 }
 
-void copyPalette(unsigned char* source, PaletteColorRGB* dest)
+void copyPalette(unsigned char* source, PaletteColorRGB* dest) { copyPalette((PaletteColorRGB*)source, dest); }
+void copyPalette(PaletteColorRGB* source, unsigned char* dest) { copyPalette(source, (PaletteColorRGB*)dest); }
+/* void copyPalette(unsigned char* source, PaletteColorRGB* dest)
 {
 	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
 		dest[i] = (PaletteColorRGB)((PaletteColorRGB*)source)[i];
@@ -73,21 +71,19 @@ void copyPalette(PaletteColorRGB* source, unsigned char* dest)
 {
 	for (int i = 0; i < COLORS_IN_PALETTE; i++) { ((PaletteColorRGB*)dest)[i] = source[i]; }
 	// assert(comparePalettes(source, dest));
-}
+} */
 // #endregion `copyPalette`
 
 // #region paletteFill
 void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned char b)
 {
-	unsigned char* paletteLocal = (unsigned char*)palette;
-	int offset = 0;
-	int i;
-
+	// TODO: Why?
 	r <<= 1;
 	g <<= 1;
 	b <<= 1;
 
-	for (i = 0; i < COLORS_IN_PALETTE; i++) {
+	u8* paletteLocal = (u8*)palette;
+	for (int i = 0, offset = 0; i < COLORS_IN_PALETTE; i++) {
 		paletteLocal[offset] = r;
 		paletteLocal[offset + 1] = g;
 		paletteLocal[offset + 2] = b;
@@ -97,21 +93,13 @@ void paletteFill(void* palette, unsigned char r, unsigned char g, unsigned char 
 
 void paletteFill(void* palette, PaletteColorRGB color)
 {
-	unsigned char* paletteLocal = (unsigned char*)palette;
-	int offset = 0;
-	int i;
-
+	// TODO: Why?
 	color.r <<= 1;
 	color.g <<= 1;
 	color.b <<= 1;
 
-	/// OPTIMIZE: For struct
-	for (i = 0; i < 256; i++) {
-		paletteLocal[offset] = color.r;
-		paletteLocal[offset + 1] = color.g;
-		paletteLocal[offset + 2] = color.b;
-		offset += 3;
-	}
+	PaletteColorRGB* paletteLocal = (PaletteColorRGB*)palette;
+	for (int i = 0; i < COLORS_IN_PALETTE; i++) { paletteLocal[i] = color; }
 }
 // #endregion paletteFill
 
@@ -126,6 +114,14 @@ void computePalette(unsigned char* inPalette, unsigned char* outPalette, int coe
 }
 void computePalette(unsigned char* inPalette, PaletteColorRGB* outPalette, int coefficient)
 {
+	computePalette((PaletteColorRGB*)inPalette, outPalette, coefficient);
+}
+void computePalette(PaletteColorRGB* inPalette, unsigned char* outPalette, int coefficient)
+{
+	computePalette(inPalette, (PaletteColorRGB*)outPalette, coefficient);
+}
+/* void computePalette(unsigned char* inPalette, PaletteColorRGB* outPalette, int coefficient)
+{
 	for (int i = 0; i < COLORS_IN_PALETTE; i++, outPalette++) {
 		(*outPalette).r = ((*(inPalette++)) * coefficient) >> 8;
 		(*outPalette).g = ((*(inPalette++)) * coefficient) >> 8;
@@ -139,10 +135,10 @@ void computePalette(PaletteColorRGB* inPalette, unsigned char* outPalette, int c
 		*(outPalette++) = ((*(inPalette)).g * coefficient) >> 8;
 		*(outPalette++) = ((*(inPalette)).b * coefficient) >> 8;
 	}
-}
+} */
 void computePalette(PaletteColorRGB* inPalette, PaletteColorRGB* outPalette, int coefficient)
 {
-	for (int i = 0; i < 256; i++, inPalette++, outPalette++) {
+	for (int i = 0; i < COLORS_IN_PALETTE; i++, inPalette++, outPalette++) {
 		(*outPalette).r = ((*(inPalette)).r * coefficient) >> 8;
 		(*outPalette).g = ((*(inPalette)).g * coefficient) >> 8;
 		(*outPalette).b = ((*(inPalette)).b * coefficient) >> 8;
@@ -161,9 +157,9 @@ void FastCopyScreen(void* source, void* dest) { memcpy(dest, source, 64000); }
 /// @todo Move to module AMBIANCE?
 void FadeInPhys(int step, int start)
 {
-	unsigned char localPalette[BYTES_IN_PALETTE];
-
 	freezeTime();
+	
+	u8 localPalette[BYTES_IN_PALETTE];
 
 	// only used for the ending ?
 	if (fadeState == 2) {} else {
@@ -188,9 +184,9 @@ void FadeInPhys(int step, int start)
 /// @todo Move to module AMBIANCE?
 void FadeOutPhys(int step, int start)
 {
-	unsigned char localPalette[BYTES_IN_PALETTE];
-
 	freezeTime();
+	
+	u8 localPalette[BYTES_IN_PALETTE];
 
 	for (int i = 256; i >= 0; i -= step) {
 		process_events();
@@ -203,6 +199,8 @@ void FadeOutPhys(int step, int start)
 	unfreezeTime();
 }
 
+/// @brief Advance tick (move time forward & prep rendering?)
+/// @param  
 void process_events(void)
 {
 #ifdef PCLIKE
