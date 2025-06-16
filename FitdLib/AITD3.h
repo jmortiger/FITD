@@ -22,7 +22,7 @@
 #define AITD3_SPRITES_INVENTAIRE_COWBOY		19
 #define AITD3_SPRITES_INVENTAIRE_COUGUAR	20
 /// @brief AITD2 ITD_RESS.PAK file index mapping
-enum ItdRessIdx2 {
+enum ItdRessIdx3 {
 	RESS3_CADRE_SPF						= 0,
 	/// @brief Font gfx
 	RESS3_ITDFONT						= 1,
@@ -54,12 +54,12 @@ enum ItdRessIdx2 {
 	RESS3_SPRITES_INVENTAIRE_COUGUAR	= 20,
 
 	/// @details Same index as AITD2
-	RESS2_INVENTAIRE_OPT0				= RESS3_INVENTAIRE_CAVERNE,
+	RESS3_INVENTAIRE_OPT0				= RESS3_INVENTAIRE_CAVERNE,
 	/// @details Same index as AITD2
-	RESS2_INVENTAIRE_OPT1				= RESS3_INVENTAIRE_COWBOY,
+	RESS3_INVENTAIRE_OPT1				= RESS3_INVENTAIRE_COWBOY,
 	/// @details Same index as AITD2
-	RESS2_INVENTAIRE_OPT2				= RESS3_INVENTAIRE_COUGUAR,
-}; typedef enum ItdRessIdx2 ItdRessIdx2;
+	RESS3_INVENTAIRE_OPT2				= RESS3_INVENTAIRE_COUGUAR,
+}; typedef enum ItdRessIdx3 ItdRessIdx3;
 
 void startAITD3();
 void drawInventoryAITD3();
