@@ -19,9 +19,8 @@ int make3dTatou(void)
 	u8* tatouPal = (u8*)CheckLoadMallocPak("ITD_RESS", RESS1_TATOU_PAL);
 	
 	int time = 8920;
-	int deltaTime = 50;
 	int rotation = 256;
-	int unk1 = 8;
+	int unk1 = 8; // Is set to 8 and unchanged
 
 	setupCameraProjection(160, 100, 128, 500, 490);
 
@@ -49,6 +48,7 @@ int make3dTatou(void)
 		//timeGlobal++;
 		timer = timeGlobal;
 
+		// TODO: Flip condition
 		// If no more than 180 ticks have passed... (avant eclair/before lightning)
 		if (evalChrono(&localChrono) <= 180) {
 			if (key || Click || JoyD) break;
@@ -82,10 +82,10 @@ int make3dTatou(void)
 			while (key == 0 && Click == 0 && JoyD == 0) {
 				process_events();
 
-				time += deltaTime - 25;
+				time += 25;
 
-				if (time > 16000)
-					break;
+				// If enough time has passed, stop rotation.
+				if (time > 16000) break;
 
 				rotation -= 8;
 
@@ -99,18 +99,19 @@ int make3dTatou(void)
 
 				osystem_stopFrame();
 			}
-
 			break;
 		}
 	} while (1);
 
+	// #region Free Armadillo resources
 	free(tatouPal);
 	free(tatou3d);
 	free(tatou2d);
+	// #endregion Free Armadillo resources
 
 	// If there was an input event...
 	if (key || Click || JoyD) {
-		// ...handle it and return 1 to skip the title sequence.
+		// ...handle it and return 1 to skip the title sequence, fading out quickly.
 		while (key) { process_events(); }
 
 		FadeOutPhys(32, 0);
