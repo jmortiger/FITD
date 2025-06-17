@@ -102,7 +102,7 @@ void drawInventoryAITD3()
 		AITD2_INVENTORY_CAM_X, AITD2_INVENTORY_CAM_Y, AITD2_INVENTORY_CAM_Z);
 }
 
-/// @brief Fills the given character buffer with the correct name of the
+/* /// @brief Fills the given character buffer with the correct name of the
 /// requested stage/floor file for this version of the current game (correctly
 /// handles Steam AITD3).
 /// @param buffer A currently empty string buffer.
@@ -117,4 +117,4 @@ void getStageFile(char* buffer, int floorNumber)
 		if (fileExists(_temp)) sprintf(buffer, "SAL%02d", floorNumber);
 		else sprintf(buffer, "ETAGE%02d", floorNumber);
 	} else sprintf(buffer, "ETAGE%02d", floorNumber);
-}
+} */

@@ -219,6 +219,7 @@ struct AaRectS32 {
 #include "AITD2.h"
 #include "AITD3.h"
 #include "JACK.h"
+#include "gameCompatibility/TIMEGATE.h"
 #include "gameCompatibility/compatibility.h"
 /* #endregion */
 
