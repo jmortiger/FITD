@@ -242,159 +242,144 @@ bgfx::ShaderHandle loadBgfxShader(const std::string& filename)
 bgfx::ProgramHandle getBackgroundShader()
 {
 	static bgfx::ProgramHandle programHandle = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(programHandle)) {
+	if (!bgfx::isValid(programHandle))
 		programHandle = loadBgfxProgram("background_vs", "background_ps");
-	}
-
 	return programHandle;
 }
 
 bgfx::ProgramHandle getMaskBackgroundShader()
 {
 	static bgfx::ProgramHandle programHandle = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(programHandle)) {
+	if (!bgfx::isValid(programHandle))
 		programHandle = loadBgfxProgram("maskBackground_vs", "maskBackground_ps");
-	}
-
 	return programHandle;
 }
 
 bgfx::ProgramHandle getFlatShader()
 {
 	static bgfx::ProgramHandle programHandle = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(programHandle)) {
+	if (!bgfx::isValid(programHandle))
 		programHandle = loadBgfxProgram("flat_vs", "flat_ps");
-	}
-
 	return programHandle;
 }
 
 bgfx::ProgramHandle getNoiseShader()
 {
 	static bgfx::ProgramHandle programHandle = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(programHandle)) {
+	if (!bgfx::isValid(programHandle))
 		programHandle = loadBgfxProgram("noise_vs", "noise_ps");
-	}
-
 	return programHandle;
 }
 
 bgfx::ProgramHandle getRampShader()
 {
 	static bgfx::ProgramHandle programHandle = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(programHandle)) {
+	if (!bgfx::isValid(programHandle))
 		programHandle = loadBgfxProgram("ramp_vs", "ramp_ps");
-	}
-
 	return programHandle;
 }
 
 bgfx::ProgramHandle getSphereShader()
 {
 	static bgfx::ProgramHandle programHandle = BGFX_INVALID_HANDLE;
-	if (!bgfx::isValid(programHandle)) {
+	if (!bgfx::isValid(programHandle))
 		programHandle = loadBgfxProgram("sphere_vs", "sphere_ps");
-	}
-
 	return programHandle;
 }
 // #endregion Get Shaders
 
 void osystem_drawBackground()
 {
-	if (backgroundMode == backgroundModeEnum_2D) {
-		bgfx::VertexLayout layout;
-		layout
-			.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-			.end();
+	if (backgroundMode != backgroundModeEnum_2D) return;
 
-		bgfx::TransientVertexBuffer transientBuffer;
-		bgfx::allocTransientVertexBuffer(&transientBuffer, 6, layout);
+	bgfx::VertexLayout layout;
+	layout
+		.begin()
+		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+		.end();
 
-		struct sVertex
-		{
-			float position[3];
-			float texcoord[2];
-		};
+	bgfx::TransientVertexBuffer transientBuffer;
+	bgfx::allocTransientVertexBuffer(&transientBuffer, 6, layout);
 
-		sVertex* pVertices = (sVertex*)transientBuffer.data;
+	struct sVertex
+	{
+		float position[3];
+		float texcoord[2];
+	};
 
-		float quadVertices[6 * 3];
-		float quadUV[6 * 2];
+	sVertex* pVertices = (sVertex*)transientBuffer.data;
 
-		// 0
-		pVertices->position[0] = 0.f;
-		pVertices->position[1] = 0.f;
-		pVertices->position[2] = 1000.f;
-		pVertices->texcoord[0] = 0.f;
-		pVertices->texcoord[1] = 0.f;
-		pVertices++;
+	float quadVertices[6 * 3];
+	float quadUV[6 * 2];
 
-		//2
-		pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
-		pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
-		pVertices->position[2] = 1000.f;
-		pVertices->texcoord[0] = 1.f;
-		pVertices->texcoord[1] = 1.f;
-		pVertices++;
+	// 0
+	pVertices->position[0] = 0.f;
+	pVertices->position[1] = 0.f;
+	pVertices->position[2] = 1000.f;
+	pVertices->texcoord[0] = 0.f;
+	pVertices->texcoord[1] = 0.f;
+	pVertices++;
 
-		//1
-		pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
-		pVertices->position[1] = 0.f;
-		pVertices->position[2] = 1000.f;
-		pVertices->texcoord[0] = 1.f;
-		pVertices->texcoord[1] = 0.f;
-		pVertices++;
+	//2
+	pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
+	pVertices->position[2] = 1000.f;
+	pVertices->texcoord[0] = 1.f;
+	pVertices->texcoord[1] = 1.f;
+	pVertices++;
 
-		//------------------------
-		//3
-		pVertices->position[0] = 0.f;
-		pVertices->position[1] = 0.f;
-		pVertices->position[2] = 1000.f;
-		pVertices->texcoord[0] = 0.f;
-		pVertices->texcoord[1] = 0.f;
-		pVertices++;
+	//1
+	pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->position[1] = 0.f;
+	pVertices->position[2] = 1000.f;
+	pVertices->texcoord[0] = 1.f;
+	pVertices->texcoord[1] = 0.f;
+	pVertices++;
 
-		//4
-		pVertices->position[0] = 0.f;
-		pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
-		pVertices->position[2] = 1000.f;
-		pVertices->texcoord[0] = 0.f;
-		pVertices->texcoord[1] = 1.f;
-		pVertices++;
+	//------------------------
+	//3
+	pVertices->position[0] = 0.f;
+	pVertices->position[1] = 0.f;
+	pVertices->position[2] = 1000.f;
+	pVertices->texcoord[0] = 0.f;
+	pVertices->texcoord[1] = 0.f;
+	pVertices++;
 
-		//5
-		pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
-		pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
-		pVertices->position[2] = 1000.f;
-		pVertices->texcoord[0] = 1.f;
-		pVertices->texcoord[1] = 1.f;
-		pVertices++;
+	//4
+	pVertices->position[0] = 0.f;
+	pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
+	pVertices->position[2] = 1000.f;
+	pVertices->texcoord[0] = 0.f;
+	pVertices->texcoord[1] = 1.f;
+	pVertices++;
 
-		static bgfx::UniformHandle backgroundTextureUniform = BGFX_INVALID_HANDLE;
-		if (!bgfx::isValid(backgroundTextureUniform)) {
-			backgroundTextureUniform = bgfx::createUniform("s_backgroundTexture", bgfx::UniformType::Sampler);
-		}
-		static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
-		if (!bgfx::isValid(paletteTextureUniform)) {
-			paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
-		}
+	//5
+	pVertices->position[0] = _SCREEN_INTERNAL_WIDTH_FLOAT;
+	pVertices->position[1] = _SCREEN_INTERNAL_HEIGHT_FLOAT;
+	pVertices->position[2] = 1000.f;
+	pVertices->texcoord[0] = 1.f;
+	pVertices->texcoord[1] = 1.f;
+	pVertices++;
 
-
-		bgfx::setState(0 | BGFX_STATE_WRITE_RGB
-			| BGFX_STATE_MSAA
-		);
-
-		bgfx::setVertexBuffer(0, &transientBuffer);
-
-		bgfx::setTexture(0, backgroundTextureUniform, g_backgroundTexture);
-		bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
-		bgfx::submit(gameViewId, getBackgroundShader());
+	static bgfx::UniformHandle backgroundTextureUniform = BGFX_INVALID_HANDLE;
+	if (!bgfx::isValid(backgroundTextureUniform))
+		backgroundTextureUniform = bgfx::createUniform("s_backgroundTexture", bgfx::UniformType::Sampler);
+	static bgfx::UniformHandle paletteTextureUniform = BGFX_INVALID_HANDLE;
+	if (!bgfx::isValid(paletteTextureUniform))
+		paletteTextureUniform = bgfx::createUniform("s_paletteTexture", bgfx::UniformType::Sampler);
 
 
-	}
+	bgfx::setState(0
+		| BGFX_STATE_WRITE_RGB
+		| BGFX_STATE_MSAA
+	);
+
+	bgfx::setVertexBuffer(0, &transientBuffer);
+
+	bgfx::setTexture(0, backgroundTextureUniform, g_backgroundTexture);
+	bgfx::setTexture(1, paletteTextureUniform, g_paletteTexture);
+	bgfx::submit(gameViewId, getBackgroundShader());
 }
 
 bool g_bgfxMainResourcesInitialized = false;
@@ -420,11 +405,10 @@ ImVec2 gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
 void renderGameWindow()
 {
 	if (ImGui::Begin("Game")) {
-		if (bgfx::getCaps()->originBottomLeft) {
+		if (bgfx::getCaps()->originBottomLeft)
 			ImGui::Image(fieldModelInspector_Texture, gameResolution, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		} else {
+		else
 			ImGui::Image(fieldModelInspector_Texture, gameResolution, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
-		}
 	}
 	ImGui::End();
 }
@@ -447,17 +431,14 @@ void osystem_startFrame()
 			currentWindowSize[1] = std::max<int>(currentWindowSize[1], 1);
 
 			gameResolution = currentWindowSize;
-		} else {
-			gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
-		}
+		} else gameResolution = { _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT };
 		ImGui::End();
 
 		if ((gameResolution[0] != oldWindowSize[0]) || (gameResolution[1] != oldWindowSize[1])) {
 			oldWindowSize = gameResolution;
 
-			if (bgfx::isValid(fieldModelInspector_FB)) {
+			if (bgfx::isValid(fieldModelInspector_FB))
 				bgfx::destroy(fieldModelInspector_FB);
-			}
 
 			const uint64_t tsFlags = 0
 				//| BGFX_SAMPLER_MIN_POINT
@@ -516,8 +497,8 @@ unsigned char physicalScreenRGB[_SCREEN_INTERNAL_WIDTH * _SCREEN_INTERNAL_HEIGHT
 /// @details * gets passed `logicalScreen`, `frontBuffer`, & `aux` as `videoBuffer`
 void osystem_CopyBlockPhys(u8* videoBuffer, int left, int top, int right, int bottom)
 {
-	unsigned char* out = physicalScreenRGB;
-	unsigned char* in = (unsigned char*)&videoBuffer[0] + left + top * _SCREEN_INTERNAL_WIDTH;
+	u8* out = physicalScreenRGB;
+	u8* in = (u8*)&videoBuffer[0] + left + top * _SCREEN_INTERNAL_WIDTH;
 
 	while ((right - left) % 4)
 		right++;
@@ -526,10 +507,10 @@ void osystem_CopyBlockPhys(u8* videoBuffer, int left, int top, int right, int bo
 		bottom++;
 
 	for (int i = top, j; i < bottom; i++) {
-		in = (unsigned char*)&videoBuffer[0] + left + i * _SCREEN_INTERNAL_WIDTH;
-		unsigned char* out2 = physicalScreen + left + i * _SCREEN_INTERNAL_WIDTH;
+		in = (u8*)&videoBuffer[0] + left + i * _SCREEN_INTERNAL_WIDTH;
+		u8* out2 = physicalScreen + left + i * _SCREEN_INTERNAL_WIDTH;
 		for (j = left; j < right; j++) {
-			unsigned char color = *(in++);
+			u8 color = *(in++);
 			updateFromRGB_Pal(out, color);
 			*(out2++) = color;
 		}
@@ -541,11 +522,11 @@ void osystem_CopyBlockPhys(u8* videoBuffer, int left, int top, int right, int bo
 /// @brief Updates `physicalScreenRGB`
 void osystem_refreshFrontTextureBuffer()
 {
-	unsigned char* out = physicalScreenRGB;
-	unsigned char* in = physicalScreen;
+	u8* out = physicalScreenRGB;
+	u8* in = physicalScreen;
 
 	for (int i = 0; i < _SCREEN_INTERNAL_HEIGHT * _SCREEN_INTERNAL_WIDTH; i++) {
-		unsigned char color = *(in++);
+		u8 color = *(in++);
 		updateFromRGB_Pal(out, color);
 	}
 
@@ -599,6 +580,7 @@ void osystem_startModelRender() {}
 
 void osystem_stopModelRender() { osystem_flushPendingPrimitives(); }
 
+// #region osystem_flushPendingPrimitives
 void _os_fpp_standardVertexLayout(bgfx::VertexLayout& layout)
 {
 	layout
@@ -667,6 +649,7 @@ void osystem_flushPendingPrimitives()
 
 	numUsedFlatVertices = numUsedNoiseVertices = numUsedRampVertices = numUsedSpheres = numUsedTransparentVertices = 0;
 }
+// #endregion osystem_flushPendingPrimitives
 
 /// @brief 
 /// @param buffer 

@@ -339,7 +339,6 @@ textEntryStruct* getTextFromIdx(int index)
 
 /// @brief Handles the animated page turn & updating the viewed page (I think). UNIMPLEMENTED.
 /// @todo FULLY IMPLEMENT.
-// NOTE: Where are the animations for the page turning stored? Inside `ITD_RESS.PAK`?
 // HACK: Just renders the page w/o the animation.
 void turnPageForward()
 {
@@ -555,18 +554,13 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 			}
 
 			if (line_type & 1) // stretch words on line
-			{
 				interWordSpace = (maxStringWidth - var_1BA) / (numWordInLine - 1);
-			}
 
 			currentText = textTable;
 
+			currentTextX = startX;
 			if (line_type & 8) // center
-			{
-				currentTextX = startX + ((maxStringWidth - var_1BA) / 2);
-			} else {
-				currentTextX = startX;
-			}
+				currentTextX += ((maxStringWidth - var_1BA) / 2);
 
 			for (int i = 0; i < numWordInLine; i++) {
 				renderText(currentTextX, currentTextY, logicalScreen, currentText->textPtr);
@@ -577,9 +571,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 
 
 			if (line_type & 2) // font size
-			{
 				currentTextY += 8; // TODO: Is this related to `fontHeight`/`MESSAGE_HEIGHT`?
-			}
 
 			currentTextY += 16; // TODO: Shouldn't this be `fontHeight`/`MESSAGE_HEIGHT`?
 
@@ -589,11 +581,10 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 		}
 
 	pageChange:
-		if (lastPageReached) {
+		if (lastPageReached)
 			*(ptrt - 1) = 0x1A; // rewrite End Of Text
-		} else {
+		else
 			ptrpage[page + 1] = ptrt;
-		}
 
 		if (demoMode == 0) {
 			if (page > 0)
@@ -615,31 +606,27 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 			if (demoMode != 1) {
 				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 				FadeInPhys(16, 0);
+			} else if (turnPageFlag) {
+				turnPageForward();
 			} else {
-				if (turnPageFlag) {
-					turnPageForward();
-				} else {
-					osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
-				}
+				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			}
 
 			onFirstPage = false;
 		} else {
 			if (turnPageFlag) {
-				if (previousPage < page) {
+				if (previousPage < page)
 					turnPageForward();
-				} else {
+				else
 					turnPageBackward();
-				}
 			} else {
-				osystem_CopyBlockPhys((unsigned char*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
+				osystem_CopyBlockPhys((u8*)logicalScreen, 0, 0, _SCREEN_INTERNAL_WIDTH, _SCREEN_INTERNAL_HEIGHT);
 			}
 		}
 
 		osystem_drawBackground();
 
-		if (demoMode != 1) // mode != 1: normal behavior (user can flip pages)
-		{
+		if (demoMode != 1) { // mode != 1: normal behavior (user can flip pages)
 			do {
 				process_events();
 			} while (key || JoyD || Click);
@@ -650,12 +637,8 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 				localJoyD = JoyD;
 				localClick = Click;
 
-				if ((localKey == 1) || localClick) {
-					quit = true;
-					break;
-				}
-
-				if ((demoMode == 2) && (localKey == 0x1C)) {
+				if (((localKey == 1) || localClick) ||
+					((demoMode == 2) && (localKey == 0x1C))) {
 					quit = true;
 					break;
 				}
@@ -694,9 +677,8 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 					}
 				}
 			}
-		} else // Demo mode: pages automatically flips
-		{
-			unsigned int timeOnCurrentPage;
+		} else { // Demo mode: pages automatically flips
+			uint timeOnCurrentPage;
 			startChrono(&timeOnCurrentPage);
 
 			// While not interupted by input or the timer being exceeded...
@@ -725,9 +707,7 @@ int Lire(int index, int startX, int top, int endX, int bottom, int demoMode, int
 /// @brief Clears all messages.
 void clearMessageTable(void)
 {
-	for (int i = 0; i < NUM_MAX_MESSAGE; i++) {
-		messageTable[i].string = NULL;
-	}
+	for (int i = 0; i < NUM_MAX_MESSAGE; i++) { messageTable[i].string = NULL; }
 }
 
 /// @brief Handles dispatching text render requests and updating `messageTable`.

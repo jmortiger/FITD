@@ -28,22 +28,6 @@ bool comparePalettes(PaletteColorRGB* source, PaletteColorRGB* dest)
 }
 bool comparePalettes(unsigned char* source, PaletteColorRGB* dest) { return comparePalettes((PaletteColorRGB*)source, dest); }
 bool comparePalettes(PaletteColorRGB* source, unsigned char* dest) { return comparePalettes(source, (PaletteColorRGB*)dest); }
-/* // !!!!
-bool comparePalettes(unsigned char* source, PaletteColorRGB* dest)
-{
-	for (int i = 0; i < BYTES_IN_PALETTE; i++) {
-		if (dest[i] != (PaletteColorRGB)((PaletteColorRGB*)source)[i]) return false;
-	}
-	return true;
-}
-
-bool comparePalettes(PaletteColorRGB* source, unsigned char* dest)
-{
-	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
-		if (((PaletteColorRGB*)dest)[i] != source[i]) return false;
-	}
-	return true;//{ ((PaletteColorRGB*)dest)[i] = source[i]; }
-} */
 // #endregion `comparePalettes`
 // #region `copyPalette`
 void copyPalette(unsigned char* source, unsigned char* dest)
@@ -58,20 +42,6 @@ void copyPalette(PaletteColorRGB* source, PaletteColorRGB* dest)
 
 void copyPalette(unsigned char* source, PaletteColorRGB* dest) { copyPalette((PaletteColorRGB*)source, dest); }
 void copyPalette(PaletteColorRGB* source, unsigned char* dest) { copyPalette(source, (PaletteColorRGB*)dest); }
-/* void copyPalette(unsigned char* source, PaletteColorRGB* dest)
-{
-	for (int i = 0; i < COLORS_IN_PALETTE; i++) {
-		dest[i] = (PaletteColorRGB)((PaletteColorRGB*)source)[i];
-		// dest[i].update(source + (i * BYTES_PER_PALETTE_COLOR));
-	}
-	// assert(comparePalettes(source, dest));
-}
-
-void copyPalette(PaletteColorRGB* source, unsigned char* dest)
-{
-	for (int i = 0; i < COLORS_IN_PALETTE; i++) { ((PaletteColorRGB*)dest)[i] = source[i]; }
-	// assert(comparePalettes(source, dest));
-} */
 // #endregion `copyPalette`
 
 // #region paletteFill
@@ -128,22 +98,6 @@ void computePalette(PaletteColorRGB* inPalette, unsigned char* outPalette, int c
 {
 	computePalette(inPalette, (PaletteColorRGB*)outPalette, coefficient);
 }
-/* void computePalette(unsigned char* inPalette, PaletteColorRGB* outPalette, int coefficient)
-{
-	for (int i = 0; i < COLORS_IN_PALETTE; i++, outPalette++) {
-		(*outPalette).r = ((*(inPalette++)) * coefficient) >> 8;
-		(*outPalette).g = ((*(inPalette++)) * coefficient) >> 8;
-		(*outPalette).b = ((*(inPalette++)) * coefficient) >> 8;
-	}
-}
-void computePalette(PaletteColorRGB* inPalette, unsigned char* outPalette, int coefficient)
-{
-	for (int i = 0; i < COLORS_IN_PALETTE; i++, inPalette++) {
-		*(outPalette++) = ((*(inPalette)).r * coefficient) >> 8;
-		*(outPalette++) = ((*(inPalette)).g * coefficient) >> 8;
-		*(outPalette++) = ((*(inPalette)).b * coefficient) >> 8;
-	}
-} */
 // #endregion `computePalette`
 
 void setPalette(void* sourcePal) { osystem_setPalette((PaletteColorRGB*)sourcePal); }

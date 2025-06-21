@@ -24,7 +24,7 @@ s16 fontSm7 = 0x1234;
 s16 fontSm8 = 0x1234;
 s16 fontSm9 = 0x80;
 
-unsigned char flagTable[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
+u8 flagTable[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 
 void ExtSetFont(char* fontData, int color)
 {
@@ -34,11 +34,9 @@ void ExtSetFont(char* fontData, int color)
 	fontData += 2;
 
 	fontSm1 = *(fontData++); // character height
-	fontSm2 = *(unsigned char*)(fontData++); // character size
+	fontSm2 = *(u8*)(fontData++); // character size
 
-	if (!fontSm2) {
-		fontSm2 = READ_LE_S16(fontData);
-	}
+	if (!fontSm2) fontSm2 = READ_LE_S16(fontData);
 
 	fontData += 2;
 
@@ -81,7 +79,7 @@ int ExtGetSizeFont(u8* string)
 		width += data;
 	}
 
-	return(width);
+	return width;
 }
 
 void renderText(int x, int y, char* surface, u8* string)
@@ -123,6 +121,7 @@ void renderText(int x, int y, char* surface, u8* string)
 				int dh = fontSm9;
 				int cl = data & 0xF;
 
+				// `a` register (low)
 				int al = *characterPtr;
 
 				bp++;
@@ -136,6 +135,7 @@ void renderText(int x, int y, char* surface, u8* string)
 
 					if (dh & 0x80) {
 						bx++;
+						// NOTE: Why assign? It'll get overwritten anyways. Related to register use?
 						al = *(characterPtr + bx);
 					}
 				}
@@ -197,3 +197,27 @@ void SimpleMessage(int x, int y, int index, int color)
 
 	renderText(x, y + 1, logicalScreen, textPtr);
 }
+
+/* /// @brief Draw given text message at given location with an optional drop-shadow
+/// @param x 
+/// @param y 
+/// @param index 
+/// @param textColor 
+/// @param shadowColor 
+void GenericMessage(int x, int y, int index, int textColor, int shadowColor = -1)
+{
+	textEntryStruct* entryPtr = getTextFromIdx(index);
+
+	if (!entryPtr) return;
+
+	x -= (entryPtr->width / 2); // center
+
+	u8* textPtr = entryPtr->textPtr;
+
+	ExtSetFont(PtrFont, shadowColor >= 0 ? shadowColor : textColor);
+	renderText(x, y + 1, logicalScreen, textPtr);
+
+	if (shadowColor < 0) return;
+	ExtSetFont(PtrFont, textColor);
+	renderText(x, y, logicalScreen, textPtr);
+} */

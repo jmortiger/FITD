@@ -17,8 +17,13 @@ SDL_Window* gWindowBGFX = nullptr;
 int gFrameLimit = 60;
 bool gCloseApp = false;
 
+#ifdef _MSC_VER
 /// @brief Used to control volume through a UI slider; min: 0, max: 1, default: 1.
 float gVolume = 1.0f;
+#else
+/// @brief Used to control volume through a UI slider; min: 0, max: 1, default: 1.
+float gVolume = 0.0f;
+#endif
 
 // Because SDL is not well defined when using cmake (it's using the old style config.h and is somewhat broken)
 extern "C" {
@@ -87,22 +92,20 @@ void StartFrame()
 }
 
 extern bool debuggerVar_debugMenuDisplayed;
-/// @brief Handles the rendering cleanup for this frame
+/// @brief Handles the rendering cleanup for this frame & caps framerate
 /// @details * Toggles debug menu w/ imgui input detection
 /// * Ends/renders imgui frame
 /// * `bgfx::frame();` to render frame
 /// * SDL performance timing
 void EndFrame()
 {
-	if (ImGui::IsKeyPressed(ImGuiKey_GraveAccent, false)) {
+	if (ImGui::IsKeyPressed(ImGuiKey_GraveAccent, false))
 		debuggerVar_debugMenuDisplayed = !debuggerVar_debugMenuDisplayed;
-	}
 
-	if (debuggerVar_debugMenuDisplayed) {
+	if (debuggerVar_debugMenuDisplayed)
 		imguiEndFrame();
-	} else {
+	else
 		ImGui::Render();
-	}
 	bgfx::frame();
 
 	// #region SDL Timing
@@ -112,9 +115,7 @@ void EndFrame()
 	double secs = (now - last_time) / freq;
 	double timeToWait = ((1.f / gFrameLimit) - secs) * 1000;
 	//timeToWait = 0;
-	if (timeToWait > 0) {
-		SDL_Delay((unsigned int)timeToWait);
-	}
+	if (timeToWait > 0) SDL_Delay((unsigned int)timeToWait);
 
 	last_time = SDL_GetPerformanceCounter();
 	// #endregion SDL Timing

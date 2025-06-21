@@ -44,6 +44,7 @@ void osystem_updateImage() {}
 #define CALLBACK
 #endif
 
+// #region Audio
 /**
  * @brief Wrapper for `int musicUpdate(void *udata, uint8 *stream, int len)`
  * @param udata
@@ -55,6 +56,7 @@ void OPL_musicPlayer(void* udata, Uint8* stream, int len) { musicUpdate(udata, s
 extern "C" { void Sound_Quit(void); }
 
 void Sound_Quit(void) {}
+// #endregion Audio
 
 extern "C" {
 	char homePath[256] = "";
@@ -67,7 +69,10 @@ SDL_Semaphore* endOfRender = NULL;
 //SDL_sem* emptyCount = NULL;
 //SDL_sem* fullCount = NULL;
 
-bool bFirst = true;
+// TODO: Was this an old version of the local `bFirstFrame` in `FitdInit`?
+// bool bFirst = true;
+
+#define FRAMES_PER_SECOND 25
 
 /// @brief 1st Entrypoint
 /// @param argc 
@@ -84,13 +89,13 @@ int FitdInit(int argc, char* argv[])
 
 	osystem_init();
 
-	uint flags = 0;
-	flags |= SDL_WINDOW_RESIZABLE;
-	//flags |= SDL_WINDOW_ALLOW_HIGHDPI;
-
+	uint flags = 0
+		| SDL_WINDOW_RESIZABLE
+		//| SDL_WINDOW_ALLOW_HIGHDPI
 #ifdef __IPHONEOS__
-	flags |= SDL_WINDOW_FULLSCREEN;
+		| SDL_WINDOW_FULLSCREEN
 #endif
+		;
 
 	int scale = 4;
 	/// @brief is running in dos resolution 13h, ie 320x200x256, but is displayed in 4:3, so pixel are not square (1.6:1)
@@ -107,8 +112,6 @@ int FitdInit(int argc, char* argv[])
 
 	unsigned long int t_start = SDL_GetTicks();
 	unsigned long int t_lastUpdate = t_start;
-
-	int FRAMES_PER_SECOND = 25;
 
 	u32 startOfPreviousFrame = SDL_GetTicks();
 	bool bFirstFrame = true;
@@ -161,8 +164,6 @@ int FitdInit(int argc, char* argv[])
 
 u32 lastFrameTime = 0;
 
-#define FRAMES_PER_SECOND 25
-
 u32 osystem_startOfFrame()
 {
 	SDL_WaitSemaphore(startOfRender);
@@ -211,7 +212,7 @@ void osystem_endOfFrame()
 
 	EndFrame();
 
-	if (bFirst) bFirst = false;
+	// if (bFirst) bFirst = false;
 
 	SDL_SignalSemaphore(endOfRender);
 	//SDL_SemPost(emptyCount);

@@ -1494,9 +1494,8 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					readBook(lifeTempVar2 + 1, lifeTempVar1);
 
-					if (g_gameId == AITD1) {
+					if (g_gameId == AITD1)
 						FadeOutPhys(4, 0);
-					}
 
 					flagInitView = 2;
 
@@ -1568,14 +1567,11 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_2D_ANIM_SAMPLE:
 				{
 					appendFormatted("LM_2D_ANIM_SAMPLE ");
-					int sampleNumber;
-					int animNumber;
-					int frameNumber;
 
-					sampleNumber = evalVar();
-					animNumber = *(s16*)(currentLifePtr);
+					int sampleNumber = evalVar();
+					int animNumber = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
-					frameNumber = *(s16*)(currentLifePtr);
+					int frameNumber = *(s16*)(currentLifePtr);
 					currentLifePtr += 2;
 
 					printf("LM_2D_ANIM_SAMPLE(sampleNumber %d, animNumber %d, frameNumber %d)\n", sampleNumber, animNumber, frameNumber);
