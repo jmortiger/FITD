@@ -64,7 +64,7 @@ void loadFloor(int floorNumber)
 	int i;
 	DebugPrintfLn(DBO_L_INFO2, "Loading the expected %i rooms on floor %i...", expectedNumberOfRoom, floorNumber);
 	for (i = 0; i < expectedNumberOfRoom; i++) {
-		DebugPrintfLn(DBO_L_LOG, "Room %i (E%iR%i ?):", i, floorNumber, i);
+		DebugPrintfLn(DBO_L_LOG, "Room %i (E%iR%i):", i, floorNumber, i);
 		DebugBeginSection(DBO_FLOOR);
 		u32 j;
 
@@ -98,35 +98,66 @@ void loadFloor(int floorNumber)
 		}
 		roomDataStruct* currentRoomDataPtr = &roomDataTable[i];
 
-		DebugBPrintf(DBO_L_DEBUG, "worldX: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData + 4)); DebugBFlushLn();
+		u8* roomData_backup = roomData;
+		DebugPrintfLn(DBO_L_LOG, "hardColOffset: %hu", READ_LE_U16(roomData));
+		int hardColOffset = readS16LE(roomData);
+		DebugPrintfLn(DBO_L_LOG, "sceZoneOffset: %hu", READ_LE_U16(roomData));
+		int sceZoneOffset = readS16LE(roomData);
+
+		/* DebugBPrintf(DBO_L_DEBUG, "worldX: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData + 4)); DebugBFlushLn();
 		DebugBPrintf(DBO_L_DEBUG, "worldY: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData + 6)); DebugBFlushLn();
 		DebugBPrintf(DBO_L_DEBUG, "worldZ: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData + 8)); DebugBFlushLn();
 		currentRoomDataPtr->worldX = READ_LE_S16(roomData + 4);
 		currentRoomDataPtr->worldY = READ_LE_S16(roomData + 6);
-		currentRoomDataPtr->worldZ = READ_LE_S16(roomData + 8);
+		currentRoomDataPtr->worldZ = READ_LE_S16(roomData + 8); */
+		DebugBPrintf(DBO_L_DEBUG, "worldX: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+		currentRoomDataPtr->worldX = readS16LE(roomData);
+		DebugBPrintf(DBO_L_DEBUG, "worldY: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+		currentRoomDataPtr->worldY = readS16LE(roomData);
+		DebugBPrintf(DBO_L_DEBUG, "worldZ: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+		currentRoomDataPtr->worldZ = readS16LE(roomData);
+		// roomData = roomData_backup;
 
-		DebugBPrintf(DBO_L_DEBUG, "numCameraInRoom: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xA)); DebugBFlushLn();
-		currentRoomDataPtr->numCameraInRoom = READ_LE_U16(roomData + 0xA);
+		// #region Read cameras
+		/* DebugBPrintf(DBO_L_DEBUG, "numCameraInRoom: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xA)); DebugBFlushLn();
+		currentRoomDataPtr->numCameraInRoom = READ_LE_U16(roomData + 0xA); */
+		DebugBPrintf(DBO_L_DEBUG, "numCameraInRoom: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData)); DebugBFlushLn();
+		currentRoomDataPtr->numCameraInRoom = readU16LE(roomData);
 
+		// NOTE: Unlike the other 2 tables, there should always be at least 1 cam, so no safety.
 		currentRoomDataPtr->cameraIdxTable = (u16*)malloc(currentRoomDataPtr->numCameraInRoom * sizeof(u16));
 
 		DebugPrintfLn(DBO_L_LOG, "cameraIdxTable (length: %u)", currentRoomDataPtr->numCameraInRoom);
 		DebugBeginSection(DBO_FLOOR);
 		for (j = 0; j < currentRoomDataPtr->numCameraInRoom; j++) {
-			DebugBPrintf(DBO_L_DEBUG, "%i: ", j); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xC + 2 * j)); DebugBFlushLn();
-			currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData + 0xC + 2 * j);
+			// DebugBPrintf(DBO_L_DEBUG, "%i: ", j); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xC + 2 * j)); DebugBFlushLn();
+			// currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData + 0xC + 2 * j);
+			DebugBPrintf(DBO_L_DEBUG, "%i: ", j); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData)); DebugBFlushLn();
+			currentRoomDataPtr->cameraIdxTable[j] = readU16LE(roomData);
 		}
 		DebugEndSection();
+		// #endregion Read cameras
 
 		// IDEA: hard col read & sce zone read are almost identical; combine?
 
 		DebugDisableOutput();
 		// #region hard col read
-		DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", READ_LE_U16(roomData));
-		u8* hardColData = roomData + READ_LE_U16(roomData);
-		DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(hardColData));
-		currentRoomDataPtr->numHardCol = READ_LE_U16(hardColData);
-		hardColData += 2;
+		/* DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", READ_LE_U16(roomData));
+		// u8* hardColData = roomData + READ_LE_U16(roomData);
+		// DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(hardColData));
+		// currentRoomDataPtr->numHardCol = READ_LE_U16(hardColData);
+		// hardColData += 2;
+		AutoAdvancePtr hardColData = AutoAdvancePtr(roomData + READ_LE_U16(roomData)); */
+		DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", hardColOffset);
+		// u8* hardColData = roomData + READ_LE_U16(roomData);
+		// DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(hardColData));
+		// currentRoomDataPtr->numHardCol = READ_LE_U16(hardColData);
+		// hardColData += 2;
+		DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(roomData));
+		currentRoomDataPtr->numHardCol = readU16LE(roomData);
+		// AutoAdvancePtr hardColData = AutoAdvancePtr(roomData + hardColOffset);
+		// DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", hardColData.readOnlyU16LE());
+		// currentRoomDataPtr->numHardCol = hardColData.readU16LE();
 
 		if (currentRoomDataPtr->numHardCol) {
 			currentRoomDataPtr->hardColTable = (hardColStruct*)malloc(sizeof(hardColStruct) * currentRoomDataPtr->numHardCol);
@@ -136,25 +167,58 @@ void loadFloor(int floorNumber)
 				DebugBeginSection(DBO_FLOOR);
 				ZVStruct* zvData = &currentRoomDataPtr->hardColTable[j].zv;
 
-				DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x00)); DebugBFlushLn();
-				zvData->ZVX1 = READ_LE_S16(hardColData + 0x00);
-				DebugBPrintf(DBO_L_DEBUG, "ZVX2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x02)); DebugBFlushLn();
-				zvData->ZVX2 = READ_LE_S16(hardColData + 0x02);
-				DebugBPrintf(DBO_L_DEBUG, "ZVY1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x04)); DebugBFlushLn();
-				zvData->ZVY1 = READ_LE_S16(hardColData + 0x04);
-				DebugBPrintf(DBO_L_DEBUG, "ZVY2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x06)); DebugBFlushLn();
-				zvData->ZVY2 = READ_LE_S16(hardColData + 0x06);
-				DebugBPrintf(DBO_L_DEBUG, "ZVZ1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x08)); DebugBFlushLn();
-				zvData->ZVZ1 = READ_LE_S16(hardColData + 0x08);
-				DebugBPrintf(DBO_L_DEBUG, "ZVZ2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x0A)); DebugBFlushLn();
-				zvData->ZVZ2 = READ_LE_S16(hardColData + 0x0A);
-				
-				DebugBPrintf(DBO_L_DEBUG, "param: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x0C)); DebugBFlushLn();
-				currentRoomDataPtr->hardColTable[j].parameter = READ_LE_U16(hardColData + 0x0C);
-				DebugBPrintf(DBO_L_DEBUG, "type: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData + 0x0E)); DebugBFlushLn();
-				currentRoomDataPtr->hardColTable[j].type = READ_LE_U16(hardColData + 0x0E);
+				/* DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				zvData->ZVX1 = READ_LE_S16(advPtr<s16>(hardColData));
+				DebugBPrintf(DBO_L_DEBUG, "ZVX2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				zvData->ZVX2 = READ_LE_S16(advPtr<s16>(hardColData));
+				DebugBPrintf(DBO_L_DEBUG, "ZVY1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				zvData->ZVY1 = READ_LE_S16(advPtr<s16>(hardColData));
+				DebugBPrintf(DBO_L_DEBUG, "ZVY2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				zvData->ZVY2 = READ_LE_S16(advPtr<s16>(hardColData));
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				zvData->ZVZ1 = READ_LE_S16(advPtr<s16>(hardColData));
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				zvData->ZVZ2 = READ_LE_S16(advPtr<s16>(hardColData));
 
-				hardColData += 0x10;
+				DebugBPrintf(DBO_L_DEBUG, "param: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				currentRoomDataPtr->hardColTable[j].parameter = READ_LE_U16(advPtr<u16>(hardColData));
+				DebugBPrintf(DBO_L_DEBUG, "type: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData)); DebugBFlushLn();
+				currentRoomDataPtr->hardColTable[j].type = READ_LE_U16(advPtr<u16>(hardColData)); */
+				/* DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData.ptr)); DebugBFlushLn();
+				zvData->ZVX1 = hardColData.readS16LE();
+				DebugBPrintf(DBO_L_DEBUG, "ZVX2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData.ptr)); DebugBFlushLn();
+				zvData->ZVX2 = hardColData.readS16LE();
+				DebugBPrintf(DBO_L_DEBUG, "ZVY1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData.ptr)); DebugBFlushLn();
+				zvData->ZVY1 = hardColData.readS16LE();
+				DebugBPrintf(DBO_L_DEBUG, "ZVY2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData.ptr)); DebugBFlushLn();
+				zvData->ZVY2 = hardColData.readS16LE();
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData.ptr)); DebugBFlushLn();
+				zvData->ZVZ1 = hardColData.readS16LE();
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(hardColData.ptr)); DebugBFlushLn();
+				zvData->ZVZ2 = hardColData.readS16LE();
+
+				DebugBPrintf(DBO_L_DEBUG, "param: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(hardColData.ptr)); DebugBFlushLn();
+				currentRoomDataPtr->hardColTable[j].parameter = hardColData.readU16LE();
+				DebugBPrintf(DBO_L_DEBUG, "type: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(hardColData.ptr)); DebugBFlushLn();
+				currentRoomDataPtr->hardColTable[j].type = hardColData.readU16LE(); */
+				DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVX1 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVX2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVX2 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVY1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVY1 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVY2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVY2 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVZ1 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVZ2 = readS16LE(roomData);
+
+				DebugBPrintf(DBO_L_DEBUG, "param: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData)); DebugBFlushLn();
+				currentRoomDataPtr->hardColTable[j].parameter = readU16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "type: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData)); DebugBFlushLn();
+				currentRoomDataPtr->hardColTable[j].type = readU16LE(roomData);
+
 				DebugEndSection();
 			}
 		} else currentRoomDataPtr->hardColTable = NULL;
@@ -163,6 +227,7 @@ void loadFloor(int floorNumber)
 		// #region sce zone read
 		DebugBPrintf(DBO_L_LOG, "Loading sceZoneData from offset "); DebugBPrintRaw(DBO_L_LOG, PF_LE_U16(roomData + 2)); DebugBPrintf(DBO_L_LOG, "..."); DebugBFlushLn();
 		// DebugPrintfLn(DBO_L_LOG, "Loading sceZoneData from offset %hu...", READ_LE_U16(roomData + 2));
+		roomData = roomData_backup;
 		u8* sceZoneData = roomData + READ_LE_U16(roomData + 2);
 		DebugBPrintf(DBO_L_LOG, "numSceZone: "); DebugBPrintRaw(DBO_L_LOG, PF_LE_U16(sceZoneData)); DebugBFlushLn();
 		// DebugPrintfLn(DBO_L_LOG, "numSceZone: %hu", READ_LE_U16(sceZoneData));

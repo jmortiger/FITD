@@ -316,6 +316,8 @@ FORCEINLINE s32 READ_BE_S32(void* ptr) { return (s32)READ_BE_U32(ptr); }
 // #endregion 32 bit
 /* #endregion */
 
+#include "misc/pointer.h"
+
 /// @brief Add a breakpoint here to catch all fatal exits.
 FORCEINLINE void FITD_throwFatal(const char* format = NULL, ...) {
 	if (format != NULL && *format != '\000') {

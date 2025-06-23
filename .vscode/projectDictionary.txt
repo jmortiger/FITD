@@ -31,6 +31,7 @@ MSVC
 OPENGL
 OPENGLES
 osystem
+paks
 Pregzt
 reimplementation
 roboto
