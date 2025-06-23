@@ -86,6 +86,8 @@ If using a debug build, the following options can be used:
  * `-itd [levels]`: Enable debug output for itd-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
  * `-life [levels]`: Enable debug output for life-related debug messages. `levels` is an integer of which debug level flags are enabled. If omitted, `info`, `warning`, and `error` level messages will be enabled.
 
+ * `-logLife [lifeNum1,lifeNum2...]`: Enable verbose life (script) debug output. To log all lives, simply add `-logLife`; to log specific lives, make a comma-separated list of them (e.g. `-logLife 549,11`). To log no lives, omit this option entirely.
+
 ## Platform Notes
 ### Building with Visual Studio on Windows
 This has been tested rigorously & works fine. Building for other plaforms from a Windows environment hasn't been robustly tested. If you'd like to try and build for Linux, please do so & contact @jmortiger ; he can test your build. If anyone has a macOS machine (Intel or Apple Silicon/M#) & a Windows machine that would like to test a macOS build, please do so and let us know how it goes. It would be great to make a proper release w/ a compiled binary for the 3 main platforms.

@@ -396,7 +396,9 @@ char currentDebugLifeLine[1024 * 1024];
 
 void appendFormatted(const char* format, ...)
 {
-	if (numLoggedLifeScripts <= 0)
+	if (numLoggedLifeScripts < 0)
+		return;
+	if (numLoggedLifeScripts == 0)
 		goto doContinue;
 	for (int i = 0; i < numLoggedLifeScripts; i++) {
 		if (loggedLifeScripts[i] == currentLifeNum)

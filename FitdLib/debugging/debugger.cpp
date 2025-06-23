@@ -308,7 +308,7 @@ void debugger_draw(void)
 // #region Life Script logging
 /// @brief Life script numbers to enable output for.
 int loggedLifeScripts[_MAX_LOGGED_LIFE_SCRIPTS];
-int numLoggedLifeScripts = 0;
+int numLoggedLifeScripts = -1;
 // #endregion Life Script logging
 
 // #region Replay
@@ -442,6 +442,7 @@ void parseDebugParam(int argc, char* argv[])
 			prior = DBO_NONE;
 			if (strcasecmp("logLife", ptr) == 0) {
 				shouldLogLives = true;
+				numLoggedLifeScripts = 0;
 				continue;
 			}
 		}
