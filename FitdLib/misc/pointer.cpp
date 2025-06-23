@@ -120,6 +120,32 @@ u32 AutoAdvancePtr::readOnlyU32() { return *(u32*)ptr; }
 u32 AutoAdvancePtr::readOnlyU32LE() { return READ_LE_U32(ptr); }
 u32 AutoAdvancePtr::readOnlyU32BE() { return READ_BE_U32(ptr); }
 // }; typedef class AutoAdvancePtr AutoAdvancePtr;
+#define __readBody(outType, size, inType, outTypeName) outType read##outTypeName(inType*& ptr)\
+{\
+	outType r = *(outType*)ptr;\
+	ptr = &ptr[size];\
+	return r;\
+}
+#define _readBody(outType, size, inType, outTypeName) __readBody(outType, size, inType, outTypeName)
+#define __readBodyEndian(outType, size, inType, endianess, outTypeName) outType read##outTypeName##endianess(inType*& ptr)\
+{\
+	/* outType r = *(outType*)ptr;\ */\
+	outType r = READ_##endianess##_##outTypeName(ptr);\
+	ptr = &ptr[size];\
+	return r;\
+}
+#define _readBodyEndian(outType, size, inType, endianess, outTypeName) __readBodyEndian(outType, size, inType, endianess, outTypeName)
+#define _readBodyAllIn(outType, size, outTypeName) __readBody(outType, size, u8, outTypeName)\
+__readBody(outType, size, s8, outTypeName)\
+__readBody(outType, size, char, outTypeName)
+#define _readBodyAllEndian(outType, size, inType, outTypeName) __readBody(outType, size, inType, outTypeName)\
+__readBodyEndian(outType, size, inType, LE, outTypeName)\
+__readBodyEndian(outType, size, inType, BE, outTypeName)
+#define _readBodyAll(outType, size, outTypeName) _readBodyAllEndian(outType, size, u8, outTypeName)\
+_readBodyAllEndian(outType, size, s8, outTypeName)\
+_readBodyAllEndian(outType, size, char, outTypeName)
+#define _readBodyAllSign(bits, bytes) _readBodyAll(s##bits, bytes, S##bits)\
+_readBodyAll(u##bits, bytes, U##bits)
 s8 readS8(u8*& ptr) { return ((s8)(*(ptr++))); }
 s8 readS8(s8*& ptr) { return ((s8)(*(ptr++))); }
 s8 readS8LE(u8*& ptr) { return ((s8)(*(ptr++))); }
@@ -132,13 +158,14 @@ u8 readU8LE(u8*& ptr) { return ((u8)(*(ptr++))); }
 u8 readU8LE(s8*& ptr) { return ((u8)(*(ptr++))); }
 u8 readU8BE(u8*& ptr) { return ((u8)(*(ptr++))); }
 u8 readU8BE(s8*& ptr) { return ((u8)(*(ptr++))); }
-s16 readS16(u8*& ptr)
-{
-	s16 r = *(s16*)ptr;
-	ptr = &ptr[2];
-	return r;
-}
-s16 readS16(s8*& ptr)
+/* 
+_readBodyAll(s16, 2, S16)
+_readBodyAllEndian(s16, 2, u8, S16)
+_readBodyAllIn(s16, 2, S16)
+_readBody(s16, 2, u8, S16)
+*/
+_readBodyAllSign(16, 2)
+/* s16 readS16(s8*& ptr)
 {
 	s16 r = *(s16*)ptr;
 	ptr = &ptr[2];
@@ -167,8 +194,8 @@ s16 readS16BE(s8*& ptr)
 	s16 r = READ_BE_S16(ptr);
 	ptr = &ptr[2];
 	return r;
-}
-u16 readU16(u8*& ptr)
+} */
+/* u16 readU16(u8*& ptr)
 {
 	u16 r = *(u16*)ptr;
 	ptr = &ptr[2];
@@ -203,8 +230,9 @@ u16 readU16BE(s8*& ptr)
 	u16 r = READ_BE_U16(ptr);
 	ptr = &ptr[2];
 	return r;
-}
-s32 readS32(u8*& ptr)
+} */
+_readBodyAllSign(32, 4)
+/* s32 readS32(u8*& ptr)
 {
 	s32 r = *(s32*)ptr;
 	ptr += 4;
@@ -275,7 +303,7 @@ u32 readU32BE(s8*& ptr)
 	u32 r = READ_BE_U32(ptr);
 	ptr += 4;
 	return r;
-}
+} */
 // #region void*
 /* s16 readS16(void* &ptr) {
 	s16 r = *(s16*)ptr;

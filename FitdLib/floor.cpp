@@ -50,10 +50,9 @@ void loadFloor(int floorNumber)
 	needChangeRoom = 1;
 	changeFloor = 0;
 
-	//////////////////////////////////
+	// #region Load rooms //////////////////////////////////
 
-	// Free prior room data table
-	if (roomDataTable) {
+	if (roomDataTable) { // Free prior room data table
 		DebugPrintfLn(DBO_L_LOG, "Freeing prior room data table from address %lx...", roomDataTable);
 		free(roomDataTable);
 		roomDataTable = NULL;
@@ -127,8 +126,8 @@ void loadFloor(int floorNumber)
 		// NOTE: Unlike the other 2 tables, there should always be at least 1 cam, so no safety.
 		currentRoomDataPtr->cameraIdxTable = (u16*)malloc(currentRoomDataPtr->numCameraInRoom * sizeof(u16));
 
-		DebugPrintfLn(DBO_L_LOG, "cameraIdxTable (length: %u)", currentRoomDataPtr->numCameraInRoom);
-		DebugBeginSection(DBO_FLOOR);
+		DebugPrintfLnCategory(DBO_L_LOG, DBO_CAMERA, "E%iR%i cameraIdxTable (length: %u)", floorNumber, i, currentRoomDataPtr->numCameraInRoom);
+		DebugBeginSection(DBO_CAMERA);
 		for (j = 0; j < currentRoomDataPtr->numCameraInRoom; j++) {
 			// DebugBPrintf(DBO_L_DEBUG, "%i: ", j); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData + 0xC + 2 * j)); DebugBFlushLn();
 			// currentRoomDataPtr->cameraIdxTable[j] = READ_LE_U16(roomData + 0xC + 2 * j);
@@ -140,7 +139,6 @@ void loadFloor(int floorNumber)
 
 		// IDEA: hard col read & sce zone read are almost identical; combine?
 
-		DebugDisableOutput();
 		// #region hard col read
 		/* DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", READ_LE_U16(roomData));
 		// u8* hardColData = roomData + READ_LE_U16(roomData);
@@ -149,6 +147,8 @@ void loadFloor(int floorNumber)
 		// hardColData += 2;
 		AutoAdvancePtr hardColData = AutoAdvancePtr(roomData + READ_LE_U16(roomData)); */
 		DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", hardColOffset);
+		if ((roomData - roomData_backup) != hardColOffset)
+			DebugPrintfLn(DBO_L_WARN, "Expected offset of %hu, got %hu (0x%lX - 0x%lX)", hardColOffset, roomData - roomData_backup, (unsigned long)roomData, (unsigned long)roomData_backup);
 		// u8* hardColData = roomData + READ_LE_U16(roomData);
 		// DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(hardColData));
 		// currentRoomDataPtr->numHardCol = READ_LE_U16(hardColData);
@@ -225,14 +225,20 @@ void loadFloor(int floorNumber)
 		// #endregion hard col read
 
 		// #region sce zone read
+		/* // DebugPrintfLn(DBO_L_LOG, "Loading sceZoneData from offset %hu...", READ_LE_U16(roomData + 2));
 		DebugBPrintf(DBO_L_LOG, "Loading sceZoneData from offset "); DebugBPrintRaw(DBO_L_LOG, PF_LE_U16(roomData + 2)); DebugBPrintf(DBO_L_LOG, "..."); DebugBFlushLn();
-		// DebugPrintfLn(DBO_L_LOG, "Loading sceZoneData from offset %hu...", READ_LE_U16(roomData + 2));
 		roomData = roomData_backup;
 		u8* sceZoneData = roomData + READ_LE_U16(roomData + 2);
 		DebugBPrintf(DBO_L_LOG, "numSceZone: "); DebugBPrintRaw(DBO_L_LOG, PF_LE_U16(sceZoneData)); DebugBFlushLn();
 		// DebugPrintfLn(DBO_L_LOG, "numSceZone: %hu", READ_LE_U16(sceZoneData));
 		currentRoomDataPtr->numSceZone = READ_LE_U16(sceZoneData);
 		sceZoneData += 2;
+		*/
+		DebugPrintfLn(DBO_L_LOG, "Loading sceZoneData from offset %hu...", sceZoneOffset);
+		if ((unsigned long)((unsigned long)roomData - (unsigned long)roomData_backup) != sceZoneOffset)
+			DebugPrintfLn(DBO_L_WARN, "Expected offset of %hu, got %lu (0x%lX - 0x%lX)", sceZoneOffset, (unsigned long)roomData - (unsigned long)roomData_backup, (unsigned long)roomData, (unsigned long)roomData_backup);
+		DebugBPrintf(DBO_L_LOG, "numSceZone: "); DebugBPrintRaw(DBO_L_LOG, PF_LE_U16(roomData)); DebugBFlushLn();
+		currentRoomDataPtr->numSceZone = readU16LE(roomData);
 
 		if (currentRoomDataPtr->numSceZone) {
 			currentRoomDataPtr->sceZoneTable = (sceZoneStruct*)malloc(sizeof(sceZoneStruct) * currentRoomDataPtr->numSceZone);
@@ -242,7 +248,7 @@ void loadFloor(int floorNumber)
 				DebugBeginSection(DBO_FLOOR);
 				ZVStruct* zvData = &currentRoomDataPtr->sceZoneTable[j].zv;
 
-				DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(sceZoneData + 0x00)); DebugBFlushLn();
+				/* DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(sceZoneData + 0x00)); DebugBFlushLn();
 				zvData->ZVX1 = READ_LE_S16(sceZoneData + 0x00);
 				DebugBPrintf(DBO_L_DEBUG, "ZVX2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(sceZoneData + 0x02)); DebugBFlushLn();
 				zvData->ZVX2 = READ_LE_S16(sceZoneData + 0x02);
@@ -260,15 +266,32 @@ void loadFloor(int floorNumber)
 				DebugBPrintf(DBO_L_DEBUG, "type: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(sceZoneData + 0x0E)); DebugBFlushLn();
 				currentRoomDataPtr->sceZoneTable[j].type = READ_LE_U16(sceZoneData + 0x0E);
 
-				sceZoneData += 0x10;
+				sceZoneData += 0x10; */
+				DebugBPrintf(DBO_L_DEBUG, "ZVX1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVX1 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVX2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVX2 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVY1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVY1 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVY2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVY2 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVZ1 = readS16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "ZVZ2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(roomData)); DebugBFlushLn();
+				zvData->ZVZ2 = readS16LE(roomData);
+
+				DebugBPrintf(DBO_L_DEBUG, "param: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData)); DebugBFlushLn();
+				currentRoomDataPtr->sceZoneTable[j].parameter = readU16LE(roomData);
+				DebugBPrintf(DBO_L_DEBUG, "type: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(roomData)); DebugBFlushLn();
+				currentRoomDataPtr->sceZoneTable[j].type = readU16LE(roomData);
+
 				DebugEndSection();
 			}
 		} else currentRoomDataPtr->sceZoneTable = NULL;
 		// #endregion sce zone read
-		DebugEnableOutput();
 		DebugEndSection();
 	}
-	///////////////////////////////////
+	// #endregion Load rooms //////////////////////////////////
 
 	// #region camera stuff /////////////////////////////////////////////////
 	int expectedNumberOfCamera;
@@ -421,8 +444,7 @@ void loadFloor(int floorNumber)
 					if (pMaskData) assert(pZoneData == pMaskData);
 					//pZoneData = currentCameraData;
 
-					int numZones;
-					pCurrentCameraViewedRoom->numCoverZones = numZones = READ_LE_U16(pZoneData);
+					int numZones = pCurrentCameraViewedRoom->numCoverZones = READ_LE_U16(pZoneData);
 					pZoneData += 2;
 
 					pCurrentCameraViewedRoom->coverZones = (cameraZoneEntryStruct*)malloc(sizeof(cameraZoneEntryStruct) * numZones);
@@ -458,7 +480,7 @@ void loadFloor(int floorNumber)
 					currentCameraData += 6;
 			}
 		} else { // Early exit
-			DebugPrintfLn(DBO_L_INFO2, "Exhausted data store; Early exit");
+			DebugPrintfLn(DBO_L_WARN, "Expected %i cameras, but exhausted data store at %i cameras; exiting early.", expectedNumberOfCamera, i);
 			DebugEndSection();
 			break;
 		}
@@ -466,6 +488,7 @@ void loadFloor(int floorNumber)
 	}
 
 	g_currentFloorNumCamera = i - 1;
+	DebugPrintfLn(DBO_L_LOG, "g_currentFloorNumCamera set to last loaded camera (%u)", g_currentFloorNumCamera);
 
 	// globalCameraDataTable = (cameraDataStruct*)realloc(globalCameraDataTable,sizeof(cameraDataStruct)*numGlobalCamera);
 

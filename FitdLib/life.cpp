@@ -680,11 +680,7 @@ void processLife(int lifeNum, bool callFoundLife)
 			int opcodeLocated;
 		processOpcode:
 
-			if (g_gameId == AITD1) {
-				opcodeLocated = AITD1LifeMacroTable[currentOpcode & 0x7FFF];
-			} else {
-				opcodeLocated = AITD2LifeMacroTable[currentOpcode & 0x7FFF];
-			}
+			opcodeLocated = ((g_gameId == AITD1) ? AITD1LifeMacroTable : AITD2LifeMacroTable)[currentOpcode & 0x7FFF];
 
 			switch (opcodeLocated) {
 				case LM_BODY:
@@ -1589,8 +1585,9 @@ void processLife(int lifeNum, bool callFoundLife)
 					} else if (g_gameId <= JACK) {
 						sampleNumber = evalVar();
 					} else {
-						sampleNumber = *(s16*)(currentLifePtr);
-						currentLifePtr += 2;
+						/* sampleNumber = *(s16*)(currentLifePtr);
+						currentLifePtr += 2; */
+						sampleNumber = readS16(currentLifePtr);
 					}
 
 					playSound(sampleNumber);
