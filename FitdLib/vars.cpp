@@ -298,11 +298,8 @@ s16 readNextArgument(const char* name)
 	s16 value = *(s16*)(currentLifePtr);
 	currentLifePtr += 2;
 
-	if (name) {
-		appendFormatted("%s:%d, ", name, value);
-	} else {
-		appendFormatted("%d, ", value);
-	}
+	if (name) appendFormatted("%s:%d, ", name, value);
+	else appendFormatted("%d, ", value);
 
 	return value;
 }

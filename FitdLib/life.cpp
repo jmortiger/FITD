@@ -182,27 +182,27 @@ int InitSpecialObjet(int mode, int X, int Y, int Z, int stage, int room, int alp
 		}
 		case 1: // Blood
 		{
-			printf("Unsupported case %d in createFlow (BLOOD)\n", mode);
+			DebugPrintfLnCategory(DBO_L_WARN, DBO_LIFE, "Unsupported case %d in createFlow (BLOOD)\n", mode);
 			break;
 		}
 		case 2: // Debris
 		{
-			printf("Unsupported case %d in createFlow (DEBRIS)\n", mode);
+			DebugPrintfLnCategory(DBO_L_WARN, DBO_LIFE, "Unsupported case %d in createFlow (DEBRIS)\n", mode);
 			break;
 		}
 		case 3: // Muzzle Flash
 		{
-			printf("Unsupported case %d in createFlow (FLASH)\n", mode);
+			DebugPrintfLnCategory(DBO_L_WARN, DBO_LIFE, "Unsupported case %d in createFlow (FLASH)\n", mode);
 			break;
 		}
 		case 4: // Cigar smoke
 		{
-			printf("Unsupported case %d in createFlow (SMOKE)\n", mode);
+			DebugPrintfLnCategory(DBO_L_WARN, DBO_LIFE, "Unsupported case %d in createFlow (SMOKE)\n", mode);
 			break;
 		}
 		default:
 		{
-			printf("Invalid case %d in createFlow; expected 0, 1, 2, 3, or 4\n", mode);
+			DebugPrintfLnCategory(DBO_L_WARN, DBO_LIFE, "Invalid case %d in createFlow; expected 0, 1, 2, 3, or 4\n", mode);
 			break;
 		}
 	}

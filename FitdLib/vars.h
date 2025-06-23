@@ -151,6 +151,23 @@ struct ZVStruct
 	/// @brief Z max
 	s32 ZVZ2;
 }; typedef struct ZVStruct ZVStruct;
+// TODO: Finish structs aligned to loaded pak data.
+/* /// @brief As it appears in paks.
+struct ZVStructPak
+{
+	/// @brief X min
+	s16 ZVX1;
+	/// @brief X max
+	s16 ZVX2;
+	/// @brief Y min
+	s16 ZVY1;
+	/// @brief Y max
+	s16 ZVY2;
+	/// @brief Z min
+	s16 ZVZ1;
+	/// @brief Z max
+	s16 ZVZ2;
+}; typedef struct ZVStructPak ZVStructPak; */
 
 struct interpolatedValue
 {

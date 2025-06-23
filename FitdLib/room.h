@@ -98,6 +98,66 @@ struct roomDataStruct
 
 	u16* cameraIdxTable;
 }; typedef struct roomDataStruct roomDataStruct;
+// TODO: Finish structs aligned to loaded pak data.
+/* struct hardColPakStruct
+{
+	ZVStructPak zv;
+	u16 type;
+	u16 parameter;
+}; typedef struct hardColPakStruct hardColPakStruct;
+
+struct sceZonePakStruct
+{
+	ZVStructPak zv;
+	u16 type;
+	u16 parameter;
+}; typedef struct sceZonePakStruct sceZonePakStruct;
+template<u16 camCount, u16 hardColCount, u16 sceZoneCount >
+struct roomDataStructPakSized
+{
+	u16 offsetToHardColData;
+	u16 offsetToSceZoneData;
+
+	s16 worldX;
+	s16 worldY;
+	s16 worldZ;
+	
+	u16 numCameraInRoom = camCount;
+	u16[camCount] cameraIdxTable;
+
+	u16 numHardCol = hardColCount;
+	hardColPakStruct[hardColCount] hardColTable;
+
+	u16 numSceZone = sceZoneCount;
+	sceZonePakStruct[sceZoneCount] sceZoneTable;
+	roomDataStructPakSized(u8* ptr) {
+		
+	}
+}; typedef struct roomDataStructPakSized roomDataStructPakSized;
+struct roomDataPakStruct
+{
+	u16 offsetToHardColData;
+	u16 offsetToSceZoneData;
+
+	s16 worldX;
+	s16 worldY;
+	s16 worldZ;
+	
+	u16 numCameraInRoom;
+	u16* cameraIdxTable;
+
+	u16 numHardCol;
+	hardColPakStruct* hardColTable;
+
+	u16 numSceZone;
+	sceZonePakStruct* sceZoneTable;
+	roomDataPakStruct(u8* ptr) {
+		
+	}
+	static u16 getNumCameraInRoom(u8* rdp) { return (rdp[0] - sizeof(u16) * 3 - sizeof(s16) * 3) / sizeof(u16); }
+	static u16 getNumHardCol(u8* rdp) { return ((rdp[rdp[0]] - rdp[0]) - sizeof(u16)) / sizeof(hardColPakStruct); }
+	static u16 getNumSceZone(u8* rdp) { return ((rdp[rdp[1]] - rdp[0]) - sizeof(u16)) / sizeof(sceZonePakStruct); }
+}; typedef struct roomDataPakStruct roomDataPakStruct; */
 
 extern cameraDataStruct* cameraDataTable[NUM_MAX_CAMERA_IN_ROOM];
 extern cameraViewedRoomStruct* currentCameraZoneList[NUM_MAX_CAMERA_IN_ROOM];
