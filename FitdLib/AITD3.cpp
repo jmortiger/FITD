@@ -57,7 +57,7 @@ void startAITD3()
 					//updateShaking();
 					flagInitView = 2;
 					setupCamera();
-					mainLoop(1, 1);
+					PlayWorld(1, 1);
 					//freeScene();
 					FadeOutPhys(8, 0);
 				}

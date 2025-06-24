@@ -3119,7 +3119,10 @@ void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 	hotPoint->z = 0;
 }
 
-void mainDraw(int flagFlip)
+/// @brief 
+/// @param flagFlip 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D169)
+void AllRedraw(int flagFlip)
 {
 	// If the camera background changed, copy that empty background into the main buffer (assuming static buffer already updated?)
 	if (/* flagFlip == 2 && */ cameraBackgroundChanged) {
@@ -3234,7 +3237,7 @@ void mainDraw(int flagFlip)
 				FadeInPhys(0x10, 0);
 				lightVar2 = 0;
 			} // else { osystem_flip(NULL); }
-		} // else { mainDrawSub1(); }
+		} // else { AllRedrawSub1(); }
 	} // else { }
 
 	// osystem_stopFrame();
@@ -4239,7 +4242,7 @@ void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 
 	setupCamera();
 
-	mainLoop(allowSystemMenu, 1);
+	PlayWorld(allowSystemMenu, 1);
 
 	/*freeScene();
 

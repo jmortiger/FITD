@@ -33,10 +33,14 @@ void updatePendingEvents(void)
 }
 
 extern "C" {
-	void mainLoop(int allowSystemMenu, int deltaTime);
+	void PlayWorld(int allowSystemMenu, int deltaTime);
 }
 
-void mainLoop(int allowSystemMenu, int deltaTime)
+/// @brief The main loop.
+/// @param allowSystemMenu 
+/// @param deltaTime 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D121)
+void PlayWorld(int allowSystemMenu, int deltaTime)
 {
 	while (true) {
 		process_events();
@@ -215,7 +219,7 @@ void mainLoop(int allowSystemMenu, int deltaTime)
 
 		// osystem_delay(100);
 
-		mainDraw(flagRedraw);
+		AllRedraw(flagRedraw);
 
 		updatePendingEvents();
 	}

@@ -13,7 +13,7 @@ void setupCamera();
 void checkIfCameraChangeIsRequired(void);
 void updateAllActorAndObjects();
 void createActorList();
-void mainDraw(int mode);
+void AllRedraw(int mode);
 int checkObjectCollisions(int actorIdx, ZVStruct* zvPtr);
 int checkLineProjectionWithActors(int actorIdx, int X, int Y, int Z, int beta, int room, int param);
 void GiveZVObjet(char* bodyPtr, ZVStruct* zvPtr);
