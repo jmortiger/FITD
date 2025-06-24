@@ -156,7 +156,7 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 		}
 
 		if (changeFloor)
-			loadFloor(newFloor);
+			loadFloor(NewNumEtage);
 
 		if (needChangeRoom) {
 			loadRoom(newRoom);

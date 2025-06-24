@@ -253,7 +253,7 @@ int numRoomZone;
 char* roomZoneData;
 char* room_PtrCamera[NUM_MAX_CAMERA_IN_ROOM];
 /// @brief Somehow related to camera indicies.
-/// @todo Rename
+/// @todo Rename to `NewNumCamera`
 /// @todo Document
 int startGameVar1;
 
@@ -332,7 +332,9 @@ char* animVar1;
 char* animVar3;
 char* animVar4;
 
-s16 newFloor;
+/// @brief new floor number
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D811)
+s16 NewNumEtage;
 
 int fadeState;
 

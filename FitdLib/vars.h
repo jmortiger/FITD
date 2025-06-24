@@ -579,7 +579,7 @@ extern char* animVar1;
 extern char* animVar3;
 extern char* animVar4;
 
-extern s16 newFloor;
+extern s16 NewNumEtage;
 
 extern int fadeState;
 

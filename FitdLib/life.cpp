@@ -327,7 +327,7 @@ void setStage(int newStage, int newRoomLocal, int X, int Y, int Z)
 	if (currentCameraTargetActor == currentProcessedActorIdx) {
 		if (newStage != g_currentFloor) {
 			changeFloor = 1;
-			newFloor = newStage;
+			NewNumEtage = newStage;
 			newRoom = newRoomLocal;
 		} else if (currentRoom != newRoomLocal) {
 			needChangeRoom = 1;
@@ -1778,7 +1778,7 @@ void processLife(int lifeNum, bool callFoundLife)
 								if (objectTable[lifeTempVar2].stage != g_currentFloor) {
 									currentWorldTarget = lifeTempVar1;
 									changeFloor = 1;
-									newFloor = objectTable[lifeTempVar2].stage;
+									NewNumEtage = objectTable[lifeTempVar2].stage;
 									newRoom = objectTable[lifeTempVar2].room;
 								} else {
 									currentWorldTarget = lifeTempVar1;
@@ -1797,7 +1797,7 @@ void processLife(int lifeNum, bool callFoundLife)
 							currentWorldTarget = lifeTempVar1;
 							if (ListWorldObjets[lifeTempVar1].stage != g_currentFloor) {
 								changeFloor = 1;
-								newFloor = ListWorldObjets[lifeTempVar1].stage;
+								NewNumEtage = ListWorldObjets[lifeTempVar1].stage;
 								newRoom = ListWorldObjets[lifeTempVar1].room;
 							} else {
 								if (currentRoom != ListWorldObjets[lifeTempVar1].room) {
