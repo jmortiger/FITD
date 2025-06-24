@@ -5,7 +5,7 @@ Free in the Dark, a Alone in the Dark engine reimplementation.
 Long overdue source code update from the version that was released on source forge in the 2000s.
 Buildable with Visual Studio 2022 & Visual Studio Code.
 
-Rendering is being rewritten to bgfx, for better portability. There is still some graphical artifacts.
+Rendering is being rewritten to bgfx, for better portability. There are still some graphical artifacts.
 
 #### Table of Contents
 * [Screenshots](#screenshots)

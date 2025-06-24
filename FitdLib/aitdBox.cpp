@@ -32,6 +32,21 @@ void afficheSprite(int left, int top, int index, char* gfxData, bool forceUpdate
 		}
 	}
 }
+#else
+#define __afficheSprite_Template if (g_gameId >= AITD3)\
+		return;\
+\
+	char* outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;\
+	char* inPtr = gfxData + READ_LE_U16(index * 2 + gfxData); /* alignement unsafe */\
+\
+	inPtr += 4;\
+\
+	int width = READ_LE_U16(inPtr); /* alignement unsafe */\
+	inPtr += 2;\
+	int height = READ_LE_U16(inPtr); /* alignement unsafe */\
+	inPtr += 2;\
+\
+	int offset = _SCREEN_INTERNAL_WIDTH - width;
 #endif
 
 /// @brief [private] afficheSprite; Poster sprite; Plaster the given sprite from the given graphics data at the specified point on the screen.
@@ -45,7 +60,7 @@ void AffSpr(int left, int top, int index, char* gfxData)
 #ifdef __MISC_AFFICHE_SPRITE_REFACTOR__
 	afficheSprite(left, top, index, gfxData, true);
 #else
-	if (g_gameId >= AITD3)
+	/* if (g_gameId >= AITD3)
 		return;
 
 	char* outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
@@ -58,7 +73,8 @@ void AffSpr(int left, int top, int index, char* gfxData)
 	int height = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
 
-	int offset = _SCREEN_INTERNAL_WIDTH - width;
+	int offset = _SCREEN_INTERNAL_WIDTH - width; */
+	__afficheSprite_Template
 
 	for (uint i = 0, j; i < height; i++) {
 		for (j = 0; j < width; j++) {
@@ -81,7 +97,7 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 #ifdef __MISC_AFFICHE_SPRITE_REFACTOR__
 	afficheSprite(left, top, index, gfxData, false);
 #else
-	if (g_gameId >= AITD3)
+	/* if (g_gameId >= AITD3)
 		return;
 
 	char* outPtr = logicalScreen + top * _SCREEN_INTERNAL_WIDTH + left;
@@ -94,7 +110,8 @@ void AffSpfI(int left, int top, int index, char* gfxData)
 	int height = READ_LE_U16(inPtr); // alignement unsafe
 	inPtr += 2;
 
-	int offset = _SCREEN_INTERNAL_WIDTH - width;
+	int offset = _SCREEN_INTERNAL_WIDTH - width; */
+	__afficheSprite_Template
 
 	for (uint i = 0, j; i < height; i++) {
 		for (j = 0; j < width; j++) {
