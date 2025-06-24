@@ -1181,14 +1181,14 @@ void initEngine(void)
 	}
 }
 
-/// @brief * Clears `fIsGameOver` (game over flag)
+/// @brief * Clears `FlagGameOver` (game over flag)
 /// * Initializes inventory
 ///    * sets `currentInventory` to 0
 ///    * sets all entries in `numObjInInventoryTable` to 0
 ///    * sets all entries in `inHandTable` to -1
 void initVars()
 {
-	fIsGameOver = 0;
+	FlagGameOver = 0;
 
 	// #region Inventory
 	currentInventory = 0;
@@ -1204,8 +1204,8 @@ void initVars()
 	genVar1 = genVar2; // NOTE: Clear unused variable
 	genVar3 = genVar4;
 
-	genVar5 = 0;
-	genVar6 = 0;
+	NbPhysBoxs = 0;
+	NbLogBoxs = 0;
 	// #endregion Initialized unused variables
 
 	// #region Sound & Music
@@ -3132,7 +3132,7 @@ void AllRedraw(int flagFlip)
 
 	// Overwrite output buffer w/ static BACKGROUND2 buffer
 	if (flagFlip != 0) {
-		genVar5 = 0; // NOTE: Update unused variable
+		NbPhysBoxs = 0; // NOTE: Update unused variable
 		FastCopyScreen(aux2, logicalScreen);
 	} else {
 		// restoreDirtyRects();
@@ -3142,7 +3142,7 @@ void AllRedraw(int flagFlip)
 	// osystem_drawBackground();
 
 	SetClip(0, 0, _SCREEN_INTERNAL_WIDTH - 1, _SCREEN_INTERNAL_HEIGHT - 1);
-	genVar6 = 0; // NOTE: Update unused variable
+	NbLogBoxs = 0; // NOTE: Update unused variable
 
 	int i;
 #ifdef FITD_DEBUGGER

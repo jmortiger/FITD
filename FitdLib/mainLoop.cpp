@@ -151,7 +151,7 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 				currentProcessedActorPtr++;
 			}
 
-			if (fIsGameOver)
+			if (FlagGameOver)
 				break;
 		}
 
@@ -185,7 +185,7 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 					currentProcessedActorPtr++;
 				}
 
-				if (fIsGameOver)
+				if (FlagGameOver)
 					break;
 
 				currentCamera = tempCurrentCamera;

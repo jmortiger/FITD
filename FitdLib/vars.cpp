@@ -47,12 +47,12 @@ boxStruct* genVar1;
 /// @todo Determine what this was for.
 boxStruct* genVar3;
 
+/// @brief Currently Unused.
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D841)
+int NbPhysBoxs;
 /// @brief Currently Unused
-/// @todo Determine what this was for.
-int genVar5;
-/// @brief Currently Unused
-/// @todo Determine what this was for.
-int genVar6;
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D842)
+int NbLogBoxs;
 
 /// @brief Currently Unused
 /// @todo Determine what this was for.
@@ -206,7 +206,8 @@ int LastSample;
 
 s16 currentCameraTargetActor;
 /// @brief A flag indicating the player died; used to stop the main loop & transfer back to the start menu. Is (unnecessarily) included in save file (thus the s16).
-s16 fIsGameOver;
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D571)
+s16 FlagGameOver;
 s16 lightOff;
 int lightVar2;
 s16 statusScreenAllowed;

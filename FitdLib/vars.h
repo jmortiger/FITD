@@ -331,8 +331,8 @@ extern boxStruct genVar4[50];
 extern boxStruct* genVar1;
 extern boxStruct* genVar3;
 
-extern int genVar5;
-extern int genVar6;
+extern int NbPhysBoxs;
+extern int NbLogBoxs;
 
 extern int overlaySize1;
 extern int overlaySize2;
@@ -486,7 +486,7 @@ extern int action;
 extern int nextSample;
 extern int nextMusic;
 extern s16 currentCameraTargetActor;
-extern s16 fIsGameOver;
+extern s16 FlagGameOver;
 extern s16 lightOff;
 extern int lightVar2;
 extern int LastPriority;
