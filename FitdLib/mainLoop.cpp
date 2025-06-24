@@ -4,7 +4,8 @@
 #include <sys/time.h>
 #endif
 
-int mainLoopSwitch = 0;
+// NOTE: Currently unreferenced; What was this for?
+// int mainLoopSwitch = 0;
 
 void updatePendingEvents(void)
 {
@@ -12,9 +13,8 @@ void updatePendingEvents(void)
 
 	if (currentMusic != -1) {
 		if (currentMusic == -2) {
-			if (evalChrono(&musicChrono) > 180) {
+			if (evalChrono(&musicChrono) > 180)
 				playMusic(nextMusic);
-			}
 		} else {
 			/*
 			if(fadeMusic(0,0,0x10)==-1)
@@ -62,22 +62,17 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 			}
 
 			if (localKey == 0x1C || localKey == 0x17) {
-				if (allowSystemMenu == 0) {
+				if (allowSystemMenu == 0)
 					break;
-				}
 
-				if (statusScreenAllowed) {
+				if (statusScreenAllowed)
 					processInventory();
-				}
 			}
-		} else {
-			//      input5 = 0;
-		}
+		} //else { input5 = 0; }
 
 		if (localClick) {
-			if (!allowSystemMenu) {
+			if (!allowSystemMenu)
 				break;
-			}
 
 			action = 0x2000;
 		} else {
@@ -112,16 +107,13 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 				if (currentProcessedActorPtr->indexInWorld >= 0) {
 					int flag = currentProcessedActorPtr->_flags;
 
-					if ((flag & AF_ANIMATED) || (g_gameId >= AITD2 && flag & 0x200)) {
+					if ((flag & AF_ANIMATED) || (g_gameId >= AITD2 && flag & 0x200))
 						updateAnimation();
-					}
-					if (flag & AF_TRIGGER) {
+					if (flag & AF_TRIGGER)
 						processActor2();
-					}
 
-					if (currentProcessedActorPtr->animActionType) {
+					if (currentProcessedActorPtr->animActionType)
 						GereFrappe();
-					}
 				}
 
 				currentProcessedActorPtr++;
@@ -144,9 +136,9 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 							case JACK:
 							case AITD1:
 							{
-								if (currentProcessedActorPtr->life != -1)
-									if (currentProcessedActorPtr->lifeMode != -1)
-										processLife(currentProcessedActorPtr->life, false);
+								if (currentProcessedActorPtr->life != -1 &&
+									currentProcessedActorPtr->lifeMode != -1)
+									processLife(currentProcessedActorPtr->life, false);
 								break;
 							}
 						}
@@ -213,21 +205,21 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 
 		sortActorList();
 
-		// if(FlagRefreshAux2) setupCameraSub4();
+		//if(FlagRefreshAux2) setupCameraSub4();
 
-		// mainLoopSub1();
+		//mainLoopSub1();
 
-		// osystem_delay(100);
+		//osystem_delay(100);
 
 		AllRedraw(flagRedraw);
 
 		updatePendingEvents();
 	}
 
-	// mainLoopVar1 = 0;
-	// shakingState = 0;
+	//mainLoopVar1 = 0;
+	//shakingState = 0;
 
-	// stopShaking();
-	// stopSounds();
+	//stopShaking();
+	//stopSounds();
 }
 
