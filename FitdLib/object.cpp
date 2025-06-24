@@ -1,6 +1,25 @@
 #include "common.h"
 
-int copyObjectToActor(int body, int typeZv, int hardZvIdx, s16 objectType, int x, int y, int z, int stage, int room, int alpha, int beta, int gamma, int anim, int frame, int animtype, int animInfo)
+/// @brief Initializes an actor with the given fields.
+/// @param body 
+/// @param typeZv 
+/// @param hardZvIdx 
+/// @param objectType 
+/// @param x 
+/// @param y 
+/// @param z 
+/// @param stage 
+/// @param room 
+/// @param alpha 
+/// @param beta 
+/// @param gamma 
+/// @param anim 
+/// @param frame 
+/// @param animType 
+/// @param animInfo 
+/// @return If `objectTable` has an empty position, the index of the instantiated actor in `objectTable` (the first empty index); otherwise, -1.
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D190)
+int InitObjet(int body, int typeZv, int hardZvIdx, s16 objectType, int x, int y, int z, int stage, int room, int alpha, int beta, int gamma, int anim, int frame, int animType, int animInfo)
 {
 	int i;
 	int j;
@@ -44,7 +63,7 @@ int copyObjectToActor(int body, int typeZv, int hardZvIdx, s16 objectType, int x
 	actorPtr->ANIM = anim;
 	actorPtr->FRAME = frame;
 
-	actorPtr->animType = animtype;
+	actorPtr->animType = animType;
 	actorPtr->animInfo = animInfo;
 
 	actorPtr->END_FRAME = 1;
@@ -204,7 +223,7 @@ int copyObjectToActor(int body, int typeZv, int hardZvIdx, s16 objectType, int x
 		}
 		default:
 		{
-			printf("Unsupported ZV type in copyObjectToActor\n");
+			printf("Unsupported ZV type in InitObjet\n");
 			printf("var1: %d\n", typeZv);
 			ASSERT(0);
 			FITD_throwFatal(); // assert(0);

@@ -2119,7 +2119,7 @@ void updateAllActorAndObjectsAITD2()
 						//int var_E = currentObject->field_2;
 						//int var_A = currentObject->anim;
 					addObject:
-						actorIdx = copyObjectToActor(currentObject->body, currentObject->typeZV, currentObject->foundName,
+						actorIdx = InitObjet(currentObject->body, currentObject->typeZV, currentObject->foundName,
 							currentObject->flags & 0xFFDF,
 							currentObject->x, currentObject->y, currentObject->z,
 							currentObject->stage, currentObject->room,
@@ -2247,7 +2247,7 @@ void updateAllActorAndObjects()
 						//int var_E = currentObject->field_2;
 						//int var_A = currentObject->anim;
 
-					addObject:        actorIdx = copyObjectToActor(currentObject->body, currentObject->typeZV, currentObject->foundName,
+					addObject:        actorIdx = InitObjet(currentObject->body, currentObject->typeZV, currentObject->foundName,
 						currentObject->flags & 0xFFDF,
 						currentObject->x, currentObject->y, currentObject->z,
 						currentObject->stage, currentObject->room,
