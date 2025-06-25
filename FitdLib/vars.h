@@ -298,19 +298,26 @@ struct boxStruct
 	s16 var3;
 }; typedef struct boxStruct boxStruct;
 
+/// @brief The statically sized initial section of a room's definition;  aligned w/ file representation.
 struct roomDefStruct
 {
-	/// @brief Offset: 0
+	/// @brief 
+	/// Offset: 0
 	s16 offsetToCameraDef;
-	/// @brief Offset: 2
+	/// @brief 
+	/// Offset: 2
 	s16 offsetToPosDef;
-	/// @brief Offset: 4
+	/// @brief 
+	/// Offset: 4
 	s16 worldX;
-	/// @brief Offset: 6
+	/// @brief 
+	/// Offset: 6
 	s16 worldY;
-	/// @brief Offset: 8
+	/// @brief 
+	/// Offset: 8
 	s16 worldZ;
-	/// @brief Offset: 0xA
+	/// @brief 
+	/// Offset: 0xA
 	s16 numCameraInRoom;
 }; typedef struct roomDefStruct roomDefStruct;
 // #endregion Misc. Structs

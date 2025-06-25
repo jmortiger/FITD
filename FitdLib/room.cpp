@@ -30,6 +30,7 @@ roomDefStruct* getRoomData(int roomNumber)
  **/
 int getNumberOfRoom()
 {
+	// TODO: Fix AITD3 case
 	// if (g_gameId >= AITD3) {
 	if (g_gameId > AITD3) {
 		char buffer[256];

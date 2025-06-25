@@ -72,6 +72,7 @@ void loadFloor(int floorNumber)
 		else
 			roomDataTable = (roomDataStruct*)malloc(sizeof(roomDataStruct));
 
+		// TODO: Refactor to use `room/getRoomData` & `roomDefStruct`.
 		u8* roomData;
 		// TODO: Fix AITD3 case
 		// if (g_gameId >= AITD3) {
@@ -97,6 +98,7 @@ void loadFloor(int floorNumber)
 		}
 		roomDataStruct* currentRoomDataPtr = &roomDataTable[i];
 
+		// Used to check that all the data is read & the pointer is advanced correctly, as the resultant value of `roomData` should be this value + `hardColOffset` & then this value + `sceZoneOffset`.
 		u8* roomData_backup = roomData;
 		DebugPrintfLn(DBO_L_LOG, "hardColOffset: %hu", READ_LE_U16(roomData));
 		int hardColOffset = readS16LE(roomData);
@@ -147,8 +149,10 @@ void loadFloor(int floorNumber)
 		// hardColData += 2;
 		AutoAdvancePtr hardColData = AutoAdvancePtr(roomData + READ_LE_U16(roomData)); */
 		DebugPrintfLn(DBO_L_LOG, "Loading hardColData from offset %hu...", hardColOffset);
-		if ((roomData - roomData_backup) != hardColOffset)
-			DebugPrintfLn(DBO_L_WARN, "Expected offset of %hu, got %hu (0x%lX - 0x%lX)", hardColOffset, roomData - roomData_backup, (unsigned long)roomData, (unsigned long)roomData_backup);
+		if ((roomData - roomData_backup) != hardColOffset) {
+			DebugPrintfLn(DBO_L_WARN, "Expected offset of %hu, got %lu (0x%lX - 0x%lX); correcting...", hardColOffset, roomData - roomData_backup, (unsigned long)roomData, (unsigned long)roomData_backup);
+			roomData = roomData_backup + hardColOffset;
+		}
 		// u8* hardColData = roomData + READ_LE_U16(roomData);
 		// DebugPrintfLn(DBO_L_LOG, "numHardCol: %hu", READ_LE_U16(hardColData));
 		// currentRoomDataPtr->numHardCol = READ_LE_U16(hardColData);
@@ -235,8 +239,10 @@ void loadFloor(int floorNumber)
 		sceZoneData += 2;
 		*/
 		DebugPrintfLn(DBO_L_LOG, "Loading sceZoneData from offset %hu...", sceZoneOffset);
-		if ((unsigned long)((unsigned long)roomData - (unsigned long)roomData_backup) != sceZoneOffset)
-			DebugPrintfLn(DBO_L_WARN, "Expected offset of %hu, got %lu (0x%lX - 0x%lX)", sceZoneOffset, (unsigned long)roomData - (unsigned long)roomData_backup, (unsigned long)roomData, (unsigned long)roomData_backup);
+		if ((roomData - roomData_backup) != sceZoneOffset) {
+			DebugPrintfLn(DBO_L_WARN, "Expected offset of %hu, got %lu (0x%lX - 0x%lX); correcting...", sceZoneOffset, roomData - roomData_backup, (unsigned long)roomData, (unsigned long)roomData_backup);
+			roomData = roomData_backup + sceZoneOffset;
+		}
 		DebugBPrintf(DBO_L_LOG, "numSceZone: "); DebugBPrintRaw(DBO_L_LOG, PF_LE_U16(roomData)); DebugBFlushLn();
 		currentRoomDataPtr->numSceZone = readU16LE(roomData);
 
@@ -328,6 +334,7 @@ void loadFloor(int floorNumber)
 		int k;
 		uint offset;
 		u8* currentCameraData;
+		int ccdIncrements = 0;
 
 		// if (g_gameId >= AITD3) {
 		if (g_gameId > AITD3) {
@@ -378,43 +385,53 @@ void loadFloor(int floorNumber)
 
 			currentCameraData += 0x14; */
 			DebugBPrintf(DBO_L_DEBUG, "alpha: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].alpha = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].alpha = readU16LE(currentCameraData, &ccdIncrements);
 			DebugBPrintf(DBO_L_DEBUG, "beta: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].beta = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].beta = readU16LE(currentCameraData, &ccdIncrements);
 			DebugBPrintf(DBO_L_DEBUG, "gamma: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].gamma = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].gamma = readU16LE(currentCameraData, &ccdIncrements);
 
 			DebugBPrintf(DBO_L_DEBUG, "x: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].x = readS16LE(currentCameraData);
+			g_currentFloorCameraData[i].x = readS16LE(currentCameraData, &ccdIncrements);
 			DebugBPrintf(DBO_L_DEBUG, "y: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].y = readS16LE(currentCameraData);
+			g_currentFloorCameraData[i].y = readS16LE(currentCameraData, &ccdIncrements);
 			DebugBPrintf(DBO_L_DEBUG, "z: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].z = readS16LE(currentCameraData);
+			g_currentFloorCameraData[i].z = readS16LE(currentCameraData, &ccdIncrements);
 
 			DebugBPrintf(DBO_L_DEBUG, "focal1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].focal1 = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].focal1 = readU16LE(currentCameraData, &ccdIncrements);
 			DebugBPrintf(DBO_L_DEBUG, "focal2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].focal2 = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].focal2 = readU16LE(currentCameraData, &ccdIncrements);
 			DebugBPrintf(DBO_L_DEBUG, "focal3: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].focal3 = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].focal3 = readU16LE(currentCameraData, &ccdIncrements);
 
 			DebugBPrintf(DBO_L_DEBUG, "numViewedRooms: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
-			g_currentFloorCameraData[i].numViewedRooms = readU16LE(currentCameraData);
+			g_currentFloorCameraData[i].numViewedRooms = readU16LE(currentCameraData, &ccdIncrements);
+			// #region Error Checking
+			assert(ccdIncrements == 0x14);
+			if (ccdIncrements != 0x14)
+				DebugPrintfLn(DBO_L_WARN, "Should have incremented 20 bytes (10 times), not %i", ccdIncrements);
+			// #endregion Error Checking
 
 			g_currentFloorCameraData[i].viewedRoomTable = (cameraViewedRoomStruct*)malloc(sizeof(cameraViewedRoomStruct) * g_currentFloorCameraData[i].numViewedRooms);
+			// #region Error Checking
+			if (!g_currentFloorCameraData[i].viewedRoomTable)
+				DebugPrintfLn(DBO_L_ERROR, "Failed to malloc g_currentFloorCameraData[%i].viewedRoomTable (desired size: sizeof(cameraViewedRoomStruct) * g_currentFloorCameraData[%i].numViewedRooms -> %lu * %hu -> %lu)", i, i, sizeof(cameraViewedRoomStruct), g_currentFloorCameraData[i].numViewedRooms, sizeof(cameraViewedRoomStruct) * g_currentFloorCameraData[i].numViewedRooms);
 			ASSERT(g_currentFloorCameraData[i].viewedRoomTable);
+			// #endregion Error Checking
 			memset(g_currentFloorCameraData[i].viewedRoomTable, 0, sizeof(cameraViewedRoomStruct) * g_currentFloorCameraData[i].numViewedRooms);
 
 			// TODO: Add Debug Lines
 			for (k = 0; k < g_currentFloorCameraData[i].numViewedRooms; k++) {
 				cameraViewedRoomStruct* pCurrentCameraViewedRoom = &g_currentFloorCameraData[i].viewedRoomTable[k];
+				int ccdIncrements2 = 0;
 
 				/* pCurrentCameraViewedRoom->viewedRoomIdx = READ_LE_U16(currentCameraData + 0x00);
 				pCurrentCameraViewedRoom->offsetToMask = READ_LE_U16(currentCameraData + 0x02);
 				pCurrentCameraViewedRoom->offsetToCover = READ_LE_U16(currentCameraData + 0x04); */
-				pCurrentCameraViewedRoom->viewedRoomIdx = readU16LE(currentCameraData);
-				pCurrentCameraViewedRoom->offsetToMask = readU16LE(currentCameraData);
-				pCurrentCameraViewedRoom->offsetToCover = readU16LE(currentCameraData);
+				pCurrentCameraViewedRoom->viewedRoomIdx = readU16LE(currentCameraData, &ccdIncrements2);
+				pCurrentCameraViewedRoom->offsetToMask = readU16LE(currentCameraData, &ccdIncrements2);
+				pCurrentCameraViewedRoom->offsetToCover = readU16LE(currentCameraData, &ccdIncrements2);
 
 				/* if (g_gameId == AITD1) {
 					pCurrentCameraViewedRoom->offsetToHybrids = 0;
@@ -432,15 +449,15 @@ void loadFloor(int floorNumber)
 				if (g_gameId == AITD1) {
 					pCurrentCameraViewedRoom->offsetToHybrids = 0;
 					pCurrentCameraViewedRoom->offsetCamOptims = 0;
-					pCurrentCameraViewedRoom->lightX = readU16LE(currentCameraData);
-					pCurrentCameraViewedRoom->lightY = readU16LE(currentCameraData);
-					pCurrentCameraViewedRoom->lightZ = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->lightX = readU16LE(currentCameraData, &ccdIncrements2);
+					pCurrentCameraViewedRoom->lightY = readU16LE(currentCameraData, &ccdIncrements2);
+					pCurrentCameraViewedRoom->lightZ = readU16LE(currentCameraData, &ccdIncrements2);
 				} else {
-					pCurrentCameraViewedRoom->offsetToHybrids = readU16LE(currentCameraData);
-					pCurrentCameraViewedRoom->offsetCamOptims = readU16LE(currentCameraData);
-					pCurrentCameraViewedRoom->lightX = readU16LE(currentCameraData);
-					pCurrentCameraViewedRoom->lightY = readU16LE(currentCameraData);
-					pCurrentCameraViewedRoom->lightZ = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->offsetToHybrids = readU16LE(currentCameraData, &ccdIncrements2);
+					pCurrentCameraViewedRoom->offsetCamOptims = readU16LE(currentCameraData, &ccdIncrements2);
+					pCurrentCameraViewedRoom->lightX = readU16LE(currentCameraData, &ccdIncrements2);
+					pCurrentCameraViewedRoom->lightY = readU16LE(currentCameraData, &ccdIncrements2);
+					pCurrentCameraViewedRoom->lightZ = readU16LE(currentCameraData, &ccdIncrements2);
 				}
 
 				// load camera mask
@@ -460,7 +477,7 @@ void loadFloor(int floorNumber)
 					for (int k = 0; k < pCurrentCameraViewedRoom->numMask; k++) {
 						cameraMaskStruct* pCurrentCameraMask = &pCurrentCameraViewedRoom->masks[k];
 
-						/* // for this overlay zone, how many 
+						/* // for this overlay zone, how many
 						pCurrentCameraMask->numTestRect = READ_LE_U16(pMaskData);
 						pMaskData += 2; */
 						// for this overlay zone, how many 
@@ -521,7 +538,18 @@ void loadFloor(int floorNumber)
 					}
 				}
 
-				// if (g_gameId == AITD1)
+				// #region Error Checking
+				if (g_gameId == AITD1) {
+					if (ccdIncrements2 != 0x0C)
+						DebugPrintfLn(DBO_L_WARN, "Should have incremented 12 bytes (8 times), not %i", ccdIncrements2);
+				} else if (ccdIncrements2 != 0x10)
+					DebugPrintfLn(DBO_L_WARN, "Should have incremented 16 bytes (8 times), not %i", ccdIncrements2);
+				if (g_gameId == AITD1) // AITD1 doesn't use `offsetToHybrids` or `offsetCamOptims`.
+					assert(ccdIncrements2 == 0x0C);
+				else
+					assert(ccdIncrements2 == 0x10);
+				// #endregion Error Checking
+				// if (g_gameId == AITD1) // AITD1 doesn't use `offsetToHybrids` or `offsetCamOptims`.
 				// 	currentCameraData += 0x0C;
 				// else
 				// 	currentCameraData += 0x10;
@@ -538,7 +566,7 @@ void loadFloor(int floorNumber)
 	}
 
 	g_currentFloorNumCamera = i - 1;
-	DebugPrintfLn(DBO_L_LOG, "g_currentFloorNumCamera set to last loaded camera (%u)", g_currentFloorNumCamera);
+	DebugPrintfLn(DBO_L_LOG, "g_currentFloorNumCamera set to index of last loaded camera (%u)", g_currentFloorNumCamera);
 
 	// globalCameraDataTable = (cameraDataStruct*)realloc(globalCameraDataTable,sizeof(cameraDataStruct)*numGlobalCamera);
 
