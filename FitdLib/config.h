@@ -98,12 +98,20 @@ typedef unsigned long int u64;
 #ifdef _DEBUG
 #define ASSERT(exp) assert(exp)
 #else
+#ifdef DEBUG
+#define ASSERT(exp) assert(exp)
+#else
 #define ASSERT(exp)
+#endif
 #endif
 
 #ifdef _DEBUG
 #define ASSERT_PTR(exp) assert(exp)
 #else
+#ifdef DEBUG
+#define ASSERT_PTR(exp) assert(exp)
+#else
 #define ASSERT_PTR(exp)
+#endif
 #endif
 
