@@ -352,7 +352,7 @@ void loadFloor(int floorNumber)
 
 			u8* backupDataPtr = currentCameraData;
 
-			DebugBPrintf(DBO_L_DEBUG, "alpha: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData + 0x00)); DebugBFlushLn();
+			/* DebugBPrintf(DBO_L_DEBUG, "alpha: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData + 0x00)); DebugBFlushLn();
 			g_currentFloorCameraData[i].alpha = READ_LE_U16(currentCameraData + 0x00);
 			DebugBPrintf(DBO_L_DEBUG, "beta: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData + 0x02)); DebugBFlushLn();
 			g_currentFloorCameraData[i].beta = READ_LE_U16(currentCameraData + 0x02);
@@ -376,7 +376,30 @@ void loadFloor(int floorNumber)
 			DebugBPrintf(DBO_L_DEBUG, "numViewedRooms: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData + 0x12)); DebugBFlushLn();
 			g_currentFloorCameraData[i].numViewedRooms = READ_LE_U16(currentCameraData + 0x12);
 
-			currentCameraData += 0x14;
+			currentCameraData += 0x14; */
+			DebugBPrintf(DBO_L_DEBUG, "alpha: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].alpha = readU16LE(currentCameraData);
+			DebugBPrintf(DBO_L_DEBUG, "beta: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].beta = readU16LE(currentCameraData);
+			DebugBPrintf(DBO_L_DEBUG, "gamma: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].gamma = readU16LE(currentCameraData);
+
+			DebugBPrintf(DBO_L_DEBUG, "x: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].x = readS16LE(currentCameraData);
+			DebugBPrintf(DBO_L_DEBUG, "y: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].y = readS16LE(currentCameraData);
+			DebugBPrintf(DBO_L_DEBUG, "z: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_S16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].z = readS16LE(currentCameraData);
+
+			DebugBPrintf(DBO_L_DEBUG, "focal1: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].focal1 = readU16LE(currentCameraData);
+			DebugBPrintf(DBO_L_DEBUG, "focal2: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].focal2 = readU16LE(currentCameraData);
+			DebugBPrintf(DBO_L_DEBUG, "focal3: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].focal3 = readU16LE(currentCameraData);
+
+			DebugBPrintf(DBO_L_DEBUG, "numViewedRooms: "); DebugBPrintRaw(DBO_L_DEBUG, PF_LE_U16(currentCameraData)); DebugBFlushLn();
+			g_currentFloorCameraData[i].numViewedRooms = readU16LE(currentCameraData);
 
 			g_currentFloorCameraData[i].viewedRoomTable = (cameraViewedRoomStruct*)malloc(sizeof(cameraViewedRoomStruct) * g_currentFloorCameraData[i].numViewedRooms);
 			ASSERT(g_currentFloorCameraData[i].viewedRoomTable);
@@ -386,11 +409,14 @@ void loadFloor(int floorNumber)
 			for (k = 0; k < g_currentFloorCameraData[i].numViewedRooms; k++) {
 				cameraViewedRoomStruct* pCurrentCameraViewedRoom = &g_currentFloorCameraData[i].viewedRoomTable[k];
 
-				pCurrentCameraViewedRoom->viewedRoomIdx = READ_LE_U16(currentCameraData + 0x00);
+				/* pCurrentCameraViewedRoom->viewedRoomIdx = READ_LE_U16(currentCameraData + 0x00);
 				pCurrentCameraViewedRoom->offsetToMask = READ_LE_U16(currentCameraData + 0x02);
-				pCurrentCameraViewedRoom->offsetToCover = READ_LE_U16(currentCameraData + 0x04);
+				pCurrentCameraViewedRoom->offsetToCover = READ_LE_U16(currentCameraData + 0x04); */
+				pCurrentCameraViewedRoom->viewedRoomIdx = readU16LE(currentCameraData);
+				pCurrentCameraViewedRoom->offsetToMask = readU16LE(currentCameraData);
+				pCurrentCameraViewedRoom->offsetToCover = readU16LE(currentCameraData);
 
-				if (g_gameId == AITD1) {
+				/* if (g_gameId == AITD1) {
 					pCurrentCameraViewedRoom->offsetToHybrids = 0;
 					pCurrentCameraViewedRoom->offsetCamOptims = 0;
 					pCurrentCameraViewedRoom->lightX = READ_LE_U16(currentCameraData + 0x06);
@@ -402,6 +428,19 @@ void loadFloor(int floorNumber)
 					pCurrentCameraViewedRoom->lightX = READ_LE_U16(currentCameraData + 0x0A);
 					pCurrentCameraViewedRoom->lightY = READ_LE_U16(currentCameraData + 0x0C);
 					pCurrentCameraViewedRoom->lightZ = READ_LE_U16(currentCameraData + 0x0E);
+				} */
+				if (g_gameId == AITD1) {
+					pCurrentCameraViewedRoom->offsetToHybrids = 0;
+					pCurrentCameraViewedRoom->offsetCamOptims = 0;
+					pCurrentCameraViewedRoom->lightX = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->lightY = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->lightZ = readU16LE(currentCameraData);
+				} else {
+					pCurrentCameraViewedRoom->offsetToHybrids = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->offsetCamOptims = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->lightX = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->lightY = readU16LE(currentCameraData);
+					pCurrentCameraViewedRoom->lightZ = readU16LE(currentCameraData);
 				}
 
 				// load camera mask
@@ -409,9 +448,11 @@ void loadFloor(int floorNumber)
 				if (g_gameId >= JACK) {
 					pMaskData = backupDataPtr + g_currentFloorCameraData[i].viewedRoomTable[k].offsetToMask;
 
-					// for this camera, how many masks zone
+					/* // for this camera, how many masks zone
 					pCurrentCameraViewedRoom->numMask = READ_LE_U16(pMaskData);
-					pMaskData += 2;
+					pMaskData += 2; */
+					// for this camera, how many masks zone
+					pCurrentCameraViewedRoom->numMask = readU16LE(pMaskData);
 
 					pCurrentCameraViewedRoom->masks = (cameraMaskStruct*)malloc(sizeof(cameraMaskStruct) * pCurrentCameraViewedRoom->numMask);
 					memset(pCurrentCameraViewedRoom->masks, 0, sizeof(cameraMaskStruct) * pCurrentCameraViewedRoom->numMask);
@@ -419,9 +460,11 @@ void loadFloor(int floorNumber)
 					for (int k = 0; k < pCurrentCameraViewedRoom->numMask; k++) {
 						cameraMaskStruct* pCurrentCameraMask = &pCurrentCameraViewedRoom->masks[k];
 
-						// for this overlay zone, how many 
+						/* // for this overlay zone, how many 
 						pCurrentCameraMask->numTestRect = READ_LE_U16(pMaskData);
-						pMaskData += 2;
+						pMaskData += 2; */
+						// for this overlay zone, how many 
+						pCurrentCameraMask->numTestRect = readU16LE(pMaskData);
 
 						pCurrentCameraMask->rectTests = (rectTestStruct*)malloc(sizeof(rectTestStruct) * pCurrentCameraMask->numTestRect);
 						memset(pCurrentCameraMask->rectTests, 0, sizeof(rectTestStruct) * pCurrentCameraMask->numTestRect);
@@ -429,11 +472,15 @@ void loadFloor(int floorNumber)
 						for (int j = 0; j < pCurrentCameraMask->numTestRect; j++) {
 							rectTestStruct* pCurrentRectTest = &pCurrentCameraMask->rectTests[j];
 
-							pCurrentRectTest->zoneX1 = READ_LE_S16(pMaskData);
+							/* pCurrentRectTest->zoneX1 = READ_LE_S16(pMaskData);
 							pCurrentRectTest->zoneZ1 = READ_LE_S16(pMaskData + 2);
 							pCurrentRectTest->zoneX2 = READ_LE_S16(pMaskData + 4);
 							pCurrentRectTest->zoneZ2 = READ_LE_S16(pMaskData + 6);
-							pMaskData += 8;
+							pMaskData += 8; */
+							pCurrentRectTest->zoneX1 = readS16LE(pMaskData);
+							pCurrentRectTest->zoneZ1 = readS16LE(pMaskData);
+							pCurrentRectTest->zoneX2 = readS16LE(pMaskData);
+							pCurrentRectTest->zoneZ2 = readS16LE(pMaskData);
 						}
 					}
 				}
@@ -441,28 +488,31 @@ void loadFloor(int floorNumber)
 				// load camera cover
 				{
 					u8* pZoneData = backupDataPtr + g_currentFloorCameraData[i].viewedRoomTable[k].offsetToCover;
+					// Assert all the mask data was read & the pointer advanced to the zone data.
 					if (pMaskData) assert(pZoneData == pMaskData);
-					//pZoneData = currentCameraData;
 
-					int numZones = pCurrentCameraViewedRoom->numCoverZones = READ_LE_U16(pZoneData);
-					pZoneData += 2;
+					/* int numZones = pCurrentCameraViewedRoom->numCoverZones = READ_LE_U16(pZoneData);
+					pZoneData += 2; */
+					int numZones = pCurrentCameraViewedRoom->numCoverZones = readU16LE(pZoneData);
 
 					pCurrentCameraViewedRoom->coverZones = (cameraZoneEntryStruct*)malloc(sizeof(cameraZoneEntryStruct) * numZones);
 
 					ASSERT(pCurrentCameraViewedRoom->coverZones);
 
 					for (int j = 0; j < pCurrentCameraViewedRoom->numCoverZones; j++) {
-						int numPoints;
-						pCurrentCameraViewedRoom->coverZones[j].numPoints = numPoints = READ_LE_U16(pZoneData);
-						pZoneData += 2;
+						/* int numPoints = pCurrentCameraViewedRoom->coverZones[j].numPoints = READ_LE_U16(pZoneData);
+						pZoneData += 2; */
+						int numPoints = pCurrentCameraViewedRoom->coverZones[j].numPoints = readU16LE(pZoneData);
 
 						pCurrentCameraViewedRoom->coverZones[j].pointTable = (cameraZonePointStruct*)malloc(sizeof(cameraZonePointStruct) * (numPoints + 1));
 
 						for (int pointIdx = 0; pointIdx < pCurrentCameraViewedRoom->coverZones[j].numPoints; pointIdx++) {
-							pCurrentCameraViewedRoom->coverZones[j].pointTable[pointIdx].x = READ_LE_U16(pZoneData);
+							/* pCurrentCameraViewedRoom->coverZones[j].pointTable[pointIdx].x = READ_LE_U16(pZoneData);
 							pZoneData += 2;
 							pCurrentCameraViewedRoom->coverZones[j].pointTable[pointIdx].y = READ_LE_U16(pZoneData);
-							pZoneData += 2;
+							pZoneData += 2; */
+							pCurrentCameraViewedRoom->coverZones[j].pointTable[pointIdx].x = readU16LE(pZoneData);
+							pCurrentCameraViewedRoom->coverZones[j].pointTable[pointIdx].y = readU16LE(pZoneData);
 						}
 
 						// copy first point to last position
@@ -471,10 +521,10 @@ void loadFloor(int floorNumber)
 					}
 				}
 
-				if (g_gameId == AITD1)
-					currentCameraData += 0x0C;
-				else
-					currentCameraData += 0x10;
+				// if (g_gameId == AITD1)
+				// 	currentCameraData += 0x0C;
+				// else
+				// 	currentCameraData += 0x10;
 
 				if (g_gameId == TIMEGATE)
 					currentCameraData += 6;
