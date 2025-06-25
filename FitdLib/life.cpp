@@ -822,12 +822,17 @@ void processLife(int lifeNum, bool callFoundLife)
 				case LM_DO_MAX_ZV: // DO_MAX_ZV
 				{
 					appendFormatted("LM_DO_MAX_ZV ");
-					// FITD_throwFatal();
-					// Adjusts the bbox length and width so they're both as big as whichever one is bigger divided by two, creating a cuboid with a square horizontal cross-section. Leaves the height unaffected. 
-					// char t_b[256];
-					// DebugSPrintZVStruct(t_b, currentProcessedActorPtr->zv);
-					// printf("LM_DO_MAX_ZV: %s", t_b);
+					
+					// Update the model's zv scale...
 					getZvMax(HQR_Get(listBody, currentProcessedActorPtr->bodyNum), &currentProcessedActorPtr->zv);
+
+					// ...then put it in the room's coordinate system.
+					currentProcessedActorPtr->zv.ZVX1 += currentProcessedActorPtr->roomX;
+					currentProcessedActorPtr->zv.ZVX2 += currentProcessedActorPtr->roomX;
+					currentProcessedActorPtr->zv.ZVY1 += currentProcessedActorPtr->roomY;
+					currentProcessedActorPtr->zv.ZVY2 += currentProcessedActorPtr->roomY;
+					currentProcessedActorPtr->zv.ZVZ1 += currentProcessedActorPtr->roomZ;
+					currentProcessedActorPtr->zv.ZVZ2 += currentProcessedActorPtr->roomZ;
 
 					break;
 				}
