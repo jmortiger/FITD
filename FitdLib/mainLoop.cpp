@@ -160,7 +160,7 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 
 		if (needChangeRoom) {
 			loadRoom(newRoom);
-			setupCamera();
+			InitView();
 		} else {
 			checkIfCameraChangeIsRequired();
 			if (g_gameId >= AITD2) {
@@ -190,12 +190,12 @@ void PlayWorld(int allowSystemMenu, int deltaTime)
 
 				currentCamera = tempCurrentCamera;
 			}
-			if (flagInitView
+			if (FlagInitView
 #ifdef FITD_DEBUGGER
 				|| debuggerVar_topCamera
 #endif
 				) {
-				setupCamera();
+				InitView();
 			}
 		}
 

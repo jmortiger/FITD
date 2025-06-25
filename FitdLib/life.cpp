@@ -710,7 +710,7 @@ void processLife(int lifeNum, bool callFoundLife)
 								// }
 							}
 						} else {
-							flagInitView = 1;
+							FlagInitView = 1;
 						}
 					}
 					break;
@@ -738,7 +738,7 @@ void processLife(int lifeNum, bool callFoundLife)
 						SetAnimObjet(0, pAnim, pBody);
 						InitAnim(param2, 4, -1);
 					} else {
-						flagInitView = 1;
+						FlagInitView = 1;
 					}
 					break;
 				}
@@ -1500,7 +1500,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					if (g_gameId == AITD1)
 						FadeOutPhys(4, 0);
 
-					flagInitView = 2;
+					FlagInitView = 2;
 
 					break;
 				}
@@ -1536,7 +1536,7 @@ void processLife(int lifeNum, bool callFoundLife)
 					turnPageFlag = false;
 					Lire(lifeTempVar2 + 1, lifeTempVar3, lifeTempVar4, lifeTempVar5, lifeTempVar6, 0, lifeTempVar7, lifeTempVar8);
 
-					flagInitView = 2;
+					FlagInitView = 2;
 
 					unfreezeTime();
 
@@ -1862,7 +1862,7 @@ void processLife(int lifeNum, bool callFoundLife)
 
 					unfreezeTime();
 
-					flagInitView = 1;
+					FlagInitView = 1;
 
 					if (g_gameId > AITD1)
 						FadeOutPhys(0x10, 0);

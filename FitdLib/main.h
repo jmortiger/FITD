@@ -9,7 +9,7 @@ void processActor2();
 void loadFloor(int floorNumber);
 void loadRoom(int roomNumber);
 void executeFoundLife(int objIdx);
-void setupCamera();
+void InitView();
 void checkIfCameraChangeIsRequired(void);
 void updateAllActorAndObjects();
 void createActorList();

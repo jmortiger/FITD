@@ -347,8 +347,8 @@ void startAITD1()
 				if (restoreSave(12, 0)) {
 					// original would quit here if protection flag was false
 					// updateShaking();
-					flagInitView = 2;
-					setupCamera();
+					FlagInitView = 2;
+					InitView();
 					PlayWorld(1, 1);
 					// freeScene();
 					FadeOutPhys(8, 0);

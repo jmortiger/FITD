@@ -205,5 +205,5 @@ void playSequence(int sequenceIdx, int fadeStart, int fadeOutVar)
 		if (fadeOutVar == 0) quitPlayback = true;
 	}
 
-	flagInitView = 2;
+	FlagInitView = 2;
 }

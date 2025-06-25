@@ -229,20 +229,20 @@ char* cameraPtr;
 roomDefStruct* pCurrentRoomData;
 
 s16 currentRoom;
-/// @todo Determine & describe specific difference with `flagRedraw`
 /// @brief 
 /// @details Not a true flag, but a mode switch.
 /// 0: No BG change
 /// 1: Static actors changed (update BG2)
 /// 2: Cam/Background image changed (update BG1)
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D588)
 /// @todo Determine & describe specific difference with `flagRedraw`
-int flagInitView;
+int FlagInitView;
 /// @brief FlagRedraw is set to 0 most of the time, to 1 shortly during a camera switch, and to 2 after exiting the inventory/main menu, during the fade-in/fade-out.
 /// @details Not a true flag, but a mode switch.
 /// 0: No BG change
 /// 1: Static actors changed (update BG2)
 /// 2: Cam/Background image changed (update BG1)
-/// @todo Determine & describe specific difference with `flagInitView`
+/// @todo Determine & describe specific difference with `FlagInitView`
 int flagRedraw;
 /// @brief Seemingly replaces `flagRedraw`
 bool cameraBackgroundChanged = false;

@@ -359,7 +359,7 @@ void processInventory(void)
 
 	unfreezeTime();
 
-	flagInitView = 1;
+	FlagInitView = 1;
 
 	while (Click || key || JoyD) {
 		process_events();

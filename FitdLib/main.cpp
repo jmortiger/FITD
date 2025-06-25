@@ -2324,9 +2324,10 @@ void createActorList()
 	}
 }
 
-/// @brief 
-/// @todo CONTAINS TOP-DOWN CAM TRANSFORM
-void setupCamera()
+/// @brief `setupCamera`
+/// @todo CONTAINS TOP-DOWN CAM TRANSFORM.
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D150)
+void InitView()
 {
 	freezeTime();
 
@@ -2374,12 +2375,12 @@ void setupCamera()
 	// setupCameraSub3();
 	setupCameraSub4();
 	// setupCameraSub5();
-	if (flagInitView == 2)
+	if (FlagInitView == 2)
 		flagRedraw = 2;
 	else if (flagRedraw != 2)
 		flagRedraw = 1;
 
-	flagInitView = 0;
+	FlagInitView = 0;
 	unfreezeTime();
 }
 
@@ -3560,7 +3561,7 @@ void foundObject(int objIdx, int param)
 	//if(mainLoopVar1 != 0)
 		//setupShaking(-600);
 
-	flagInitView = 1;
+	FlagInitView = 1;
 }
 
 void hardColSuB1Sub1(int flag)
@@ -3858,7 +3859,7 @@ void checkIfCameraChangeIsRequired(void)
 
 	if (currentCamera != localCurrentCam) {
 		startGameVar1 = localCurrentCam;
-		flagInitView = 1;
+		FlagInitView = 1;
 	}
 
 #ifdef FITD_DEBUGGER
@@ -4238,9 +4239,9 @@ void startGame(int startupFloor, int startupRoom, int allowSystemMenu)
 	loadRoom(startupRoom);
 
 	startGameVar1 = 0;
-	flagInitView = 2;
+	FlagInitView = 2;
 
-	setupCamera();
+	InitView();
 
 	PlayWorld(allowSystemMenu, 1);
 

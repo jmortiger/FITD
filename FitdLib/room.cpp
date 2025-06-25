@@ -175,7 +175,7 @@ void loadRoom(int roomNumber)
 	}
 
 	startGameVar1 = newNumCamera;
-	flagInitView = 1;
+	FlagInitView = 1;
 	needChangeRoom = 0;
 	unfreezeTime();
 }

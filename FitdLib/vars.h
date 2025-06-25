@@ -513,7 +513,7 @@ extern char* cameraPtr;
 extern roomDefStruct* pCurrentRoomData;
 
 extern s16 currentRoom;
-extern int flagInitView;
+extern int FlagInitView;
 extern int flagRedraw;
 extern bool cameraBackgroundChanged;
 extern int numCameraInRoom;
