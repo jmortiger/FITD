@@ -120,15 +120,17 @@ u32 AutoAdvancePtr::readOnlyU32() { return *(u32*)ptr; }
 u32 AutoAdvancePtr::readOnlyU32LE() { return READ_LE_U32(ptr); }
 u32 AutoAdvancePtr::readOnlyU32BE() { return READ_BE_U32(ptr); }
 // }; typedef class AutoAdvancePtr AutoAdvancePtr;
-#define __readBody(outType, size, inType, outTypeName) outType read##outTypeName(inType*& ptr)\
+#define __readBody(outType, size, inType, outTypeName) outType read##outTypeName(inType*& ptr, int* count)\
 {\
+	if (count) (*count) += size;\
 	outType r = *(outType*)ptr;\
 	ptr = &ptr[size];\
 	return r;\
 }
 #define _readBody(outType, size, inType, outTypeName) __readBody(outType, size, inType, outTypeName)
-#define __readBodyEndian(outType, size, inType, endianess, outTypeName) outType read##outTypeName##endianess(inType*& ptr)\
+#define __readBodyEndian(outType, size, inType, endianess, outTypeName) outType read##outTypeName##endianess(inType*& ptr, int* count)\
 {\
+	if (count) (*count) += size;\
 	/* outType r = *(outType*)ptr;\ */\
 	outType r = READ_##endianess##_##outTypeName(ptr);\
 	ptr = &ptr[size];\
@@ -146,18 +148,18 @@ _readBodyAllEndian(outType, size, s8, outTypeName)\
 _readBodyAllEndian(outType, size, char, outTypeName)
 #define _readBodyAllSign(bits, bytes) _readBodyAll(s##bits, bytes, S##bits)\
 _readBodyAll(u##bits, bytes, U##bits)
-s8 readS8(u8*& ptr) { return ((s8)(*(ptr++))); }
-s8 readS8(s8*& ptr) { return ((s8)(*(ptr++))); }
-s8 readS8LE(u8*& ptr) { return ((s8)(*(ptr++))); }
-s8 readS8LE(s8*& ptr) { return ((s8)(*(ptr++))); }
-s8 readS8BE(u8*& ptr) { return ((s8)(*(ptr++))); }
-s8 readS8BE(s8*& ptr) { return ((s8)(*(ptr++))); }
-u8 readU8(u8*& ptr) { return ((u8)(*(ptr++))); }
-u8 readU8(s8*& ptr) { return ((u8)(*(ptr++))); }
-u8 readU8LE(u8*& ptr) { return ((u8)(*(ptr++))); }
-u8 readU8LE(s8*& ptr) { return ((u8)(*(ptr++))); }
-u8 readU8BE(u8*& ptr) { return ((u8)(*(ptr++))); }
-u8 readU8BE(s8*& ptr) { return ((u8)(*(ptr++))); }
+s8 readS8(u8*& ptr, int* count) { if (count) (*count)++; return ((s8)(*(ptr++))); }
+s8 readS8(s8*& ptr, int* count) { if (count) (*count)++; return ((s8)(*(ptr++))); }
+s8 readS8LE(u8*& ptr, int* count) { if (count) (*count)++; return ((s8)(*(ptr++))); }
+s8 readS8LE(s8*& ptr, int* count) { if (count) (*count)++; return ((s8)(*(ptr++))); }
+s8 readS8BE(u8*& ptr, int* count) { if (count) (*count)++; return ((s8)(*(ptr++))); }
+s8 readS8BE(s8*& ptr, int* count) { if (count) (*count)++; return ((s8)(*(ptr++))); }
+u8 readU8(u8*& ptr, int* count) { if (count) (*count)++; return ((u8)(*(ptr++))); }
+u8 readU8(s8*& ptr, int* count) { if (count) (*count)++; return ((u8)(*(ptr++))); }
+u8 readU8LE(u8*& ptr, int* count) { if (count) (*count)++; return ((u8)(*(ptr++))); }
+u8 readU8LE(s8*& ptr, int* count) { if (count) (*count)++; return ((u8)(*(ptr++))); }
+u8 readU8BE(u8*& ptr, int* count) { if (count) (*count)++; return ((u8)(*(ptr++))); }
+u8 readU8BE(s8*& ptr, int* count) { if (count) (*count)++; return ((u8)(*(ptr++))); }
 /* 
 _readBodyAll(s16, 2, S16)
 _readBodyAllEndian(s16, 2, u8, S16)
