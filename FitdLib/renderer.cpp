@@ -386,22 +386,8 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 	for (int i = 0; i < pBody->m_groups.size(); i++) {
 		sGroup* pGroup = &pBody->m_groups[i];
 
-		int j;
-
-		int point1;
-		int point2;
-
-		s16* ptr1;
-		s16* ptr2;
-
-		int number;
-
-		int ax;
-		int bx;
-		int dx;
-
-		point1 = pGroup->m_baseVertices * 6;
-		point2 = pGroup->m_start * 6;
+		int point1 = pGroup->m_baseVertices * 6;
+		int point2 = pGroup->m_start * 6;
 
 		ASSERT(point1 % 2 == 0);
 		ASSERT(point2 % 2 == 0);
@@ -412,16 +398,16 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 		ASSERT(point1 / 3 < NUM_MAX_POINT_IN_POINT_BUFFER);
 		ASSERT(point2 / 3 < NUM_MAX_POINT_IN_POINT_BUFFER);
 
-		ptr1 = (s16*)&pointBuffer[point1];
-		ptr2 = (s16*)&pointBuffer[point2];
+		s16* ptr1 = (s16*)&pointBuffer[point1];
+		s16* ptr2 = (s16*)&pointBuffer[point2];
 
-		number = pGroup->m_numVertices;
+		int number = pGroup->m_numVertices;
 
-		ax = ptr1[0];
-		bx = ptr1[1];
-		dx = ptr1[2];
+		int ax = ptr1[0];
+		int bx = ptr1[1];
+		int dx = ptr1[2];
 
-		for (j = 0; j < number; j++) {
+		for (int j = 0; j < number; j++) {
 			*(ptr2++) += ax;
 			*(ptr2++) += bx;
 			*(ptr2++) += dx;
@@ -437,7 +423,6 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 		char* ptr = (char*)pointBuffer;
 		s16* outPtr = cameraSpaceBuffer;
 		int k = numOfPoints;
-
 
 		float* outPtr2;
 
@@ -477,15 +462,11 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 		outPtr2 = renderPointList;
 
 		do {
-			float X;
-			float Y;
-			float Z;
-
-			X = *(s16*)ptr;
+			float X = *(s16*)ptr;
 			ptr += 2;
-			Y = *(s16*)ptr;
+			float Y = *(s16*)ptr;
 			ptr += 2;
-			Z = *(s16*)ptr;
+			float Z = *(s16*)ptr;
 			ptr += 2;
 
 #if defined(AITD_UE4)
@@ -500,8 +481,8 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 				*(outPtr2++) = -10000;
 				*(outPtr2++) = -10000;
 			} else {
-				float transformedX = ((X * cameraFovX) / Z) + cameraCenterX;
-				float transformedY;
+				// float transformedX = ((X * cameraFovX) / Z) + cameraCenterX;
+				float transformedX = _RENDER_calcTransformed(X, Z, X);
 
 				*(outPtr2++) = transformedX;
 
@@ -511,7 +492,8 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 				if (transformedX > BBox3D3)
 					BBox3D3 = (int)transformedX;
 
-				transformedY = ((Y * cameraFovY) / Z) + cameraCenterY;
+				// float transformedY = ((Y * cameraFovY) / Z) + cameraCenterY;
+				float transformedY = _RENDER_calcTransformed(Y, Z, Y);;
 
 				*(outPtr2++) = transformedY;
 
@@ -526,14 +508,11 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 #endif
 
 			k--;
-			if (k == 0) {
-				return(1);
-			}
-
+			if (k == 0) return 1;
 		} while (renderVar1 == 0);
 	}
 
-	return(0);
+	return 0;
 }
 
 /*
@@ -573,14 +552,17 @@ int RotateNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBod
 		float Y = pBody->m_vertices[i].y;
 		float Z = pBody->m_vertices[i].z;
 
+		// Dividing by this seems to be equivalent to `intVal << 16`.
+		static const float maxU16Plus1 = 65536.f;
+		// TODO: Make macro helper to link w/ `main/pointRotate`
 		if (!noModelRotation) {
 			// Y rotation
 			{
 				float tempX = X;
 				float tempZ = Z;
 
-				X = (((modelSinBeta * tempX) - (modelCosBeta * tempZ)) / 65536.f) * 2.f;
-				Z = (((modelCosBeta * tempX) + (modelSinBeta * tempZ)) / 65536.f) * 2.f;
+				X = (((modelSinBeta * tempX) - (modelCosBeta * tempZ)) / maxU16Plus1) * 2.f;
+				Z = (((modelCosBeta * tempX) + (modelSinBeta * tempZ)) / maxU16Plus1) * 2.f;
 			}
 
 			// Z rotation
@@ -588,8 +570,8 @@ int RotateNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBod
 				float tempX = X;
 				float tempY = Y;
 
-				X = (((modelSinGamma * tempX) - (modelCosGamma * tempY)) / 65536.f) * 2.f;
-				Y = (((modelCosGamma * tempX) + (modelSinGamma * tempY)) / 65536.f) * 2.f;
+				X = (((modelSinGamma * tempX) - (modelCosGamma * tempY)) / maxU16Plus1) * 2.f;
+				Y = (((modelCosGamma * tempX) + (modelSinGamma * tempY)) / maxU16Plus1) * 2.f;
 			}
 
 			// X rotation
@@ -597,8 +579,8 @@ int RotateNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBod
 				float tempY = Y;
 				float tempZ = Z;
 
-				Y = (((modelSinAlpha * tempY) - (modelCosAlpha * tempZ)) / 65536.f) * 2.f;
-				Z = (((modelCosAlpha * tempY) + (modelSinAlpha * tempZ)) / 65536.f) * 2.f;
+				Y = (((modelSinAlpha * tempY) - (modelCosAlpha * tempZ)) / maxU16Plus1) * 2.f;
+				Z = (((modelCosAlpha * tempY) + (modelSinAlpha * tempZ)) / maxU16Plus1) * 2.f;
 			}
 		}
 
@@ -617,16 +599,15 @@ int RotateNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBod
 			*(outPtr++) = -10000;
 			*(outPtr++) = -10000;
 		} else {
-			float transformedX;
-			float transformedY;
-
 			Y -= translateY;
 
 			transformPoint(&X, &Y, &Z);
 
 			Z += cameraPerspective;
 
-			transformedX = ((X * cameraFovX) / Z) + cameraCenterX;
+			// float transformedX = ((X * cameraFovX) / Z) + cameraCenterX;
+			// float transformedX = _RENDER_calcTransformedX(X, Z);
+			float transformedX = _RENDER_calcTransformed(X, Z, X);
 
 			*(outPtr++) = transformedX;
 
@@ -636,7 +617,8 @@ int RotateNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBod
 			if (transformedX > BBox3D3)
 				BBox3D3 = (int)transformedX;
 
-			transformedY = ((Y * cameraFovY) / Z) + cameraCenterY;
+			// float transformedY = ((Y * cameraFovY) / Z) + cameraCenterY;
+			float transformedY = _RENDER_calcTransformed(Y, Z, Y);
 
 			*(outPtr++) = transformedY;
 

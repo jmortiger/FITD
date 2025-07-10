@@ -18,4 +18,12 @@ int AffObjet(int x, int y, int z, int alpha, int beta, int gamma, void* modelPtr
 
 void computeScreenBox(int x, int y, int z, int alpha, int beta, int gamma, char* bodyPtr);
 
+// #define _RENDER_calcTransformedX(xF, zF) ((xF * cameraFovX) / zF) + cameraCenterX
+// #define _RENDER_calcTransformedXCustom(xF, zF, cameraFovXF, cameraCenterXF) ((xF * cameraFovXF) / zF) + cameraCenterXF
+#define _RENDER_calcTransformedCustom(valF, zF, cameraFovF, cameraCenterF) ((valF * cameraFovF) / zF) + cameraCenterF
+// #define _RENDER_calcTransformed(valF, zF, coord) ((valF * cameraFov##coord) / Z) + cameraCenter##coord
+#define _RENDER_calcTransformed(valF, zF, coord) _RENDER_calcTransformedCustom(valF, zF, cameraFov##coord, cameraCenter##coord)
+#define _RENDER_calcTransformedX(xF, zF) _RENDER_calcTransformed(xF, zF, X)
+#define _RENDER_calcTransformedY(yF, zF) _RENDER_calcTransformed(yF, zF, Y)
+
 #endif

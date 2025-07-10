@@ -1,6 +1,6 @@
 #include "common.h"
 
-/// @brief 
+/// @brief Sorts objects by distance from camera (?)
 /// @param param1 The index of the first actor in `objectTable`.
 /// @param param2 The index of the second actor in `objectTable`.
 /// @return 
@@ -8,59 +8,59 @@
 /// @note This currently uses [Manhattan distance](<https://en.wikipedia.org/wiki/Taxicab_geometry>); this is technically incorrect, but might not matter.
 int sortCompareFunction(const void* param1, const void* param2)
 {
-	int distance1 = 0;
-	int distance2 = 0;
-	tObject* actor1Ptr;
-	tObject* actor2Ptr;
-	ZVStruct* actor1ZvPtr;
-	ZVStruct* actor2ZvPtr;
-	ZVStruct localZv1;
-	ZVStruct localZv2;
-	int flag = 0;
-	int y1;
-	int y2;
-
 	ASSERT(*(int*)param1 >= 0 && *(int*)param1 < NUM_MAX_OBJECT);
 	ASSERT(*(int*)param2 >= 0 && *(int*)param2 < NUM_MAX_OBJECT);
 
-	actor1Ptr = &objectTable[*(int*)param1];
-	actor2Ptr = &objectTable[*(int*)param2];
+	tObject* actor1Ptr = &objectTable[*(int*)param1];
+	tObject* actor2Ptr = &objectTable[*(int*)param2];
 
-	actor1ZvPtr = &actor1Ptr->zv;
-	actor2ZvPtr = &actor2Ptr->zv;
+	ZVStruct* actor1ZvPtr = &actor1Ptr->zv;
+	ZVStruct* actor2ZvPtr = &actor2Ptr->zv;
 
+	// #region Translate to current room's coordinate space
+	ZVStruct localZv1;
 	if (actor1Ptr->room != currentRoom) {
 		copyZv(actor1ZvPtr, &localZv1);
 		getZvRelativePosition(&localZv1, actor1Ptr->room, currentRoom);
 		actor1ZvPtr = &localZv1;
 	}
 
+	ZVStruct localZv2;
 	if (actor2Ptr->room != currentRoom) {
 		copyZv(actor2ZvPtr, &localZv2);
 		getZvRelativePosition(&localZv2, actor2Ptr->room, currentRoom);
 		actor2ZvPtr = &localZv2;
 	}
+	// #endregion Translate to current room's coordinate space
 
-	y1 = ((((actor1ZvPtr->ZVY1 + actor1ZvPtr->ZVY2) / 2) - 2000) / 2000) * 2000;
-	y2 = ((((actor2ZvPtr->ZVY1 + actor2ZvPtr->ZVY2) / 2) - 2000) / 2000) * 2000;
+	/// @def Takes the y midpoint and does... something.
+	/// This subtracts 2000 once, & 2000 is subtracted again 
+#define yRange(ptr) ((((ptr->ZVY1 + ptr->ZVY2) / 2) - 2000) / 2000) * 2000
+	int y1 = yRange(actor1ZvPtr);
+	int y2 = yRange(actor2ZvPtr);
+#undef yRange
 
-	if ((y1 == y2) || (g_gameId >= JACK)) // both y in the same range
-	{
-		if (
-			((actor1ZvPtr->ZVX1 > actor2ZvPtr->ZVX1) && (actor1ZvPtr->ZVX1 < actor2ZvPtr->ZVX2)) ||
+	int distance1 = 0;
+	int distance2 = 0;
+	if ((y1 == y2) || (g_gameId >= JACK)) { // both y in the same range
+		/// BitFlag:
+		/// 0'01: extents overlap on the X axis
+		/// 0'10: extents overlap on the Z axis
+		int flag = 0;
+
+		// If their extents overlap on the X axis...
+		if (((actor1ZvPtr->ZVX1 > actor2ZvPtr->ZVX1) && (actor1ZvPtr->ZVX1 < actor2ZvPtr->ZVX2)) ||
 			((actor1ZvPtr->ZVX2 > actor2ZvPtr->ZVX1) && (actor1ZvPtr->ZVX2 < actor2ZvPtr->ZVX2)) ||
 			((actor2ZvPtr->ZVX1 > actor1ZvPtr->ZVX1) && (actor2ZvPtr->ZVX1 < actor1ZvPtr->ZVX2)) ||
-			((actor2ZvPtr->ZVX2 > actor1ZvPtr->ZVX1) && (actor2ZvPtr->ZVX2 < actor1ZvPtr->ZVX2))) {
+			((actor2ZvPtr->ZVX2 > actor1ZvPtr->ZVX1) && (actor2ZvPtr->ZVX2 < actor1ZvPtr->ZVX2)))
 			flag |= 1;
-		}
 
-		if (
-			((actor1ZvPtr->ZVZ1 > actor2ZvPtr->ZVZ1) && (actor1ZvPtr->ZVZ1 < actor2ZvPtr->ZVZ2)) ||
+		// If their extents overlap on the Z axis...
+		if (((actor1ZvPtr->ZVZ1 > actor2ZvPtr->ZVZ1) && (actor1ZvPtr->ZVZ1 < actor2ZvPtr->ZVZ2)) ||
 			((actor1ZvPtr->ZVZ2 > actor2ZvPtr->ZVZ1) && (actor1ZvPtr->ZVZ2 < actor2ZvPtr->ZVZ2)) ||
 			((actor2ZvPtr->ZVZ1 > actor1ZvPtr->ZVZ1) && (actor2ZvPtr->ZVZ1 < actor1ZvPtr->ZVZ2)) ||
-			((actor2ZvPtr->ZVZ2 > actor1ZvPtr->ZVZ1) && (actor2ZvPtr->ZVZ2 < actor1ZvPtr->ZVZ2))) {
+			((actor2ZvPtr->ZVZ2 > actor1ZvPtr->ZVZ1) && (actor2ZvPtr->ZVZ2 < actor1ZvPtr->ZVZ2)))
 			flag |= 2;
-		}
 
 		//TODO: remove hack and find the exact cause of the bug in the sorting algorithme
 		//flag = 0;
@@ -69,48 +69,41 @@ int sortCompareFunction(const void* param1, const void* param2)
 			distance1 = computeDistanceToPoint(translateX, translateZ, (actor1ZvPtr->ZVX1 + actor1ZvPtr->ZVX2) / 2, (actor1ZvPtr->ZVZ1 + actor1ZvPtr->ZVZ2) / 2);
 			distance2 = computeDistanceToPoint(translateX, translateZ, (actor2ZvPtr->ZVX1 + actor2ZvPtr->ZVX2) / 2, (actor2ZvPtr->ZVZ1 + actor2ZvPtr->ZVZ2) / 2);
 		} else {
-			if (flag & 2) // intersect on Z
-			{
-				if (abs(translateX - actor1ZvPtr->ZVX1) < abs(translateX - actor1ZvPtr->ZVX2)) {
+			// ...calculate the displacement as the sum of the component displacements.
+			// IDEA: Change from Manhattan distance?
+			if (flag & 2) { // intersect on Z
+				if (abs(translateX - actor1ZvPtr->ZVX1) < abs(translateX - actor1ZvPtr->ZVX2))
 					distance1 = abs(translateX - actor1ZvPtr->ZVX1);
-				} else {
+				else
 					distance1 = abs(translateX - actor1ZvPtr->ZVX2);
-				}
 
-				if (abs(translateX - actor2ZvPtr->ZVX1) < abs(translateX - actor2ZvPtr->ZVX2)) {
+				if (abs(translateX - actor2ZvPtr->ZVX1) < abs(translateX - actor2ZvPtr->ZVX2))
 					distance2 = abs(translateX - actor2ZvPtr->ZVX1);
-				} else {
+				else
 					distance2 = abs(translateX - actor2ZvPtr->ZVX2);
-				}
 			}
-			if (flag & 1) // intersect on X
-			{
-				if (abs(translateZ - actor1ZvPtr->ZVZ1) < abs(translateZ - actor1ZvPtr->ZVZ2)) {
+			if (flag & 1) { // intersect on X
+				if (abs(translateZ - actor1ZvPtr->ZVZ1) < abs(translateZ - actor1ZvPtr->ZVZ2))
 					distance1 += abs(translateZ - actor1ZvPtr->ZVZ1);
-				} else {
+				else
 					distance1 += abs(translateZ - actor1ZvPtr->ZVZ2);
-				}
 
-				if (abs(translateZ - actor2ZvPtr->ZVZ1) < abs(translateZ - actor2ZvPtr->ZVZ2)) {
+				if (abs(translateZ - actor2ZvPtr->ZVZ1) < abs(translateZ - actor2ZvPtr->ZVZ2))
 					distance2 += abs(translateZ - actor2ZvPtr->ZVZ1);
-				} else {
+				else
 					distance2 += abs(translateZ - actor2ZvPtr->ZVZ2);
-				}
 			}
 		}
-
 	} else {
 		distance1 = abs(translateY - 2000 - y1);
 		distance2 = abs(translateY - 2000 - y2);
 	}
 
-	if (distance1 > distance2) {
+	if (distance1 > distance2)
 		return(-1);
-	}
 
-	if (distance1 < distance2) {
+	if (distance1 < distance2)
 		return(1);
-	}
 
 	return(0);
 }

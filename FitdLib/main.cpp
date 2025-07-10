@@ -2550,11 +2550,11 @@ void drawProjectedLine(s32 x1s, s32 y1s, s32 z1s, s32 x2s, s32 y2s, s32 z2s, int
 	z1 += cameraPerspective;
 	z2 += cameraPerspective;
 
-	transformedX1 = ((x1 * cameraFovX) / (float)z1) + cameraCenterX;
-	transformedX2 = ((x2 * cameraFovX) / (float)z2) + cameraCenterX;
+	transformedX1 = ((x1 * cameraFovX) / z1) + cameraCenterX;
+	transformedX2 = ((x2 * cameraFovX) / z2) + cameraCenterX;
 
-	transformedY1 = ((y1 * cameraFovY) / (float)z1) + cameraCenterY;
-	transformedY2 = ((y2 * cameraFovY) / (float)z2) + cameraCenterY;
+	transformedY1 = ((y1 * cameraFovY) / z1) + cameraCenterY;
+	transformedY2 = ((y2 * cameraFovY) / z2) + cameraCenterY;
 
 	if (z1 > 0 && z2 > 0)
 		osystem_draw3dLine(transformedX1, transformedY1, z1, transformedX2, transformedY2, z2, c);
@@ -2705,7 +2705,8 @@ void drawProjectedQuad(float x1, float x2, float x3, float x4, float y1, float y
 	z4 += cameraPerspective;
 
 	if (z1 > DEPTH_THRESHOLD && z2 > DEPTH_THRESHOLD && z3 > DEPTH_THRESHOLD && z4 > DEPTH_THRESHOLD) {
-#define _dpq_transform(axisLower, axis, num) ((axisLower##num * cameraFov##axis) / (float)z##num) + cameraCenter##axis
+#define _dpq_transform(axisLower, axis, num) _RENDER_calcTransformed(axisLower##num, (float)z##num, axis)
+		// #define _dpq_transform(axisLower, axis, num) ((axisLower##num * cameraFov##axis) / (float)z##num) + cameraCenter##axis
 		osystem_draw3dQuad(
 			_dpq_transform(x, X, 1),
 			_dpq_transform(y, Y, 1),
@@ -3834,24 +3835,17 @@ void checkIfCameraChangeIsRequired(void)
 	int newCamera;
 
 	if (currentCamera != -1) {
-		tObject* actorPtr;
-		int zvx1;
-		int zvx2;
-		int zvz1;
-		int zvz2;
+		tObject* actorPtr = &objectTable[currentCameraTargetActor];
 
-		actorPtr = &objectTable[currentCameraTargetActor];
+		int zvx1 = actorPtr->zv.ZVX1 / 10;
+		int zvx2 = actorPtr->zv.ZVX2 / 10;
 
-		zvx1 = actorPtr->zv.ZVX1 / 10;
-		zvx2 = actorPtr->zv.ZVX2 / 10;
+		int zvz1 = actorPtr->zv.ZVZ1 / 10;
+		int zvz2 = actorPtr->zv.ZVZ2 / 10;
 
-		zvz1 = actorPtr->zv.ZVZ1 / 10;
-		zvz2 = actorPtr->zv.ZVZ2 / 10;
-
-		if (isInPoly(zvx1, zvx2, zvz1, zvz2, currentCameraZoneList[currentCamera])) // is still in current camera zone ?
-		{
+		// is still in current camera zone ?
+		if (isInPoly(zvx1, zvx2, zvz1, zvz2, currentCameraZoneList[currentCamera]))
 			return;
-		}
 	}
 
 #ifdef FITD_DEBUGGER
