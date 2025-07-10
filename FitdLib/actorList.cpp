@@ -1,5 +1,11 @@
 #include "common.h"
 
+/// @brief 
+/// @param param1 The index of the first actor in `objectTable`.
+/// @param param2 The index of the second actor in `objectTable`.
+/// @return 
+/// @todo Magic number of `2000` refers to the max range for which distance is calculated (source?); replace w/ macro/constant.
+/// @note This currently uses [Manhattan distance](<https://en.wikipedia.org/wiki/Taxicab_geometry>); this is technically incorrect, but might not matter.
 int sortCompareFunction(const void* param1, const void* param2)
 {
 	int distance1 = 0;
@@ -111,5 +117,5 @@ int sortCompareFunction(const void* param1, const void* param2)
 
 void sortActorList()
 {
-	qsort(sortedActorTable, numActorInList, sizeof(int), sortCompareFunction);
+	qsort(Index, NbAffObjets, sizeof(int), sortCompareFunction);
 }

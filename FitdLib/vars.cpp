@@ -271,8 +271,11 @@ bool transformUseX;
 bool transformUseY;
 bool transformUseZ;
 
+/// @brief `cameraX`; The camera's X position in the room's coordinate space (?)
 int translateX;
+/// @brief `cameraY`; The camera's Y position in the room's coordinate space (?)
 int translateY;
+/// @brief `cameraZ`; The camera's Z position in the room's coordinate space (?)
 int translateZ;
 
 int cameraCenterX;
@@ -308,8 +311,12 @@ s16 readNextArgument(const char* name)
 
 float renderPointList[6400];
 
-int numActorInList;
-int sortedActorTable[NUM_MAX_OBJECT];
+/// @brief numActorInList; the number of actors currently in `Index` (the sorted actor table)(/ the current instantiated actors that are in the current room ?).
+int NbAffObjets;
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D803)
+/// @brief sortedActorTable; the 
+/// @remark [Legacy name](https://docs.google.com/spreadsheets/d/1cYRTP37v7Y11O38okNyHPg1YrZx549GG6z2vhY7QRok/edit?gid=2024760462#gid=2024760462&range=D799)
+int Index[NUM_MAX_OBJECT];
 
 int angleCompX;
 int angleCompZ;

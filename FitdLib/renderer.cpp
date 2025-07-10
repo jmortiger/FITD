@@ -307,6 +307,7 @@ void ZoomGroupe(int zoomX, int zoomY, int zoomZ, sGroup* ptr)
 /// @param pBody 
 /// @return 
 /// @todo Investigate
+/// @todo Return bool
 int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 {
 	renderX = x - translateX;
@@ -494,8 +495,7 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 #else
 			Z += cameraPerspective;
 
-			if (Z <= 50) // clipping
-			{
+			if (Z <= 50) { // clipping
 				*(outPtr2++) = -10000;
 				*(outPtr2++) = -10000;
 				*(outPtr2++) = -10000;
@@ -505,9 +505,9 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 
 				*(outPtr2++) = transformedX;
 
+				// Expand bounds
 				if (transformedX < BBox3D1)
 					BBox3D1 = (int)transformedX;
-
 				if (transformedX > BBox3D3)
 					BBox3D3 = (int)transformedX;
 
@@ -515,9 +515,9 @@ int AnimNuage(int x, int y, int z, int alpha, int beta, int gamma, sBody* pBody)
 
 				*(outPtr2++) = transformedY;
 
+				// Expand bounds
 				if (transformedY < BBox3D2)
 					BBox3D2 = (int)transformedY;
-
 				if (transformedY > BBox3D4)
 					BBox3D4 = (int)transformedY;
 

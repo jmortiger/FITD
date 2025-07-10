@@ -1,5 +1,7 @@
 #include "common.h"
 
+/// @brief 256 indicies = 180 degrees
+/// @note 0 is 4 instead of 0, which doesn't seem right & doesn't match cosTable[512] (360 deg.); is this right?
 const s16 cosTable[] = {
 	4, 201, 402, 603, 804, 1005, 1206, 1406, 1607, 1808, 2009, 2209, 2410, 2610, 2811, 3011,
 	3211, 3411, 3611, 3811, 4011, 4210, 4409, 4608, 4807, 5006, 5205, 5403, 5601, 5799, 5997, 6195,

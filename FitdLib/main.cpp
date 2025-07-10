@@ -1522,6 +1522,10 @@ void SetAngleCamera(int x, int y, int z)
 	} else transformUseZ = false;
 }
 
+/// @brief Sets the globals `translateX`, `translateY`, `translateZ` accordingly.
+/// @param x 
+/// @param y 
+/// @param z 
 void SetPosCamera(int x, int y, int z)
 {
 	translateX = x;
@@ -1672,6 +1676,7 @@ void pointRotate(int x, int y, int z, int* destX, int* destY, int* destZ)
 	if (!pointRotateEnable)
 		return;
 
+	// TODO: Make macro helper to link w/ `renderer/RotateNuage`
 	int tempX = x;
 	int tempY = y;
 	int tempZ = z;
@@ -2307,16 +2312,16 @@ void createActorList()
 {
 	tObject* actorPtr = objectTable;
 
-	numActorInList = 0;
+	NbAffObjets = 0;
 	for (int i = 0; i < NUM_MAX_OBJECT; i++) {
 		if (actorPtr->indexInWorld != -1 && actorPtr->bodyNum != -1) {
 			if (checkActorInRoom(actorPtr->room)) {
-				sortedActorTable[numActorInList] = i;
+				Index[NbAffObjets] = i;
 				if (!(actorPtr->_flags & (AF_SPECIAL & AF_ANIMATED))) {
 					actorPtr->_flags |= AF_BOXIFY;
 					// FlagRefreshAux2 = 1;
 				}
-				numActorInList++;
+				NbAffObjets++;
 			}
 		}
 
@@ -2945,6 +2950,7 @@ int isBgOverlayRequired(int x1, int x2, int z1, int z2, char* data, int param)
 		//  drawOverlayZone(data, 80);
 		/////////////////////////////////////
 
+		// TODO: Auto advance pointer
 		int zoneX1 = *(s16*)(data + 0);
 		int zoneZ1 = *(s16*)(data + 2);
 		int zoneX2 = *(s16*)(data + 4);
@@ -3085,6 +3091,7 @@ void getHotPoint(int hotPointIdx, char* bodyPtr, point3dStruct* hotPoint)
 	if (flag & 2) { // TODO: What flag is this?
 		bodyPtr += 12;
 
+		// TODO: Auto advance pointer
 		s16 offset = *(s16*)bodyPtr;
 		bodyPtr += 2;
 		bodyPtr += offset;
@@ -3160,8 +3167,8 @@ void AllRedraw(int flagFlip)
 
 	osystem_startModelRender();
 
-	for (i = 0; i < numActorInList; i++) {
-		int currentDrawActor = sortedActorTable[i];
+	for (i = 0; i < NbAffObjets; i++) {
+		int currentDrawActor = Index[i];
 		tObject* actorPtr;
 
 		actorPtr = &objectTable[currentDrawActor];

@@ -565,8 +565,8 @@ s16 readNextArgument(const char* name = NULL);
 
 extern float renderPointList[6400];
 
-extern int numActorInList;
-extern int sortedActorTable[NUM_MAX_OBJECT];
+extern int NbAffObjets;
+extern int Index[NUM_MAX_OBJECT];
 
 extern int angleCompX;
 extern int angleCompZ;
