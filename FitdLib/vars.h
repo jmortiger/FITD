@@ -150,6 +150,15 @@ struct ZVStruct
 	s32 ZVZ1;
 	/// @brief Z max
 	s32 ZVZ2;
+
+	/* // template<int> int getYMid() { return (ZVY1 + ZVY2) / 2; }
+	// template<s32> s32 getYMid() { return (ZVY1 + ZVY2) / (s32)2; }
+	int getXMid() { return (ZVX1 + ZVX2) / 2; }
+	int getYMid() { return (ZVY1 + ZVY2) / 2; }
+	int getZMid() { return (ZVZ1 + ZVZ2) / 2; }
+	float getXMidF() { return (ZVX1 + ZVX2) / 2.f; }
+	float getYMidF() { return (ZVY1 + ZVY2) / 2.f; }
+	float getZMidF() { return (ZVZ1 + ZVZ2) / 2.f; } */
 }; typedef struct ZVStruct ZVStruct;
 // TODO: Finish structs aligned to loaded pak data.
 /* /// @brief As it appears in paks.
